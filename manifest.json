@@ -1,0 +1,173 @@
+{
+    "name": "Slickiss",
+    "version": "1.7.7",
+    "manifest_version": 2,
+    "description": "Hides ads and Captcha in Kissanime and offers many other functionalities like notifications for Anime, quick download, and more",
+    "browser_action": {
+        "name": "Slickiss",
+        "default_popup": "popup.html",
+        "default_icon": "icons/128.png"
+    },
+    "icons": {
+        "128": "icons/128.png"
+    },
+    "permissions": [
+        "storage",
+        "activeTabs",
+        "notifications",
+        "contextMenus",
+        "*://vagwyn.pw/*",
+        "*://cutt.ly/*",
+        "*://*.ti553.com/*",
+        "*://*.popads.net/*",
+        "*://*.bebi.com/*",
+        "*://1b6a637cbe7bb65ac.com/*",
+        "*://4f6b2af479d337cf.com/*",
+        "*://4702fb341ddf276d.com/*",
+        "*://go.onclasrv.com/*",
+        "*://deloton.com/*",
+        "*://mc.yandex.ru/*",
+        "*://ads.2mdnsys.com/*",
+        "*://pl14474491.puserving.com/*",
+        "*://go.oclaserver.com/*",
+        "*://*.addthis.com/*",
+        "*://m.addthisedge.com/*",
+        "*://kissanime.ru/ads/*",
+        "*://zukxd6fkxqn.com/*",
+        "*://native.propellerads.com/*",
+        "*://native.propellerclick.com/*",
+        "*://cobalten.com/*",
+        "*://pushance.com/*",
+        "*://rotumal.com/*",
+        "*://pusheify.com/*",
+        "*://luckypushh.com/*",
+        "*://koindut.com/*",
+        "*://wranjeon.xyz/*",
+        "*://forcedolphin.com/*",
+        "*://nauchegy.link/*",
+        "*://bristlyapace.com/*",
+        "*://nraisgroupe.com/*",
+        "*://inpagepush.com/*",
+        "*://boyaidare.club/*",
+        "*://artapeare.site/*",
+        "*://kissanime.ru/*",
+        "*://kissasian.sh/*",
+        "*://www.rapidvideo.com/*",
+        "*://streamango.com/*",
+        "*://www.mp4upload.com/*",
+        "*://oload.stream/*",
+        "*://oload.live/*",
+        "*://oload.site/*",
+        "*://oload.icu/*",
+        "*://openload.co/*",
+        "*://www.novelplanet.me/v/*",
+        "webRequest",
+        "webRequestBlocking"
+    ],
+    "background": {
+        "scripts": [
+            "jquery-2.1.4.min.js",
+            "md5.js",
+            "kickout.js",
+            "background.js",
+            "downloader.js"
+        ],
+        "persistent": true
+    },
+    "web_accessible_resources": [
+        "imgs/*"
+    ],
+    "content_scripts": [
+        {
+            "js": [
+                "jquery-2.1.4.min.js",
+                "md5.js",
+                "classes/custom.js",
+                "classes/Tooltip.js",
+                "classes/Assets.js",
+                "classes/ImgProc.js",
+                "classes/Captcha.js",
+                "classes/DlGrabber.js",
+                "classes/EpisodeListing.js",
+                "classes/Bookmark.js",
+                "classes/Anime.js",
+                "classes/Episode.js",
+                "classes/Slickiss.js",
+                "classes/MessageManager.js",
+                "vars.js",
+                "player.js"
+            ],
+            "css": [
+                "custom-style.css"
+            ],
+            "matches": [
+                "*://kissanime.ru/*",
+                "*://kissasian.sh/*",
+                "*://www.rapidvideo.com/*",
+                "*://streamango.com/*",
+                "*://www.mp4upload.com/*",
+                "*://oload.stream/*",
+                "*://oload.live/*",
+                "*://oload.site/*",
+                "*://oload.icu/*",
+                "*://openload.co/*",
+                "*://www.novelplanet.me/v/*"
+            ],
+            "all_frames": true,
+            "run_at": "document_start"
+        },
+        {
+            "js": [
+                "captchaLibs v2.js",
+                "ocrad.min.js",
+                "captchaSolving.js"
+            ],
+            "matches": [
+                "*://kissanime.ru/*"
+            ],
+            "all_frames": true,
+            "run_at": "document_start"
+        },
+        {
+            "js": [
+                "polisher.js",
+                "bookmarks.js",
+                "batchBoard.js",
+                "batchManager.js",
+                "animeTtp.js",
+                "sendUpdates.js"
+            ],
+            "matches": [
+                "*://kissanime.ru/*",
+                "*://kissasian.sh/*"
+            ],
+            "all_frames": true
+        },
+        {
+            "js": [
+                "vid.js"
+            ],
+            "matches": [
+                "*://www.rapidvideo.com/*",
+                "*://streamango.com/*",
+                "*://www.mp4upload.com/*",
+                "*://www.novelplanet.me/v/*"
+            ],
+            "all_frames": true,
+            "run_at": "document_start"
+        },
+        {
+            "js": [
+                "v.js"
+            ],
+            "matches": [
+                "*://oload.stream/*",
+                "*://oload.live/*",
+                "*://oload.site/*",
+                "*://oload.icu/*",
+                "*://openload.co/*"
+            ],
+            "all_frames": true
+        }
+    ]
+}
