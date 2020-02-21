@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.7.8 (10/03/2017)
+## v1.7.9 (10/03/2017)
 
 - Removing all the speghetti code
 - Adding minor features
