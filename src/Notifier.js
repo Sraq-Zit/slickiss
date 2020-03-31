@@ -2,19 +2,31 @@ class Notifier {
 
     static async updatesToHTML() {
         const updates = await this.getUpdates();
-        if (!updates || !updates.notes[updates.manifest.version]) return null;
+        const tasks = await this.getTasks();
+        let empty = true;
         const container = $('<div/>');
-        container.append($('<div/>', { class: 'bigChar', text: 'Upcoming updates' }));
-        container.append($('<a/>', { class: 'title', text: updates.manifest.version }));
-        container.append($('<ul/>', { css: { 'padding-left': '25px' } }));
+        if (updates && updates.notes[updates.manifest.version]) {
+            empty = false;
+            container.append($('<div/>', { class: 'bigChar', text: 'Upcoming updates' }));
+            container.append($('<a/>', { class: 'title', text: updates.manifest.version }));
+            container.append($('<ul/>', { css: { 'padding-left': '25px' } }));
 
-        for (const note of updates.notes[updates.manifest.version])
-            container.find('ul')
-                .append($('<li/>', { text: note, css: { 'margin-left': '5px', 'font-weight': 'unset' } }))
-
-        container.find('a.title').wrap($('<p/>'));
-        container.find('a.title').wrap($('<p/>'));
-        return container;
+            for (const note of updates.notes[updates.manifest.version])
+                container.find('ul')
+                    .append($('<li/>', { text: note, css: { 'margin-left': '5px', 'font-weight': 'unset' } }))
+            container.find('a.title').wrap($('<p/>'));
+        }
+        if (tasks && (tasks.todo.length || tasks.done.length)) {
+            empty = false;
+            let p;
+            container.append($('<div/>', { class: 'bigChar', text: 'To do' }));
+            container.append(p = $('<p/>', { text: 'To do' }));
+            for (const task of tasks.done)
+                p.append($('<span/>', { text: `　✔ ${task}` }).css('font-weight', 'bold'));
+            for (const task of tasks.todo)
+                p.append($('<span/>', { text: `　- ${task}` }));
+        }
+        return empty ? null : container;
     }
 
     static async getUpdates() {
@@ -45,6 +57,26 @@ class Notifier {
             }
         } catch (e) { }
         return notes;
+    }
+
+    static async getTasks() {
+        const url = 'https://raw.githubusercontent.com/Sraq-Zit/slickiss/master/TODO.md';
+        let tasks = {
+            todo: [],
+            done: []
+        };
+        try {
+            tasks = {
+                todo: [],
+                done: []
+            }
+            let raw = await fetch(url).then(t => t.text());
+            const pattern = / - \[([ x])\](.+)/g;
+            let r;
+            while (r = pattern.exec(raw))
+                tasks[r[0] == ' ' ? 'todo' : 'done'] = r[1];
+        } catch (e) { }
+        return tasks;
     }
 
 }
