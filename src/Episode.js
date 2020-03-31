@@ -24,6 +24,7 @@ class Episode {
 
         } else {
             $('iframe[id*=adsIfrme]').remove();
+            $('[id*=adsIfrme] > iframe').parent().remove();
             $("#disqus_thread").show(); //hide disqus
             // $('#divVideo').attr("id", "video").css('width', ''); // change id to avoid content removal ..
             // $('#divDownload').attr("id", "dDownload"); // change id to avoid content removal caused by adblock
