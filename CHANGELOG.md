@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0 (10/03/2017)
+## v2.0.0 (31/03/2020)
 
 - Replaced all the speghetti code with new code
 - Handled all servers available
