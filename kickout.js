@@ -7,9 +7,18 @@ const blocked = chrome.runtime.getManifest().permissions
 chrome.webRequest.onBeforeRequest.addListener(
     function (details) {
         Chrome.get().then(s => settings = s);
-        return {
-            cancel: Boolean(!details.url.includes("Scripts/video-js/video.js") || Number(settings.lite || !settings['servers.beta']))
-        };
+        b = true;
+        const initiators = chrome.runtime.getManifest().permissions
+            .filter(v => b && (b = (v[0] == '*')))
+            .map(v => v.replace(/[*:/]/g, ''));
+        for (const init of initiators)
+            if (details.initiator.includes(init))
+                return {
+                    cancel: Boolean(
+                        !details.url.includes("Scripts/video-js/video.js") ||
+                        Number(settings.lite || !settings['servers.beta'])
+                    )
+                };
     }, {
     urls: blocked
 }, ["blocking"]
