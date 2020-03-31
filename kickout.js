@@ -1,16 +1,32 @@
+let b;
+Chrome.get().then(s => settings = s);
+
+
+const blocked = chrome.runtime.getManifest().permissions
+    .filter(e => Boolean(b === true || (b = (e[0] == '*' && (b === false || null)))));
 chrome.webRequest.onBeforeRequest.addListener(
     function (details) {
-        return {
-            cancel: true
-        };
+        Chrome.get().then(s => settings = s);
+        b = true;
+        const initiators = chrome.runtime.getManifest().permissions
+            .filter(v => b && (b = (v[0] == '*')))
+            .map(v => v.replace(/[*:/]/g, ''));
+        for (const init of initiators)
+            if (details.initiator.includes(init))
+                return {
+                    cancel: Boolean(
+                        !details.url.includes("Scripts/video-js/video.js") ||
+                        Number(settings.lite || !settings['servers.beta'])
+                    )
+                };
     }, {
-        urls: ["*://artapeare.site/*", "*://boyaidare.club/*", "*://inpagepush.com/*", "*://vagwyn.pw/*", "*://*.ti553.com/*", "*://*.popads.net/*", "*://*.bebi.com/*", "*://1b6a637cbe7bb65ac.com/*", "*://4f6b2af479d337cf.com/*", "*://4702fb341ddf276d.com/*", "*://go.onclasrv.com/*", "*://deloton.com/*", "*://mc.yandex.ru/*", "*://ads.2mdnsys.com/*", "*://pl14474491.puserving.com/*", "*://go.oclaserver.com/*", "*://*.addthis.com/*", "*://m.addthisedge.com/*", "*://kissanime.ru/ads/*", "*://zukxd6fkxqn.com/*", "*://native.propellerads.com/*", "*://native.propellerclick.com/*", "*://cobalten.com/*", "*://pushance.com/*", "*://rotumal.com/*", "*://pusheify.com/*", "*://luckypushh.com/*", "*://koindut.com/*", "*://wranjeon.xyz/*", "*://forcedolphin.com/*", "*://nauchegy.link/*", "*://bristlyapace.com/*"]
-    },
-    ["blocking"]
+    urls: blocked
+}, ["blocking"]
 );
 
 chrome.webRequest.onHeadersReceived.addListener(
     function (info) {
+        Chrome.get().then(s => settings = s);
         var headers = info.responseHeaders;
         var index = headers.findIndex(x => x.name.toLowerCase() == "x-frame-options");
         if (index != -1) {
@@ -20,8 +36,8 @@ chrome.webRequest.onHeadersReceived.addListener(
             responseHeaders: headers
         };
     }, {
-        urls: ['<all_urls>'], //
-        types: ["sub_frame", "xmlhttprequest"]
-    },
+    urls: ['<all_urls>'],
+    types: ["sub_frame", "xmlhttprequest", "script"]
+},
     ['blocking', 'responseHeaders']
 );

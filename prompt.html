@@ -1,0 +1,50 @@
+<div id="msgArea"
+    style='position: absolute; height: 100%; width: 100%; background-color: rgba(0, 0, 0, 0.8); text-align: center; z-index: 3; font-family: "Open Sans", Arial, Verdana, Helvetica, sans-serif; font-size: 13px; display: block; line-height: initial; color: initial; font-size: 1.2em;'>
+    <style>
+        #msgArea h1,
+        #msgArea h2,
+        #msgArea h3,
+        #msgArea h4,
+        #msgArea h5,
+        #msgArea h6 {
+            font-weight: 300;
+        }
+
+        #msgArea .prompt td {
+            height: fit-content;
+            text-align: center;
+            padding: 17px;
+            cursor: pointer;
+            transition: all .1s linear
+        }
+
+        #msgArea .prompt td:hover {
+            background-color: lightgray;
+        }
+
+        #msgArea .prompt td:active {
+            background-color: gray;
+        }
+    </style>
+    <div
+        style="position: absolute;transform: translate(-50%, -50%);background-color: white;width: 480px;top: 50%;left: 50%;">
+        <h2 style="height: fit-content; padding: 10px; margin: 0;">
+            <span class="bigTitle">Are you sure you want use plain video player instead of Slickiss player ?</span>
+            <div style="font-size:.6em" class="subTitle">
+                <label>
+                    <input type="checkbox" id="permanent"> Don't use Slickiss player next time
+                </label>
+                <br><br>
+                <textarea class="decorated" placeholder="I'd appreciate your feedback.."></textarea>
+            </div>
+        </h2>
+        <table class="prompt" style="width: 100%;height: 40%;" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td class="yes">Yes</td>
+                    <td class="no">No</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

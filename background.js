@@ -31,6 +31,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             url: chrome.extension.getURL(message.data)
         });
 
+    if (message.type == 'updateData')
+        Chrome.get().then(s => settings = s);
+
     if (message.logged === true || message.logged === false)
         chrome.contextMenus.update(cmOp.id, {
             enabled: message.logged,
@@ -54,8 +57,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
 
 });
+
 var frame = $("<iframe/>")
-$("body").append(frame.attr("src", "https://kissanime.ru/slickupdates"));
+$("body").append(frame.attr("src", "https://kissanime.ru/#sendUpdates"));
 
 
 const step = 30000;
@@ -79,7 +83,7 @@ eventer(messageEvent, function (e) {
     console.log("showing notification..");
     chrome.notifications.create(
         url, data,
-        function () {}
+        function () { }
     );
 });
 chrome.notifications.onButtonClicked.addListener(function (notificationId, btnIndex) {
@@ -88,6 +92,7 @@ chrome.notifications.onButtonClicked.addListener(function (notificationId, btnIn
         url: url
     });
 });
+
 
 countTime();
 

@@ -11,7 +11,52 @@ a[href*='4702fb341ddf276d'],
     display: none !important;
 }
 
-a[href*=Episode-001], a.new {
+#disqus_thread {
+    display: unset !important;
+}
+
+#footer {
+    top: unset !important;
+}
+
+
+
+.display {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.display td {
+    width: 25vw;
+    text-align: center;
+}
+
+.display td {
+    padding: 20px;
+}
+
+.centered {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    height: fit-content;
+    width: fit-content;
+}
+
+.query {
+    font-size: 2em;
+}
+
+.query+td {
+    text-align: right;
+}
+
+a[href*=Episode-001],
+a.new {
     color: #fff5ab;
 }
 
@@ -73,6 +118,7 @@ textarea.decorated {
     color: #efefef;
     background: #656565;
     border-radius: 20px;
+    font-family: sans-serif;
     text-align: center;
     word-break: break-all;
     box-shadow: rgba(51, 51, 51, 0.71) 0px 0px 4px 2px;
@@ -304,6 +350,7 @@ img#pageLoading+h1 {
 
 .slickBtn:not(.disabled):active {
     background: #5d8800;
+    transform: scale(.9);
 }
 
 .settings {
@@ -347,14 +394,10 @@ img#pageLoading+h1 {
     transition: opacity .3s ease-out;
 }
 
-.timeDisplay canvas {
+.timeDisplay canvas:not([width=0]) {
     margin-bottom: 5px;
 }
 
-.disabled {
-    cursor: default;
-    background: lightgray;
-}
 
 .pointerFill {
     position: absolute;
@@ -403,16 +446,16 @@ table.toolbarContainer td {
     opacity: 1;
 }
 
-.player:not(.canPlay) .pointerFill {
+.player:not(.canplay) .pointerFill {
     width: 95% !important;
 }
 
-.player:not(.canPlay) .pointer {
+.player:not(.canplay) .pointer {
     margin-left: 0 !important;
 }
 
-.canPlay .pointerFill,
-.canPlay .pointer {
+.canplay .pointerFill,
+.canplay .pointer {
     background: #a8f500;
 }
 
@@ -429,6 +472,14 @@ table.toolbarContainer td {
     width: 100% !important;
 }
 
+.player:not(.canplay) .disabled {
+    cursor: unset;
+}
+
+.disabled {
+    cursor: default;
+    background: lightgray;
+}
 
 .iconStyle {
     font-size: 3em;
@@ -478,7 +529,13 @@ table.toolbarContainer td {
     animation-name: bookmark;
 }
 
-
+.slickFloating {
+    animation-name: floating;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-outs;
+    animation-duration: 2s;
+    transition: all .5s ease-out;
+}
 
 
 
@@ -522,5 +579,19 @@ table.toolbarContainer td {
     to {
         transform: rotate(0deg);
         background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/mark-seen.png);
+    }
+}
+
+@keyframes floating {
+    0% {
+        top: calc(50% + 10px);
+    }
+
+    50% {
+        top: calc(50% - 10px);
+    }
+
+    100% {
+        top: calc(50% + 10px);
     }
 }
