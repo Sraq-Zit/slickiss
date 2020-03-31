@@ -72,7 +72,7 @@ class Slickiss {
                         $('<div/>', { text: 'Loading..' })
                     ]));
                     Notifier.updatesToHTML().then(updates => {
-                        if (!updates) return an.remove();
+                        if (!updates) return an.next().remove() && an.remove();
                         an.find('.barContent > div:not(.arrow-general)')
                             .empty().append(updates.children());
                     });
