@@ -120,9 +120,15 @@
                 "*://kissasian.sh/*",
                 "*://playhydrax.com/*",
                 "*://hydrax.net/*",
-                "*://www.rapidvideo.com/*",
-                "*://streamango.com/*",
                 "*://www.mp4upload.com/*",
+                "*://www.novelplanet.me/*"
+            ],
+            "include_globs": [
+                "*://kissanime.ru/*",
+                "*://kissasian.sh/*",
+                "*://playhydrax.com/*",
+                "*://hydrax.net/watch?v=*",
+                "*://www.mp4upload.com/embed-*",
                 "*://www.novelplanet.me/v/*"
             ],
             "all_frames": true,
