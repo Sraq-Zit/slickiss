@@ -1,147 +1,109 @@
-let bookmarks = [],
-    history = [];
+if (top == self) throw 'This url is used for notifying updates in the background';
+window.stop();
+$(document.documentElement).html('');
 
+let bookmarks = [], hist = LocalStorage.get("history") || [];
 
+const types = {
+    all: "0",
+    newEp: "1",
+    bookmarkedEp: "2",
+    others: "3",
+    dub: "4"
+};
 
-if (location.href.includes("slickupdates")) {
-    if (!$("html").html().includes("challenge-form")) {
-        window.history.pushState({
-            "pageTitle": "slickupdates"
-        }, "", "/slickupdates");
+$("body").remove();
+manageData(false);
 
-        if (localStorage.getItem("history")) history = JSON.parse(localStorage.getItem("history"));
-        $("html").html("");
-        manageData(false);
-    }
-}
-
-function manageData(timeout = true) {
-    if (timeout) {
-        setTimeout(function () {
-            manageData(false)
-        }, 60 * 1000);
-        return;
-    }
-
-
-    uploadData();
+async function manageData(timeout = true) {
+    if (timeout) await sleep(6e4);
 
     console.log("starting..");
-    if (!settings.set) {
-        manageData();
-        return;
-    }
-    if (settings.updates.includes(types.bookmarkedEp)) {
-        console.log("getting bookmarks if available..");
-        $.ajax({
-            dataType: 'html',
-            type: 'GET',
-            url: "/BookmarkList",
-            success: function (responseData) {
-                responseData = responseData.replace(/<img[^>]+?>/g, "");
-                if (responseData.includes("challenge-form")) {
-                    location.reload();
-                    return;
-                }
-                $(responseData).find('.aAnime').each(function (index, el) {
-                    var anime = $(el).text().trim();
-                    bookmarks.push(anime);
-                });
-                sendUpdates();
-            },
-            error: function (responseData) {
-                manageData();
-            }
-        });
-    } else sendUpdates();
+    settings = await Chrome.get();
+    uploadData();
+    sendUpdates();
 
 }
 
-function sendUpdates() {
-    var b = false;
-    $.ajax({
-        dataType: 'html',
-        type: 'get',
-        url: '//kissanime.ru/',
-        success: function (responseData) {
-            var res = responseData.replace(/<img[^>]+?>/g, "");
-            console.log("last update: " + history[history.length - 1]);
-            if (responseData.includes("challenge-form")) {
-                location.reload();
-                return;
+async function sendUpdates() {
+    var pic, c = 0;
+    try {
+        let r = await fetch('//kissanime.ru/').then(t => t.text());
+        const res = r.noImgs;
+        console.log("last update: " + hist[hist.length - 1]);
+        if (r.includes("challenge-form")) {
+            await Captcha.bypassCf();
+            location.reload();
+            return;
+        }
+        var toDisplay = "";
+        console.log("settings: " + settings.updates);
+        for (const el of $(res).find("a.textDark").toArray()) {
+            var text = "";
+            var anime = $(el).prev().text().trim() + " " + $(el).text().trim();
+
+
+            let b = false;
+            let check = b = settings.updates.includes(types.newEp) && /\D+0+1\D*$/g.test(el.textContent) &&
+                (settings.updates.includes(types.dub) || !anime.includes("(Dub)"));
+            if (settings.updates.includes(types.newEp) && b) text += "This anime has new Ep" + "\n";
+
+            const bk = await Bookmark.getAnimeBookmarkInfo(el.href);
+            check = (b = settings.updates.includes(types.bookmarkedEp) && bk.bookmarked) || check;
+
+            if (b) text += "This anime is bookmarked" + "\n";
+
+            check = (b = settings.updates.includes(types.others) && !$(el).text().trim().toLowerCase().includes("episode") &&
+                (settings.updates.includes(types.dub) || !anime.includes("(Dub)"))) || check;
+            if (b) text += "This anime has special ep" + "\n";
+
+            check = (b = settings.updates.includes(types.all)) || check;
+
+            if (b) text += "'All' option is selected" + "\n";
+
+            if (check && !hist.includes(anime)) {
+                console.log(text);
+                console.log($(el).prev()[0].href);
+                if (!pic) pic = $(el).prev()[0].href;
+                hist.push(anime);
+                toDisplay += $(el).prev().text().trim() + " " + $(el).text().trim() + "\n";
+                c++;
             }
-            var toDisplay = "";
-            var pic, c = 0;
-            console.log("settings: " + settings.updates);
-            $(res).find("a.textDark").each(function () {
-                var text = "";
-                var anime = $(this).prev().text().trim() + " " + $(this).text().trim();
 
-                var b;
-                check = b = settings.updates.includes(types.newEp) && /\D+0+1\D*$/g.test(this.textContent) &&
-                    (settings.updates.includes(types.dub) || !anime.includes("(Dub)"));
-                if (settings.updates.includes(types.newEp) && b) text += "This anime has new Ep" + "\n";
+        }
+        while (hist.length > 50) hist.shift();
+        LocalStorage.set("history", hist, false);
+        if (pic) {
+            r = await fetch(pic).then(t => t.text());
+            const json = {
+                legit: true,
+                type: 'basic',
+                title: "You've got " + (c > 1 ? c + " updates" : "an update"),
+                contextMessage: "You can disable this on the Slickiss extension options",
+                buttons: [{
+                    title: "Open Kissanime"
+                }],
+                iconUrl: "/imgs/angry-loli.png",
+                message: toDisplay
+            };
+            if (!r.includes("challenge-form"))
+                json.iconUrl = $(r).find(".rightBox img").eq(0).attr("src");
+            if (pic && c == 1) {
+                json.buttons.push({
+                    title: "Open Anime page"
+                });
+                json.animeUrl = pic;
+            }
+            parent.postMessage(json, "*");
+        }
 
-                check |= b = settings.updates.includes(types.bookmarkedEp) && bookmarks.includes($(this).prev().text().trim());
-                if (b) text += "This anime is bookmarked" + "\n";
+        parent.postMessage({
+            isAlive: true
+        }, "*");
 
-                check |= b = settings.updates.includes(types.others) && !$(this).text().trim().toLowerCase().includes("episode") &&
-                    (settings.updates.includes(types.dub) || !anime.includes("(Dub)"));
-                if (b) text += "This anime has special ep" + "\n";
+    } catch (e) { console.warn(e); }
 
-                check |= b = settings.updates.includes(types.all);
-                if (b) text += "'All' option is selected" + "\n";
-
-                if (check && !history.includes(anime)) {
-                    console.log(text);
-                    console.log($(this).prev()[0].href);
-                    if (!pic) pic = $(this).prev().get(0).href;
-                    history.push(anime);
-                    toDisplay += $(this).prev().text().trim() + " " + $(this).text().trim() + "\n";
-                    c++;
-                }
-
-            });
-            while (history.length > 50) history.shift();
-            localStorage.setItem("history", JSON.stringify(history));
-
-            if (pic) $.ajax({
-                dataType: 'html',
-                type: 'GET',
-                url: pic,
-                success: function (responseData) {
-                    var title = "You've got " + (c > 1 ? c + " updates" : "an update"),
-                        json = {
-                            legit: true,
-                            type: 'basic',
-                            title: title,
-                            contextMessage: "You can disable this on the Slickiss extension options",
-                            buttons: [{
-                                title: "Open Kissanime"
-                            }],
-                            iconUrl: "/imgs/angry-loli.png",
-                            message: toDisplay
-                        };
-                    if (!responseData.includes("challenge-form"))
-                        json.iconUrl = $(responseData).find(".rightBox img").eq(0).attr("src");
-                    if (pic && c == 1) {
-                        json.buttons.push({
-                            title: "Open Anime page"
-                        });
-                        json.animeUrl = pic;
-                    }
-                    parent.postMessage(json, "*");
-                }
-            });
-
-            parent.postMessage({
-                isAlive: true
-            }, "*");
-
-            manageData();
-        },
-        error: manageData
-    });
+    manageData();
 }
 
 
@@ -170,7 +132,7 @@ function uploadData() {
                 }
             });
 
-    } else if(data) localStorage.removeItem("capData");
+    } else if (data) localStorage.removeItem("capData");
 
     chrome.storage.sync.get(function (data) {
         var f = data.feedback,

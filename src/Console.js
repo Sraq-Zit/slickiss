@@ -1,0 +1,5 @@
+class Console {
+    constructor(panel) {
+        
+    }
+}

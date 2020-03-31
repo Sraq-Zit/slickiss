@@ -5,106 +5,116 @@
     <title>Slickiss</title>
     <link href="tpl_style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="src/Chrome.js"></script>
+    <script type="text/javascript" src="src/SettingsManager.js"></script>
     <script type="text/javascript" src="popup.js"></script>
     <style>
-        html{
+        html {
             height: fit-content;
         }
-        
-        body{
+
+        body {
             padding-bottom: 15px;
             width: 300px;
-            height: 400px;
+            height: 420px;
             border: 1px solid #333333;
             font-family: sans-serif;
             transition: height .3s ease;
         }
-        
+
         table {
             border-spacing: 0;
         }
-        
+
         td {
             font-size: 1.3em;
             padding: 10px;
             cursor: pointer;
             transition: all .3s ease;
         }
-        
+
         td:after {
             content: "\25B6";
             float: right;
         }
+
         td.backward:after {
             content: "\25C0";
             padding-right: 10px;
             float: left;
         }
-        .backward{
+
+        .backward {
             padding: 10px;
             font-size: 1.7em;
         }
-        
-        td:hover{
+
+        td:hover {
             background-color: #384035;
         }
-        
-        .options, .details{
+
+        .notice {
+            color: #b1ca05;
+
+        }
+
+        .options,
+        .details {
             position: absolute;
-            border-bottom: solid 1px #333;
-            width: 300px;
-            height: 340px;
+            width: 280px;
+            height: 355px;
             left: 0;
             transition: all .5s ease;
         }
-        .details{
+
+        .details {
             padding: 0 0 0 15px;
         }
-        
-        .details + div{
+
+        .details+div {
+            border-top: solid 1px #333;
+        }
+
+        .details+div {
             position: absolute;
             bottom: 20px;
             width: 300px;
         }
-        
+
         .options.hidden {
             left: -300px;
         }
-        
+
         .details.hidden {
             left: 300px;
         }
-        
-        .body{
+
+        .body {
             display: none;
         }
-        
     </style>
 </head>
 
 <body>
     <div class="options">
-        <table width="100%" height="340px">
+        <table height="355px" style="width: 100vw;">
             <tr>
-                <td class="op" data-body="display">Anime Display</td>
+                <td class="op" data-body="general">General</td>
             </tr>
             <tr>
-                <td class="op" data-body="player">Remove Custom Player</td>
+                <td class="op" data-body="appearance">Appearance</td>
             </tr>
             <tr>
-                <td class="op" data-body="servers">Batch Servers Order</td>
+                <td class="op" data-body="player">Player</td>
             </tr>
             <tr>
-                <td class="op" data-body="updates">Anime Updates Notification</td>
-            </tr>
-            <tr>
-                <td class="op" data-body="other">Other Settings</td>
+                <td class="op" data-body="notification">Notifications</td>
             </tr>
         </table>
 
     </div>
     <div class="details hidden">
-        <table width="100%" style="margin-bottom: 10px; margin-left: -10px;">
+        <table style="margin-bottom: 10px; margin-left: -15px; width: 100vw;">
             <tr>
                 <td class="backward bigChar">Back</td>
             </tr>
@@ -112,87 +122,85 @@
 
 
         <!--<hr>-->
-        <div class="body display">
-            <input type="radio" name="display" value="1" checked> Slickiss version <br>
-            <input type="radio" name="display" value="0"> Original version <br>
+        <div class="body appearance">
+            <div class="hasPic" data-id="lite">
+                <input type="radio" name="lite" value="1" checked> Slickiss version
+            </div> <br>
+            <div class="hasPic" data-id="orig">
+                <input type="radio" name="lite" value=""> Original version
+            </div> <br>
+            <br>
+            <img src="https://image.prntscr.com/image/Gk4OKEKIR2iZddj01oUQXA.png" id="lite"
+                style="width: 100%; display: none;">
+            <img src="https://image.prntscr.com/image/5RE5uA-jQiefsTXo5F6QrQ.png" id="orig"
+                style="width: 100%; display: none;">
         </div>
         <!--<hr>-->
         <div class="body player">
             Player type:
-            <select id="player">
-                <option value="0">Plain html5 player</option>
+            <select name="player">
+                <option value="">Plain html5 player</option>
                 <option value="1" selected>Slickiss player</option>
             </select>
             <br>
-            <input type="checkbox" name="vid" value="www.rapidvideo.com" checked> RapidVideo <br>
-            <input type="checkbox" name="vid" value="www.mp4upload.com" checked> Mp4Upload <br>
-            <input type="checkbox" name="vid" value="streamango.com" checked> Streamango <br>
-            <input type="checkbox" name="vid" value="oload.stream" checked> Openload <br>
-        </div>
-        <!--<hr>-->
-        <div class="body servers">
-            <div class="batchOrder">
-                <span style="margin-right: 10px">(1)</span>
-                <select>
-                    <option value="5">Nova</option>
-                    <option value="0">RapidVideo</option>
-                    <option value="1">Streamango</option>
-                    <option value="2">Openload</option>
-                    <option value="3">Mp4Upload</option>
-                    <option value="4">Alpha</option>
-                </select>
-            </div>
-            <br>
-            Default :<br>
-            <button id="cmd">Idman CMD command</button>
-            <button>Clean filenames</button>
-        </div>
+            <input type="checkbox" name="servers.mp4upload" checked> Mp4Upload <br>
+            <input type="checkbox" name="servers.nova" checked> Nova <br>
+            <input type="checkbox" name="servers.beta" checked> Beta / Alpha servers <br><br>
+            <div class="notice">* Disabling alpha/beta server will disable Slickiss display when
+                that server is used </div>
 
-        <div class="body updates">
-            <input type="checkbox" class="update all" name="update" value="0"> All (Basically any update on Kissanime) <br>
-            <input type="checkbox" class="update" name="update" value="1"> New first episodes <br>
-            <input type="checkbox" class="update" name="update" value="2"> Bookmarked episodes <br>
-            <input type="checkbox" class="update" name="update" value="3"> Others (Movies, trailers..) <br>
-            <input type="checkbox" class="update" name="update" value="4"> Include Dub (Excluding Bookmarks)<br>
         </div>
         <!--<hr>-->
-        <div class="body other">
-            <input type="checkbox" id="captcha" name="captcha" checked> Solve Captcha <br>
-            <input type="checkbox" id="ttip" checked> Show Anime info tooltip <br>
-            <input type="checkbox" id="notifyLastTime" checked> Continue from where you left off notification <br>
-            <input type="checkbox" id="pre" name="preload" checked> Preload the video <br>
-            <input type="checkbox" id="autoplay" checked> Autoplay video <br>
-            <input type="checkbox" id="nextPrev"> Prepare previous and next episode <br>
-            <input type="checkbox" id="shortcuts" checked> Use Shortcuts (<a href="#" id="shortcutSetting">Click to set shortcuts</a>) <br>
-            <input type="checkbox" id="mark"> Auto mark as seen once latest episode is watched <br>
-            <span style="color: #b1ca05;">* You should be logged in.</span> <br>
+
+        <div class="body notification">
+            <input type="checkbox" class="update all" name="updates" value="0"> All (Basically any update on Kissanime)
+            <br>
+            <input type="checkbox" class="update" name="updates" value="1"> New first episodes <br>
+            <input type="checkbox" class="update" name="updates" value="2"> Bookmarked episodes <br>
+            <input type="checkbox" class="update" name="updates" value="3"> Others (Movies, trailers..) <br>
+            <input type="checkbox" class="update" name="updates" value="4"> Include Dub (Not in Bookmarks)<br>
+        </div>
+        <!--<hr>-->
+        <div class="body general">
+            <input type="checkbox" name="captcha" checked> Solve Captcha <br>
+            <input type="checkbox" name="ttip" checked> Show Anime info tooltip <br>
+            <input type="checkbox" name="notifyLastTime" checked> Continue from where you left off notification <br>
+            <input type="checkbox" name="autoplay" checked> Autoplay video <br>
+            <input type="checkbox" name="prepareNextPrev"> Prepare previous and next episode <br>
+            <input type="checkbox" name="shortcuts" checked> Use Shortcuts ( <a href="#" id="shortcutSetting">Click to
+                set shortcuts</a>)
+            <br>
+            <input type="checkbox" name="markAsSeen"> Auto mark as seen once latest episode is watched <br>
+            <span class="notice">* You should be logged in.</span> <br>
             Default Server :
-            <select id="server">
+            <select name="defaultserver">
                 <option value="default">Kissanime's default</option>
-                <option value="rapidvideo">RapidVideo</option>
+                <option value="hydrax">Hydrax</option>
                 <option value="mp4upload">Mp4Upload</option>
-                <option value="openload">Openload</option>
-                <option value="streamango">Streamango</option>
                 <option value="nova">Nova</option>
-                <option value="alpha">Alpha</option>
                 <option value="beta">Beta</option>
+                <option value="beta3">Beta 3</option>
+                <option value="beta4">Beta 4</option>
             </select>
+            <br>
+
+            <span class="notice">
+                * This list may not contain all available servers due to the frequent
+                change of Kissanime supported servers, the list will update whenever I notice the change
+                in the next update.
+            </span>
 
             <br>
             <br>
 
             <span style="margin-right: 10px">Quality: </span>
-            <select id="quality">
+            <select name="quality">
                 <option value="1080p">1080p</option>
                 <option value="720p" selected>720p</option>
                 <option value="480p">480p</option>
                 <option value="360p">360p</option>
             </select>
-
-            <div style="color: #b1ca05;">* Available in Nova and Rapidvideo</div>
-            <div style="color: #b1ca05;">* 720p for Rapidvideo is available for premium users only</div>
-            <div style="color: #b1ca05;">* The other servers are 720p</div>
-
+            <div class="notice">* For now only Nova support multiple qualities</div>
             <br>
         </div>
         <!--<hr>-->
