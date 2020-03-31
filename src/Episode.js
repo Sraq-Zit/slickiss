@@ -121,8 +121,6 @@ class Episode {
             ]).prepend(this.bookmark);
 
         this.iframe = this.divContent.find("iframe");
-        if (settings[`servers.${DlGrabber.getServerName(this.iframe.attr('src'))}`])
-            this.iframe.attr('src', this.iframe.attr('src') + '#ignore');
         this.iframe.css({
             width: '100%',
             height: '100%',
