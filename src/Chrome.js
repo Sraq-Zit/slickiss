@@ -33,7 +33,7 @@ let settings = {
 
 
 Chrome.get().then(s => {
-    s = Object.keys(s).length ? s : (settings && Chrome.set(settings));
+    s = Object.keys(s).length ? s : (Chrome.set(settings) || settings);
     for (const k in settings)
         if (!(k in s)) s[k] = settings[k];
 
