@@ -20,11 +20,11 @@ class Notifier {
             empty = false;
             let p;
             container.append($('<div/>', { class: 'bigChar', text: 'To do' }));
-            container.append(p = $('<p/>', { text: 'To do' }));
+            container.append(p = $('<p/>'));
             for (const task of tasks.done)
-                p.append($('<span/>', { text: `　✔ ${task}` }).css('font-weight', 'bold'));
+                p.append($('<div/>', { text: `✔ ${task}` }).css('font-weight', 'bold'));
             for (const task of tasks.todo)
-                p.append($('<span/>', { text: `　- ${task}` }));
+                p.append($('<div/>', { text: `- ${task}` }).css('font-weight', 'normal'));
         }
         return empty ? null : container;
     }
@@ -74,7 +74,7 @@ class Notifier {
             const pattern = / - \[([ x])\](.+)/g;
             let r;
             while (r = pattern.exec(raw))
-                tasks[r[0] == ' ' ? 'todo' : 'done'] = r[1];
+                tasks[r[1] == ' ' ? 'todo' : 'done'].push(r[2]);
         } catch (e) { }
         return tasks;
     }
