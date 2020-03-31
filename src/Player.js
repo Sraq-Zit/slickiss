@@ -565,6 +565,8 @@ class Player {
         await player.init();
         document.documentElement.innerHTML = '<body></body>';
         $('body').css('margin', 0).append(player.container);
+        if (!(sName in DlGrabber.handlers))
+            return Assets.toast('Whoops! Server not supported by Slickiss.') && player;
         const r = data || await DlGrabber.handlers.auto(location.href);
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);
