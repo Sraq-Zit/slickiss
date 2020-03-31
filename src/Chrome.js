@@ -26,9 +26,16 @@ let settings = {
     quality: "720p",
     'servers.mp4upload': true,
     'servers.nova': true,
-    'servers.beta': true,
     shortcuts: true,
     ttip: true,
     updates: [0]
 };
-Chrome.get().then(s => settings = Object.keys(s).length ? s : (settings && Chrome.set(settings)));
+
+
+Chrome.get().then(s => {
+    s = Object.keys(s).length ? s : (settings && Chrome.set(settings));
+    for (const k in settings)
+        if (!(k in s)) s[k] = settings[k];
+
+    settings = s;
+});
