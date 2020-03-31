@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>How to use Batches</title>
+    <script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="style.js"></script>
+	<link href="tpl_style.css?v=7" rel="stylesheet" type="text/css" />
+	<link  rel="shortcut icon" type="image/png" href="icon32.png"/>
+
+	<style type="text/css">
+        body{
+            padding: 20px;
+            font-size: 130%;
+            line-height: normal;
+        }
+        body *{
+            transition: all 1s ease-out;
+        }
+        p{margin: 20px;}
+        .bigChar{color: white; font-size: 2em;}
+        .smallerChar{font-size: 1.5em; color: lightcyan}
+        img:not(.stay){border: 1px solid lightgreen; margin: 5px; max-width: 850px; max-height: 300px;}
+        ol{border-left: 1px solid white;}
+        .focus{
+            color: burlywood;
+        }
+	</style>
+</head>
+    
+<body>
+    <p>Batch feature gives you the ability to grab episodes' download links, in less time than doing it manually.<br>
+        The extension programatically sends requests to the episodes and grab the links, then it displays the links, as well as a <a href="#idman-command">command line for IDMan</a> for more flexiblity and less work</p>
+    
+    <ol>
+        
+        <li class='bigChar' id="how-to-use">How to use</li>
+        <p>After setting your prefered <a href="#server-order">servers order</a> and choosing episodes you want, you have two options: </p>
+            <ol>
+                <li class="smallerChar" id="idman-command">IDMan command line</li><br>
+                    This one is recommended.
+                    The greatest thing about commands is that you can rename file names in IDMan, in fact, IDMan gets the file name sent by the server and uses it, or if on browser, IDMan grabs the link and uses the page title as the filename<br><br><img src="screenshots/idm-title-as-name.png"><br>
+                    So the command line tells IDMan what filename should the link have instead of having names like these : <br>
+                    <img src="screenshots/download-name.png"><br>
+                    or most importantly avoid names like these (Rapidvideo)<br>
+                    <img src="screenshots/download-name3.png"><br>
+                    in case they came from external websites.<br>
+                    To use the command line do the following instructions: <br><br>
+                    <ol>
+                        <li>Copy the command line from the results : </li><br>
+                        <img src="screenshots/copy-command.png"><br><br><br>
+                        
+                        <li>Click  [ <svg height="15px" width="15px">
+                                <g>
+                                    <path  d="M18.373,8.481C24.043,6.22,29.017,5.084,33.569,5c2.39,0,4.646,0.257,6.785,0.754   c3.256,0.831,7.762,3.271,9.479,4.251l-8.152,27.759c-4.154-2.649-9.167-5.222-15.946-5.291h-0.006   c-4.521,0-9.433,1.041-15.125,3.178L18.373,8.481z M31.14,75.052c2.016-6.815,6.857-23.274,8.302-28.194   c-1.048-0.637-2.116-1.274-3.209-1.864c-4.195-2.145-8.271-3.232-12.12-3.232c-0.522,0-1.046,0.016-1.576,0.062   c-4.912,0.404-9.395,1.695-12.283,2.697c-0.766,0.279-1.546,0.574-2.357,0.901L0,72.658c5.427-1.998,10.222-2.969,14.617-2.969   C21.723,69.689,26.877,72.332,31.14,75.052z M79.216,54.753c-5.153,1.655-10.096,2.494-14.719,2.494   c-8.433,0-14.337-2.72-18.062-5.331l-7.948,27.48C40.846,80.74,48.777,85,54.854,85c4.904,0,10.394-1.252,16.772-3.832   L79.216,54.753z M90,17.543c-5.17,1.998-10.214,3.016-15.032,3.016c-8.058,0-14-2.781-17.85-5.455L49.036,42.94   c5.428,3.474,11.276,5.237,17.414,5.237c5.005,0,10.188-1.196,15.421-3.559l-0.016-0.193l0.328-0.079L90,17.543z" style="fill: white; transform: scale(.18,.18);"></path>
+                                </g>
+                            </svg>+R ] or click Run from  Start window : 
+                        </li><br>
+                        <img src="screenshots/run.png">
+                        <br><br><br>
+                        
+                        <li>Type "cmd" and click OK (or search "cmd") :</li>
+                        <img src="screenshots/cmd.png"><br><br><br>
+                        
+                        <li>Click right and paste the command :</li>
+                        <img src="screenshots/paste-commands.png"><br><br><br>
+                        
+                        <li>The commands will lunch. Wait for them until the cmd prompt disapears, at the end you'll see Idman and then you can see your downloads :</li>
+                        <img src="screenshots/commands-running.png"><br>
+                        <img src="screenshots/cmd-files-on-idman.png"><br>
+                        PS: if you sorted the downloaded files in IDMan by last try date descendingly you'll find them at the very bottom.
+                        <br><br>
+                    </ol>
+                
+                <li class="smallerChar" id="links-copying">Managing links</li><br>
+                The flaw with this option is the file naming, especially if the wanted episode(s) only supports Rapidvideo or Alpha servers, you'll be having troubles which file is which.<br>
+                However, if the links contains only Streamango and Openload, you're good to go. Just copy the links :<br>
+                <img src="screenshots/copy-links.png"><br><br>
+                For download managers like EagleGet, they automatically show you list of copied links (with file naming problem again).<br>
+                For IDMan simply select this option:<br>
+                <img src="screenshots/idman-clipboard-option.png"><br><br>
+                And there you go :<br>
+                <img src="screenshots/batch-idman-from-clipboard.png">
+                
+            </ol>
+        
+        <li class='bigChar' id="server-order">Selecting Servers Orders</li><br>
+        <img src="screenshots/popup.png" class="stay" style="float: left; margin-right: 20px" width="300px"><br><br><p>
+        By clicking on the slickiss extension icon you can choose at this popup the servers order for batch grabbing.<br><br><br>
+        <b>IDMan command priority :</b>
+        Starts with RapidVideo because it is quick and the command handles the crypted filenames.<br><br>
+        <b>Links priority :</b>
+        Starts with Streamango and Openload because they don't crypt filenames.
+        </p>
+    </ol>
+</body>
+</html>

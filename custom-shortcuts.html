@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Shortcuts</title>
+	<link href="http://kissanime.ru/Content/css/tpl_style.css?v=7" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="shortcuts.js"></script>
+	<link  rel="shortcut icon" type="image/png" href="icon32.png"/>
+
+	<style type="text/css">
+		.vCentered{
+			position:absolute;
+	        left:0; right:0;
+	        top:0; bottom:0;
+	        margin:auto;
+	        white-space: nowrap;
+	        padding: 50px;
+		}
+		.shortcut{
+			font-size: 3em;
+		}
+		body{
+			line-height: 40px;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="height: 300px; width: 250px; margin" class="vCentered">
+		<table style="width: 100%">
+			<col style="width: 50%">
+			<col style="width: 50%">
+			<tr>
+				<td><a href="#" class="shortcut playAndPause"></a></td>
+				<td>Play/Pause video</td>
+			</tr>
+			<tr>
+				<td><a href="#" class="shortcut fullScreen"></a></td>
+				<td>Fullscreen</td>
+			</tr>
+			<tr>
+				<td><a href="#" class="shortcut nextEp"></a></td>
+				<td>Go to next episode</td>
+			</tr>
+			<tr>
+				<td><a href="#" class="shortcut prevEp"></a></td>
+				<td>Go to previous episode</td>
+			</tr>
+			<tr>
+				<td><a href="#" class="shortcut skipTheme"></a></td>
+				<td>Skip opening/ending</td>
+			</tr>
+			<tr>
+				<td><a href="#" class="shortcut abortPreload"></a></td>
+				<td>Abort the preload of the video</td>
+			</tr>
+		</table>
+	</div>
+	<div style="height: 300px; width: 250px; background-color: rgba(0,0,0,.9); display: none;" class="vCentered sInput">
+		<div class="shortcutInput" style="font-size: 5em; margin-top: 48%; white-space: pre-wrap; text-align: center;">Click shortcut</div>
+		<br>
+		<br>
+		<span style="cursor: pointer;padding-right: 10px; text-align: center; margin: 40px;" class="save barTitle">OK(or click escape)</span>
+	</div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Slickiss</title>
+    <link href="tpl_style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+    <style>
+        html{
+            height: fit-content;
+        }
+        
+        body{
+            padding-bottom: 15px;
+            width: 300px;
+            height: 400px;
+            border: 1px solid #333333;
+            font-family: sans-serif;
+            transition: height .3s ease;
+        }
+        
+        table {
+            border-spacing: 0;
+        }
+        
+        td {
+            font-size: 1.3em;
+            padding: 10px;
+            cursor: pointer;
+            transition: all .3s ease;
+        }
+        
+        td:after {
+            content: "\25B6";
+            float: right;
+        }
+        td.backward:after {
+            content: "\25C0";
+            padding-right: 10px;
+            float: left;
+        }
+        .backward{
+            padding: 10px;
+            font-size: 1.7em;
+        }
+        
+        td:hover{
+            background-color: #384035;
+        }
+        
+        .options, .details{
+            position: absolute;
+            border-bottom: solid 1px #333;
+            width: 300px;
+            height: 340px;
+            left: 0;
+            transition: all .5s ease;
+        }
+        .details{
+            padding: 0 0 0 15px;
+        }
+        
+        .details + div{
+            position: absolute;
+            bottom: 20px;
+            width: 300px;
+        }
+        
+        .options.hidden {
+            left: -300px;
+        }
+        
+        .details.hidden {
+            left: 300px;
+        }
+        
+        .body{
+            display: none;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="options">
+        <table width="100%" height="340px">
+            <tr>
+                <td class="op" data-body="display">Anime Display</td>
+            </tr>
+            <tr>
+                <td class="op" data-body="player">Remove Custom Player</td>
+            </tr>
+            <tr>
+                <td class="op" data-body="servers">Batch Servers Order</td>
+            </tr>
+            <tr>
+                <td class="op" data-body="updates">Anime Updates Notification</td>
+            </tr>
+            <tr>
+                <td class="op" data-body="other">Other Settings</td>
+            </tr>
+        </table>
+
+    </div>
+    <div class="details hidden">
+        <table width="100%" style="margin-bottom: 10px; margin-left: -10px;">
+            <tr>
+                <td class="backward bigChar">Back</td>
+            </tr>
+        </table>
+
+
+        <!--<hr>-->
+        <div class="body display">
+            <input type="radio" name="display" value="1" checked> Slickiss version <br>
+            <input type="radio" name="display" value="0"> Original version <br>
+        </div>
+        <!--<hr>-->
+        <div class="body player">
+            Player type:
+            <select id="player">
+                <option value="0">Plain html5 player</option>
+                <option value="1" selected>Slickiss player</option>
+            </select>
+            <br>
+            <input type="checkbox" name="vid" value="www.rapidvideo.com" checked> RapidVideo <br>
+            <input type="checkbox" name="vid" value="www.mp4upload.com" checked> Mp4Upload <br>
+            <input type="checkbox" name="vid" value="streamango.com" checked> Streamango <br>
+            <input type="checkbox" name="vid" value="oload.stream" checked> Openload <br>
+        </div>
+        <!--<hr>-->
+        <div class="body servers">
+            <div class="batchOrder">
+                <span style="margin-right: 10px">(1)</span>
+                <select>
+                    <option value="5">Nova</option>
+                    <option value="0">RapidVideo</option>
+                    <option value="1">Streamango</option>
+                    <option value="2">Openload</option>
+                    <option value="3">Mp4Upload</option>
+                    <option value="4">Alpha</option>
+                </select>
+            </div>
+            <br>
+            Default :<br>
+            <button id="cmd">Idman CMD command</button>
+            <button>Clean filenames</button>
+        </div>
+
+        <div class="body updates">
+            <input type="checkbox" class="update all" name="update" value="0"> All (Basically any update on Kissanime) <br>
+            <input type="checkbox" class="update" name="update" value="1"> New first episodes <br>
+            <input type="checkbox" class="update" name="update" value="2"> Bookmarked episodes <br>
+            <input type="checkbox" class="update" name="update" value="3"> Others (Movies, trailers..) <br>
+            <input type="checkbox" class="update" name="update" value="4"> Include Dub (Excluding Bookmarks)<br>
+        </div>
+        <!--<hr>-->
+        <div class="body other">
+            <input type="checkbox" id="captcha" name="captcha" checked> Solve Captcha <br>
+            <input type="checkbox" id="ttip" checked> Show Anime info tooltip <br>
+            <input type="checkbox" id="notifyLastTime" checked> Continue from where you left off notification <br>
+            <input type="checkbox" id="pre" name="preload" checked> Preload the video <br>
+            <input type="checkbox" id="autoplay" checked> Autoplay video <br>
+            <input type="checkbox" id="nextPrev"> Prepare previous and next episode <br>
+            <input type="checkbox" id="shortcuts" checked> Use Shortcuts (<a href="#" id="shortcutSetting">Click to set shortcuts</a>) <br>
+            <input type="checkbox" id="mark"> Auto mark as seen once latest episode is watched <br>
+            <span style="color: #b1ca05;">* You should be logged in.</span> <br>
+            Default Server :
+            <select id="server">
+                <option value="default">Kissanime's default</option>
+                <option value="rapidvideo">RapidVideo</option>
+                <option value="mp4upload">Mp4Upload</option>
+                <option value="openload">Openload</option>
+                <option value="streamango">Streamango</option>
+                <option value="nova">Nova</option>
+                <option value="alpha">Alpha</option>
+                <option value="beta">Beta</option>
+            </select>
+
+            <br>
+            <br>
+
+            <span style="margin-right: 10px">Quality: </span>
+            <select id="quality">
+                <option value="1080p">1080p</option>
+                <option value="720p" selected>720p</option>
+                <option value="480p">480p</option>
+                <option value="360p">360p</option>
+            </select>
+
+            <div style="color: #b1ca05;">* Available in Nova and Rapidvideo</div>
+            <div style="color: #b1ca05;">* 720p for Rapidvideo is available for premium users only</div>
+            <div style="color: #b1ca05;">* The other servers are 720p</div>
+
+            <br>
+        </div>
+        <!--<hr>-->
+
+    </div>
+
+
+    <div>
+        <div style="margin-top: 20px; text-align: center; width: 100%;">
+            <span style="cursor: pointer;padding-right: 10px;" class="save barTitle">Save</span>
+            <span style="cursor: pointer;padding-right: 10px;" class="save reload barTitle">Save and reload</span>
+        </div>
+        <footer style="text-align: center">Contact : kingofmestry@gmail.com</footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Slickiss</title>
+    <link href="tpl_style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+    <style>
+        .body{
+            border-left: 1px solid;
+            padding-left: 10px;
+            margin-left: 10px;
+        }
+        .opened{
+            overflow: hidden;
+            max-height: 1000px;
+            transition: all .5s ease;
+        }
+        .opened span::before{
+            content: "\25BC";
+        }
+        .closed span::before{
+            content: "\25B6";
+        }
+        .closed + .body{
+            max-height: 0;
+        }
+        h1{font-size: 20px}
+    </style>
+</head>
+
+<body>
+    <div style="padding: 15px; width: 300px; border: 1px solid #333333;">
+        <!--<hr>-->
+        <a href="#" class="opened closed">
+            <h1><span></span>Video Display</h1>
+        </a>
+        <div class="body">
+
+            <input type="radio" name="display" value="1" checked> Slickiss version <br>
+            <input type="radio" name="display" value="0"> Original version <br>
+        </div>
+        <!--<hr>-->
+        <a href="#" class="opened closed">
+            <h1><span></span>Remove Custom Player</h1>
+        </a>
+        <div class="body">
+            <input type="checkbox" name="vid" value="www.rapidvideo.com" checked> RapidVideo <br>
+            <input type="checkbox" name="vid" value="www.mp4upload.com" checked> Mp4Upload <br>
+            <input type="checkbox" name="vid" value="streamango.com" checked> Streamango <br>
+            <input type="checkbox" name="vid" value="oload.stream" checked> Openload <br>
+        </div>
+        <!--<hr>-->
+
+        <div style="display: none;">
+            <h1 style="; display: none;">Batch Servers Order</h1>
+            <input type="radio" class="batch-method" name="batch" value="1" checked> Priority to IDMan command <br>
+            <input type="radio" name="batch" class="batch-method" value="0"> Priority to file naming <br>
+            <hr>
+        </div>
+
+        <a href="#" class="opened closed">
+            <h1><span></span>Anime Updates Notification</h1>
+        </a>
+        <div class="body">
+            <input type="checkbox" class="update all" name="update" value="0"> All (Basically any update on Kissanime) <br>
+            <input type="checkbox" class="update" name="update" value="1" checked> New first episodes <br>
+            <input type="checkbox" class="update" name="update" value="2" checked> Bookmarked episodes <br>
+            <input type="checkbox" class="update" name="update" value="3" checked> Others (Movies, trailers..) <br>
+        </div>
+        <!--<hr>-->
+        <a href="#" class="opened">
+            <h1><span></span>Other Settings</h1>
+        </a>
+        <div class="body">
+            <input type="checkbox" id="captcha" name="captcha" checked> Solve Captcha <br>
+            <input type="checkbox" id="pre" name="preload" checked> Preload the video <br>
+            <input type="checkbox" id="autoplay" checked> Autoplay video <br>
+            <input type="checkbox" id="nextPrev"> Prepare previous and next episode <br>
+            <input type="checkbox" id="shortcuts" checked> Use Shortcuts (<a href="#" id="shortcutSetting">Click to set shortcuts</a>) <br>
+            <input type="checkbox" id="mark" name="preload"> Auto mark as seen once latest episode is watched <br>
+            <span style="color: #b1ca05;">*You should be logged in.</span> <br>
+            Default Server :
+            <select id="server">
+                <option value="default">Kissanime's default</option>
+                <option value="rapidvideo">RapidVideo</option>
+                <option value="mp4upload">Mp4Upload</option>
+                <option value="openload">Openload</option>
+                <option value="streamango">Streamango</option>
+                <option value="alpha">Alpha</option>
+                <option value="beta">Beta</option>
+            </select>
+            <br>
+        </div>
+        <!--<hr>-->
+        <div style="margin-top: 20px; text-align: center; width: 100%;">
+            <span style="cursor: pointer;padding-right: 10px;" class="save barTitle">Save</span>
+            <span style="cursor: pointer;padding-right: 10px;" class="save reload barTitle">Save and reload</span>
+        </div>
+        <br>
+        <footer>Contact : kingofmestry@gmail.com</footer>
+    </div>
+</body>
+
+</html>
