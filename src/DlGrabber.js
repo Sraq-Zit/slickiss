@@ -177,6 +177,8 @@ class DlGrabber {
             /** @param {string} url */
             beta4: url => this.handlers.alpha(url, 'beta4'),
             /** @param {string} url */
+            beta360p: url => this.handlers.alpha(url, 'beta4'),
+            /** @param {string} url */
             auto: url => {
                 return this.handlers[this.getServerName(url)](url);
             }
@@ -191,7 +193,7 @@ class DlGrabber {
         if (url.includes('mp4upload')) return 'mp4upload';
         if (url.includes('novelplanet')) return 'nova';
         if (url.includes('s=alpha')) return 'alpha';
-        if (url.includes('s=beta')) return /s=(beta.?)([#&]|$)/g.exec(url)[1];
+        if (url.includes('s=beta')) return /s=(beta.+?)([#&]|$)/g.exec(url)[1];
     }
 
     /** Finds the iframe source hidden in the website's scripts
