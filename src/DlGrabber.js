@@ -99,7 +99,7 @@ class DlGrabber {
                 }).then(t => t.text());
                 $('<img/>', { src: `https://ping.${r.url}/ping.gif` });
                 return {
-                    src: 'https://' + r.url + '/?track=' + id
+                    src: r.url && 'https://' + r.url + '/?track=' + id
                 };
             }, 'post', { slug: /v=(.+?)(#|&|$)/g.exec(url)[1] }),
             /** @param {string} url */
