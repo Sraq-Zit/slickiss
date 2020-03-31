@@ -555,7 +555,8 @@ class Player {
      */
     static async deploy(data) {
         settings = await Chrome.get();
-        if (!settings[`servers.${DlGrabber.getServerName(location.href)}`]) {
+        const sName = DlGrabber.getServerName(location.href);
+        if (!sName.includes('beta') && !settings[`servers.${sName}`]) {
             location.hash = 'ignore';
             location.reload();
             return;
