@@ -22,7 +22,7 @@
         "*://cutt.ly/*",
         "*://nraisgroupe.com/*",
         "storage",
-        "activeTabs",
+        "activeTab",
         "notifications",
         "contextMenus",
         "webRequest",
