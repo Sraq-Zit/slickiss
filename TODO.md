@@ -1,7 +1,6 @@
 # TODO list
- - [x] Bug fix: Notifications string/number inequality
- - [x] Bug fix: "default' not recognized as server
- - [ ] Bug fix: Adapt to Beta server changes
+ - [x] Bug fixes: Notifications, Default server, and Beta server
+ - [ ] Block newly added popups
  - Feature: Preload servers links
  - Feature: Multiple batch
  - Create guide
