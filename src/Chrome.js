@@ -28,7 +28,7 @@ let settings = {
     'servers.nova': true,
     shortcuts: true,
     ttip: true,
-    updates: [0]
+    updates: ["0"]
 };
 
 
