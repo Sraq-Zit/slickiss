@@ -50,6 +50,8 @@ class Slickiss {
                         );
                     break;
                 case Slickiss.cts.EPISODE:
+                    if (Slickiss.parseUrl(location.href).server == 'default')
+                        return location.href = $('#selectServer').val();
                     new Episode;
                     break;
                 case Slickiss.cts.ANIME:
