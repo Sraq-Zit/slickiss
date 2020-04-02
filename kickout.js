@@ -12,7 +12,7 @@ chrome.webRequest.onBeforeRequest.addListener(
             .filter(v => b && (b = (v[0] == '*')))
             .map(v => v.replace(/[*:/]/g, ''));
         for (const init of initiators)
-            if (details.initiator.includes(init))
+            if (details.initiator && details.initiator.includes(init))
                 return {
                     cancel: Boolean(
                         !details.url.includes("Scripts/video-js/video.js") ||
