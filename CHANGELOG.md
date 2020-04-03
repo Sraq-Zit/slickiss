@@ -1,11 +1,5 @@
 # Changelog
 
-## v2.0.2 (03/04/2020)
-
-- Bug fix: Remove new update announcement once updated
-
----
-
 ## v2.0.1 (03/04/2020)
 
 - Bug fixes: Notifications, Default and Beta server
