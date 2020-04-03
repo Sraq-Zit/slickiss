@@ -28,6 +28,7 @@
         "webRequest",
         "webRequestBlocking",
         "*://vagwyn.pw/*",
+        "*://amarceusan.com/*",
         "*://*.ti553.com/*",
         "*://*.popads.net/*",
         "*://*.bebi.com/*",

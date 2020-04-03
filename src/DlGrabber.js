@@ -53,7 +53,10 @@ class DlGrabber {
                     count++;
                     DlGrabber.handlers[server](this.urls[server] || this.servers[server])
                         .then(src => {
-                            this.onprogress(DlGrabber.progress.FINISH, { server: src.server, response: src });
+                            this.onprogress(DlGrabber.progress.FINISH, {
+                                server: src.server,
+                                response: src
+                            });
                             this.downloads[src.server] = src;
                             if (Object.keys(this.downloads).length == count)
                                 resolve();
@@ -177,7 +180,7 @@ class DlGrabber {
             /** @param {string} url */
             beta4: url => this.handlers.alpha(url, 'beta4'),
             /** @param {string} url */
-            beta360p: url => this.handlers.alpha(url, 'beta4'),
+            beta360p: url => this.handlers.alpha(url, 'beta360p'),
             /** @param {string} url */
             auto: url => {
                 return this.handlers[this.getServerName(url)](url);
