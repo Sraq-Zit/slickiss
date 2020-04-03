@@ -33,7 +33,7 @@ class Notifier {
         const url = 'https://raw.githubusercontent.com/Sraq-Zit/slickiss/master/manifest.json';
         const manifest = JSON.parse(await fetch(url).then(t => t.text()));
         let updates = await Chrome.get('newUpdates');
-        if (updates && updates.manifest.version == chrome.runtime.getManifest().version) return updates;
+        if (updates && updates.manifest.version != chrome.runtime.getManifest().version) return updates;
         if (manifest.version == chrome.runtime.getManifest().version) return null;
         updates = { manifest: manifest };
         updates.notes = await this.getNotes();
