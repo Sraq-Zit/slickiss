@@ -6,12 +6,6 @@
 
 ---
 
-## v2.0.3 (05/04/2020)
-
-- Block new ad
-
----
-
 ## v2.0.2 (03/04/2020)
 
 - Bug fix: Remove new update announcement once updated
