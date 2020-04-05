@@ -13,7 +13,6 @@
     },
     "permissions": [
         "*://kissanime.ru/*",
-        "*://kissasian.sh/*",
         "*://playhydrax.com/*",
         "*://hydrax.net/*",
         "*://ping.idocdn.com/",
@@ -118,7 +117,6 @@
             ],
             "matches": [
                 "*://kissanime.ru/*",
-                "*://kissasian.sh/*",
                 "*://playhydrax.com/*",
                 "*://hydrax.net/*",
                 "*://www.mp4upload.com/*",
@@ -126,7 +124,6 @@
             ],
             "include_globs": [
                 "*://kissanime.ru/*",
-                "*://kissasian.sh/*",
                 "*://playhydrax.com/*",
                 "*://hydrax.net/watch?v=*",
                 "*://www.mp4upload.com/embed-*",
