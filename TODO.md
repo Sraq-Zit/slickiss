@@ -1,5 +1,5 @@
 # TODO list
- - Feature: Preload servers links
- - Feature: Multiple batch
+ - [ ] Feature: Multiple batch
+ - [ ] Feature: Preload servers links
  - Feature: Automatique report for new ads and popups
  - Create guide
