@@ -97,7 +97,7 @@ class EpisodeListing {
         });
         this.episodes = this.episodes.reverse();
         this.setHandlers();
-
+        return this;
     }
 
 
@@ -116,7 +116,7 @@ class EpisodeListing {
         this.serverOrder.add((this.incTitle)).on('click input', e => {
             this.urlsArea.val('');
             this.command.val('');
-            if(!this.serverOrder.val()) return;
+            if (!this.serverOrder.val()) return;
             let command = "if exist \"c:\\progra~1\\internet download manager\" (cd \"c:\\progra~1\\internet download manager\") else if exist \"c:\\progra~2\\internet download manager\" (cd \"c:\\progra~2\\internet download manager\") else mshta \"javascript:var sh=new ActiveXObject( \"WScript.Shell\" ); sh.Popup( \"you sure you have idman ? (Alternatively use the links provided from kissanime by the extension\", 10, \"IDMan not found!\", 64 );close()\" \n";
             let text = '';
             let failed = '';
