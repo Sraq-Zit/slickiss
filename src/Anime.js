@@ -82,6 +82,45 @@ class Anime {
         this.bkManager.add(this.sManager)[this.bookmarking ? 'addClass' : 'removeClass']('disabled');
     }
 
+    /** Retrieves anime data from url
+     * @param {*} url URL of the requested anime
+     * @return {Promise<{
+            url: string;
+            name: string;
+            cover: string;
+            listing: JQuery<HTMLTableElement>;
+            namings: string[];
+            genres: string[];
+            aired: string;
+            status: string;
+            views: string;
+            summary: string;
+        }>}
+     */
+    static async getAnimeData(url) {
+        if (!Slickiss.isContext(url, Slickiss.cts.ANIME))
+            return console.error('Requested URL isn\'t an Anime URL') || null;
+        const req = await fetch(url);
+        if (req.status == 503) {
+            await Captcha.bypassCf();
+            return this.getAnimeData();
+        }
+        const html = await req.text();
+        const doc = $(html.noImgs);
+        return {
+            url: url,
+            name: doc.find('.barContent .bigChar').text(),
+            cover: doc.find('.rightBox im').attr('src'),
+            listing: doc.find('.listing'),
+            namings: doc.find('span.info:contains("Other name:") ~ a').toArray().map(el => $(el).text()),
+            genres: doc.find('span.info:contains("Genres:") ~ a').toArray().map(el => $(el).text()),
+            aired: doc.find('span.info:contains("Date aired:")').parent().text().split(':')[1].trim(),
+            status: doc.find('span.info:contains("Status:")').parent().text().split(/:| {3,}/)[1].trim(),
+            views: doc.find('span.info:contains("Status:")').parent().text().split(/:| {3,}/)[4].trim(),
+            summary: doc.find('span.info:contains("Summary:")').parent().next().html().trim()
+        };
+    }
+
     static listing(listing) {
         return new EpisodeListing(listing).addControls();
     }
