@@ -30,7 +30,7 @@ class Assets {
 
     /** Load file from relative path
      * @param {string} file Relative path to fetch
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     static async loadAssetFromFile(file) {
         return fetch(chrome.extension.getURL(file)).then(t => t.text());

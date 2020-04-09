@@ -73,7 +73,6 @@ class Captcha {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: this.formAction && `reUrl=${encodeURIComponent(this.url)}&answerCap=${this.prob1.index},${this.prob2.index}`
             });
-            this.html = await this.response.text();
             if (this.response.status == 503) {
                 this.update(Captcha.steps.BYPASSING);
                 await Captcha.bypassCf();
@@ -85,6 +84,7 @@ class Captcha {
                 this.formAction = undefined;
                 return this.fetch();
             }
+            this.html = await this.response.text();
             if (this.html.includes('selectEpisode'))
                 return this.update(Captcha.steps.SUCCESS) || 1;
 
