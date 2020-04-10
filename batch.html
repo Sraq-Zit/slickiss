@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloads </title>
+    <link rel="stylesheet" href="////bootstrap.min.css">
+    <style>
+        body {
+            background-color: #161616;
+        }
+
+        .container h1,
+        .container h2,
+        .container h3,
+        .container h4,
+        .container h5,
+        .container h6 {
+            margin-bottom: .5rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+
+        .new {
+            background-color: #263b28;
+            transition: background-color 3s ease;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        code {
+            word-break: normal !important;
+            font-size: 1.1em;
+            color: #d5f406;
+        }
+
+        .sub,
+        table td {
+            color: rgb(167, 167, 167);
+        }
+
+        .bg-k {
+            background-color: #111111;
+        }
+
+        .anime {
+            direction: rtl;
+        }
+
+        .card {
+            direction: ltr;
+            cursor: pointer;
+            background-color: #111111;
+            border: 1px solid #333333;
+            transition: all .5s ease;
+        }
+
+        .card+.card {
+            border-top: unset;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .anime>.card:not(:last-child) {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .avatar,
+        .avatar>img {
+            height: 3.125rem;
+            min-height: 3.125rem;
+            width: 3.125rem;
+            min-width: 3.125rem;
+        }
+
+        .avatar,
+        .avatar>img {
+            border-radius: 50%;
+        }
+
+
+
+        .listing th,
+        .listing a {
+            color: white;
+        }
+
+
+        .listing td {
+            padding: 20px;
+        }
+
+        /*
+        .listing tr {
+            border-bottom: 1px solid #333333;
+        }*/
+
+        .listing a {
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        input[type=checkbox] {
+            margin-right: 10px;
+        }
+
+        .card.selected {
+            background-color: #333333;
+        }
+
+        .listing {
+            margin-bottom: 30px;
+            font-size: .7em;
+        }
+
+        td span,
+        td input[type=text] {
+            font-weight: bold;
+            font-size: .7em;
+        }
+
+        td {
+            width: unset !important;
+        }
+
+        .listing tr:not(:first-child) {
+            background-color: #111111;
+        }
+
+        .listing tr:hover {
+            background-color: #1111118f;
+        }
+
+        .card~#onempty {
+            display: none;
+        }
+
+        a.episodeVisited,
+        a:visited {
+            color: gray;
+        }
+
+        #navbar-top-main {
+            border-bottom: 1px solid #333333;
+        }
+
+
+        .sample {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body class="overflow-hidden" style='font-family: "Nunito", sans-serif;'>
+
+    <header class="header header-transparent" id="header-main">
+        <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm mb-3 text-light">
+            <div class="container px-0">
+                <div class="navbar-nav align-items-center p-4">
+                    <div class="row w-100">
+                        <div class="col p-0">
+                            <i class="cursor-pointer fa fa-plus mx-2 text-success" title="Add new Anime"></i>
+                            <i class="cursor-pointer fa fa-minus mx-2 text-danger remove-selected"
+                                title="Remove selected items"></i>
+                            <i class="cursor-pointer fa fa-download mx-2 text-info" title="Grab all download links"></i>
+                        </div>
+                        <div class="col p-0 text-right align-items-center justify-content-end d-flex">
+                            <i class="cursor-pointer far fa-circle fa-check-circle mx-2 check-all"
+                                title="Check all"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-5 anime overflow-auto" style="height:85vh;">
+                <div class="card card-active-listener sample">
+                    <div class="card-body">
+                        <i class="text-success fa fa-bookmark position-absolute" title="You have this Anime bookmarked"
+                            style="left: 5%;top: -1px;display:none;"></i>
+                        <div class="media">
+                            <div class="avatar avatar-online mr-3">
+                                <img class="avatar-img" src="////imgs/angry-loli.png" alt="Cover picture">
+                            </div>
+                            <div class="media-body overflow-hidden">
+                                <div class="d-flex align-items-center mb-1">
+                                    <h6 class="text-truncate mb-0 mr-auto name">Loading...</h6>
+                                    <p class="small text-muted text-nowrap ml-4 date">unknown</p>
+                                </div>
+                                <div class="text-truncate sub">
+                                    Loading...
+                                </div>
+                                <div class="position-absolute" style="right: 5%; bottom: 12%; z-index: 1;">
+                                    <i class="fa fa-ban cursor-pointer text-danger remove mx-1"></i>
+                                    <i class="fas fa-external-link-alt cursor-pointer text-info open mx-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id='onempty' class="position-fixed display-3 w-100 text-center text-muted"
+                    style="left: 50%;top: 50%;transform: translate(-50%, -50%);opacity: .1;">
+                    Nothing to see here
+                </div>
+            </div>
+            <div class="col p-4 shadow-sm overflow-auto listings" style="height:85vh;">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

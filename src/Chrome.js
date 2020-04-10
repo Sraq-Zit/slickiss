@@ -5,9 +5,12 @@ class Chrome {
         return typeof k == 'undefined' ? data : data[k];
     }
 
-    static set(d) {
-        chrome.storage.sync.set(d);
-        chrome.runtime.sendMessage(undefined, { type: 'updateData' });
+    static async set(d) {
+        return new Promise(r => {
+            chrome.storage.sync.set(d, r);
+            chrome.runtime.sendMessage(undefined, { type: 'updateData' });
+        });
+
     }
 
 }

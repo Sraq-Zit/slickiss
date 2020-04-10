@@ -84,8 +84,11 @@
     },
     "web_accessible_resources": [
         "imgs/*",
+        "webfonts/*",
         "player.html",
-        "prompt.html"
+        "batch.html",
+        "prompt.html",
+        "*.css"
     ],
     "content_scripts": [
         {
@@ -113,7 +116,8 @@
                 "src/MessageManager.js"
             ],
             "css": [
-                "custom-style.css"
+                "custom-style.css",
+                "fontawesome.min.css"
             ],
             "matches": [
                 "*://kissanime.ru/*",
@@ -124,6 +128,7 @@
             ],
             "include_globs": [
                 "*://kissanime.ru/*",
+                "*://kissanime.ru/#batch",
                 "*://playhydrax.com/*",
                 "*://hydrax.net/watch?v=*",
                 "*://www.mp4upload.com/embed-*",
@@ -141,6 +146,19 @@
             ],
             "include_globs": [
                 "*://kissanime.ru/#sendUpdates"
+            ],
+            "all_frames": true,
+            "run_at": "document_start"
+        },
+        {
+            "js": [
+                "src/BatchManager.js"
+            ],
+            "matches": [
+                "*://kissanime.ru/"
+            ],
+            "include_globs": [
+                "*://kissanime.ru/#batch"
             ],
             "all_frames": true,
             "run_at": "document_start"

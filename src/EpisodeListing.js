@@ -30,7 +30,7 @@ class EpisodeListing {
         ]).css({ 'margin-bottom': '10px', border: 'solid', 'font-size': '1.3em' });
         this.container.append([
             this.serverIDs, this.header, this.command, this.copyBtn, this.urlsArea, this.confirmCopy,
-            this.incTitle, $('<span/>', { text: 'Titles' }), this.urlsArea
+            this.incTitle, $('<span/>', { text: 'Titles', class: 'text-light' }), this.urlsArea
         ]);
 
         this.panel = $("<div/>", {
@@ -48,7 +48,10 @@ class EpisodeListing {
         this.pagination = $('<input/>', {
             type: 'text',
             placeholder: 'Printing syntax e.g. 1-2,4 etc..',
-            css: { width: '180px', padding: '3px' }
+            css: {
+                width: '165px', padding: '3px', border: '1px solid #666666', color: '#ccc',
+                background: '#393939 url(../images/tpl_input_bg.gif) no-repeat top left'
+            }
         });
     }
 
@@ -83,9 +86,10 @@ class EpisodeListing {
         let anchors = this.listing.find('td > a');
         anchors.each((i, el) => {
             let progress;
-            $(el).before(checkbox.clone())
-            $(el).parent()
-                .before($('<td/>', { text: (anchors.length - i).pad(0, 3) }))
+            $(el).wrap($('<div/>', { css: { overflow: 'hidden', 'max-width': 'unset' } }));
+            $(el).before(checkbox.clone());
+            $(el).parent().parent()
+                .before($('<td/>').append($('<code/>', { text: (anchors.length - i).pad(0, 3) })))
                 .after(progress = $('<td/>'));
             this.episodes.push({
                 title: $(el).text().trim(),
@@ -96,6 +100,7 @@ class EpisodeListing {
             });
         });
         this.episodes = this.episodes.reverse();
+        this.getCheckboxes;
         this.setHandlers();
         return this;
     }
@@ -160,10 +165,10 @@ class EpisodeListing {
         });
         this.getter.on('click', async e => {
             e.preventDefault();
-            if (
-                (navigator.deviceMemory * 100 || 200) < this.getCheckboxes.filter(':checked').length &&
-                !confirm(`Running on a huge amount of episodes may cause the navigator to crash\nAre you sure you want to proceed ?`)
-            ) return;
+            // if (
+            //     (navigator.deviceMemory * 100 || 200) < this.getCheckboxes.filter(':checked').length &&
+            //     !confirm(`Running on a huge amount of episodes may cause the navigator to crash\nAre you sure you want to proceed ?`)
+            // ) return;
 
             this.loader.show();
             this.selection.hide();
@@ -176,31 +181,54 @@ class EpisodeListing {
         });
     }
 
-    grabDownloads() {
+    /** Max items to process at once
+     * @type {50}
+     */
+    static get DEFAULT_MAX_ITEMS() { return 100; }
+
+    /** Inspect download links through slickiss method
+     * @param {*[]} handlers Optional additional updates handlers
+     * @returns {Promise<this>}
+     */
+    grabDownloads(handlers = [], maxItems = EpisodeListing.DEFAULT_MAX_ITEMS) {
+        // (navigator.deviceMemory * 100 || 200)
+        if (!(handlers instanceof Array)) handlers = [handlers];
+        maxItems = Math.max(1, maxItems);
         this.loadingBar.css('width', '.1%');
         this.downloads = {};
         const jobs = {
-            [DlGrabber.progress.RETRIEVE]: (el) => el.text(`0% Solving captcha if necessary`),
+            [DlGrabber.progress.RETRIEVE]: (el) => el.text(`0% Solving captcha if necessary`)
+                .removeClass('text-info text-success text-danger'),
             [DlGrabber.progress.OPEN]: (el) => {
-                el.text(`${rand(5, 30)}% Exploring servers..`);
+                el.text(`${rand(5, 30)}% Exploring servers..`)
+                    .removeClass('text-info text-success text-danger')
+                    .addClass('text-info');
                 count += .33;
                 this.loadingBar
                     .css('width', (100 * count / this.getCheckboxes.filter(':checked').length) + '%');
             },
             [DlGrabber.progress.RESPONSE]: (el, option) => {
-                el.text(`${rand(35, 55)}% ${option.server} was accessed`);
+                el.text(`${rand(35, 55)}% ${option.server} was accessed`)
+                    .removeClass('text-info text-success text-danger')
+                    .addClass('text-info');
             },
             [DlGrabber.progress.DOWNLOAD]: (el) => {
-                el.text(`${rand(60, 80)}% Do bot stuff`);
+                el.text(`${rand(60, 80)}% Do bot stuff`)
+                    .removeClass('text-info text-success text-danger')
+                    .addClass('text-info');
                 count += .33;
                 this.loadingBar
                     .css('width', (100 * count / this.getCheckboxes.filter(':checked').length) + '%');
             },
             [DlGrabber.progress.FINISH]: (el, option) => {
-                el.text(`80% ${option.server} ${option.response.success ? 'grabbed' : 'failed to grab'}`);
+                el.text(`80% ${option.server} ${option.response.success ? 'grabbed' : 'failed to grab'}`)
+                    .removeClass('text-info text-success text-danger')
+                    .addClass(option.response.success ? 'text-success' : 'text-danger');
             },
             [DlGrabber.progress.DONE]: (el, obj) => {
-                el.text(`done!`);
+                el.text(`done!`).removeClass('text-info text-success text-danger')
+                    .removeClass('text-info text-success text-danger')
+                    .addClass('text-success');
                 count += .34;
                 this.loadingBar
                     .css('width', (100 * count / this.getCheckboxes.filter(':checked').length) + '%');
@@ -208,13 +236,30 @@ class EpisodeListing {
             }
         };
         let i = 0;
+        let j = 0;
         let count = 0;
+        let c = 0;
         return new Promise(resolve => {
-            for (const ep of this.episodes) {
-                if (ep.checkbox[0].checked)
-                    grab(ep.anchor.href, (prog, option) => jobs[prog](ep.progress, option), true)
-                        .then(() => this.episodes.length == ++i && resolve(this));
+            let f = ep => {
+                if (ep.checkbox[0].checked && ++c && $(ep.anchor).addClass('episodeVisited'))
+                    grab(
+                        ep.anchor.href,
+                        (prog, option) => jobs[prog](ep.progress, option) ||
+                            handlers.forEach(v => v[prog] && v[prog](ep.progress, option)),
+                        true
+                    ).then(() => {
+                        if (this.episodes.length == ++i) resolve(this);
+                        else if (c > maxItems && j < this.episodes.length) f(this.episodes[j++]);
+                    });
                 else i++;
+            };
+            for (const ep of this.episodes) {
+                if (c > maxItems) {
+                    ep.progress.text('pending..');
+                    continue;
+                }
+                j++;
+                f(ep);
             }
             if (this.episodes.length == i) resolve(this);
         });
@@ -252,12 +297,14 @@ class EpisodeListing {
         return this;
     }
 
+
     get getCheckboxes() {
+        if (this.chkBoxCache) return this.chkBoxCache;
         let checkboxes = $();
         for (const item of this.episodes)
             checkboxes = checkboxes.add(item.checkbox);
 
-        return checkboxes;
+        return this.chkBoxCache = checkboxes;
     }
 
     check(checked, from, to) {

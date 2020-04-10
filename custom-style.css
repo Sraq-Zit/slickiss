@@ -11,6 +11,61 @@ a[href*='4702fb341ddf276d'],
     display: none !important;
 }
 
+input[type=checkbox] {
+    -webkit-appearance: initial;
+    position: relative;
+    padding-right: 2.5px !important;
+    width: 15px;
+    height: 15px;
+    background-color: white;
+    border-radius: 50%;
+    line-height: 16px;
+    direction: rtl;
+}
+
+input[type=checkbox]:disabled {
+    background-color: gray;
+}
+
+input[type=checkbox]::before {
+    font-family: "Font Awesome 5 Pro";
+    content: "\f1b0" !important;
+    font-weight: bolder;
+    color: transparent;
+    font-size: 10px;
+}
+
+input[type=checkbox]:checked::before {
+    color: black;
+}
+
+.table-truncate td,
+.listing td,
+.listing td>div {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 1px;
+}
+
+.listing tr>td:nth-child(4) {
+    padding: 0;
+}
+
+.listing tr>td:nth-child(2)>div {
+    direction: rtl;
+}
+
+.listing tr>td:nth-child(2)>div>input {
+    float: left;
+    z-index: 1;
+}
+
+.listing tr>td:nth-child(1) {
+    padding-right: 0;
+    max-width: initial;
+}
+
 #disqus_thread {
     display: unset !important;
 }
@@ -61,11 +116,11 @@ a.new {
 }
 
 a.bookmarked {
-    color: #ffabab;
+    color: #ffabab !important;
 }
 
 a.bookmarked_seen {
-    color: #abffbd;
+    color: #abffbd !important;
 }
 
 .dummy {
@@ -132,6 +187,45 @@ textarea.decorated {
     height: 100%;
 }
 
+
+.floatingNotif {
+    position: fixed !important;
+    overflow: hidden;
+    bottom: 49px !important;
+    right: 50px !important;
+    z-index: 2 !important;
+    width: unset !important;
+    height: unset !important;
+    max-width: 45px;
+    padding: 15px !important;
+    background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/transparent.png) !important;
+    border-color: transparent !important;
+    opacity: .4;
+    transition: all .5s ease !important;
+}
+
+.floatingNotif>img {
+    margin-right: 10px;
+    float: left;
+    height: 50px !important;
+    border: unset !important;
+}
+
+.floatingNotif>.text {
+    margin-right: 60px;
+    transform: translateY(85%);
+    font-weight: bold;
+    font-size: 1.4em;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.floatingNotif:hover {
+    opacity: 1;
+    max-width: 50vw;
+    border-color: #333333 !important;
+    background: inherit !important;
+}
 
 .wrapper>.listing tr>td:first-child:before,
 .wrapper>.listing tr>th:not(.done):first-child:before {

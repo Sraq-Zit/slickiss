@@ -100,25 +100,39 @@ class Anime {
     static async getAnimeData(url) {
         if (!Slickiss.isContext(url, Slickiss.cts.ANIME))
             return console.error('Requested URL isn\'t an Anime URL') || null;
-        const req = await fetch(url);
-        if (req.status == 503) {
-            await Captcha.bypassCf();
-            return this.getAnimeData();
+        try {
+            const req = await fetch(url);
+            if (req.status == 503) {
+                await Captcha.bypassCf();
+                return this.getAnimeData();
+            }
+            const html = await req.text();
+            const doc = $(html.noImgs);
+            const data = {
+                namings: doc.find('span.info:contains("Other name:") ~ a'),
+                genres: doc.find('span.info:contains("Genres:") ~ a'),
+                aired: doc.find('span.info:contains("Date aired:")'),
+                status: doc.find('span.info:contains("Status:")'),
+                views: doc.find('span.info:contains("Status:")'),
+                summary: doc.find('span.info:contains("Summary:")')
+            };
+            return {
+                url: url,
+                name: doc.find('.barContent .bigChar').text(),
+                cover: doc.find('.rightBox im').attr('src'),
+                listing: doc.find('.listing'),
+                namings: !data.namings.length ? [] : data.namings.toArray().map(el => $(el).text()),
+                genres: !data.genres.length ? [] : data.genres.toArray().map(el => $(el).text()),
+                aired: !data.aired.length ? [] : data.aired.parent().text().split(':')[1].trim(),
+                status: !data.status.length ? [] : data.status.parent().text().split(/:| {3,}/)[1].trim(),
+                views: !data.views.length ? [] : data.views.parent().text().split(/:| {3,}/)[4].trim(),
+                summary: !data.summary.length ? [] : data.summary.parent().next().html().trim()
+            };
+        } catch (error) {
+            console.warn(error);
+
+            return error;
         }
-        const html = await req.text();
-        const doc = $(html.noImgs);
-        return {
-            url: url,
-            name: doc.find('.barContent .bigChar').text(),
-            cover: doc.find('.rightBox im').attr('src'),
-            listing: doc.find('.listing'),
-            namings: doc.find('span.info:contains("Other name:") ~ a').toArray().map(el => $(el).text()),
-            genres: doc.find('span.info:contains("Genres:") ~ a').toArray().map(el => $(el).text()),
-            aired: doc.find('span.info:contains("Date aired:")').parent().text().split(':')[1].trim(),
-            status: doc.find('span.info:contains("Status:")').parent().text().split(/:| {3,}/)[1].trim(),
-            views: doc.find('span.info:contains("Status:")').parent().text().split(/:| {3,}/)[4].trim(),
-            summary: doc.find('span.info:contains("Summary:")').parent().next().html().trim()
-        };
     }
 
     static listing(listing) {

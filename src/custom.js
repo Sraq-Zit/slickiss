@@ -33,6 +33,25 @@ $.ajax = function (data) {
     }
 };
 
+/** Convert Date to ux display format
+ * @param {Date} d Date to convert
+ */
+const getDisplayDate = (d = new Date) => {
+    today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+    diff = today.getTime() - d.getTime(); // get the difference between today(at 00:00:00) and the date
+    if (d.getTime() == today.getTime()) {
+        return "Today";
+    } else if (diff <= (24 * 60 * 60 * 1000)) {
+        return "Yesterday";
+    } else {
+        return d.toDateString(); // or format it what ever way you want
+    }
+}
+
 
 const rand = (min, max) => {
     min = Math.ceil(min);

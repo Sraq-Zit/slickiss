@@ -7,17 +7,26 @@ class Assets {
         return $('<div/>', {
             css: {
                 display: 'none', position: 'fixed', height: '100vh', width: '100vw', 'text-align': 'center',
-                'background-color': 'rgba(0,0,0,.8)', padding: '30px 10px', 'z-index': '1'
+                'background-color': 'rgba(0,0,0,.8)', padding: '30px 10px', 'z-index': '2'
             }
         }).append([
             $('<a/>', {
                 text: 'X',
                 css: {
-                    href: '#', position: 'absolute', top: '20px', left: '20px',
+                    href: '#', position: 'absolute', top: '20px', left: '20px', color: 'white',
                     border: '1px solid white', padding: '0px 5px', cursor: 'pointer'
                 }
             }).on('click', (e) => e.preventDefault() || $(e.currentTarget).parent().fadeOut()),
         ]);
+    }
+
+    /** A floating notifier
+     * @returns {JQuery<HTMLDivElement>}
+     */
+    static floatingNotif() {
+        return $('<div/>', { class: 'floatingNotif banner' })
+            .append($('<img/>', { src: chrome.extension.getURL('/imgs/prepare.png') }))
+            .append($('<div/>', { class: 'text', text: '4 anime' }));
     }
 
     /** Video player components
@@ -25,7 +34,7 @@ class Assets {
      */
     static async player() {
         const html = await this.loadAssetFromFile('/player.html');
-        return $(html.replace(/([("])\/{4}(.+?[")])/g, `$1${chrome.extension.getURL('')}$2`));
+        return $(html);
     }
 
     /** Load file from relative path
@@ -33,7 +42,9 @@ class Assets {
      * @returns {Promise<string>}
      */
     static async loadAssetFromFile(file) {
-        return fetch(chrome.extension.getURL(file)).then(t => t.text());
+        return fetch(chrome.extension.getURL(file))
+            .then(t => t.text())
+            .then(t => t.replace(/([("])\/{4}(.+?[")])/g, `$1${chrome.extension.getURL('')}$2`));
     }
 
     /** Create html table based on the given data

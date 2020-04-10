@@ -78,13 +78,13 @@ class Captcha {
                 await Captcha.bypassCf();
                 return this.fetch();
             }
+            this.html = await this.response.text();
             if (this.html.toLowerCase().includes('wrong answer')) {
                 this.update(Captcha.steps.FAILURE);
                 this.attempt++;
                 this.formAction = undefined;
                 return this.fetch();
             }
-            this.html = await this.response.text();
             if (this.html.includes('selectEpisode'))
                 return this.update(Captcha.steps.SUCCESS) || 1;
 

@@ -78,7 +78,7 @@ class Slickiss {
                         an.find('.barContent > div:not(.arrow-general)')
                             .empty().append(updates.children());
                     });
-                    $(document).on('ready', Bookmark.getBookmarks(1).then(
+                    $(document).on('ready', Bookmark.getBookmarks(true).then(
                         json => $("a[href*='Anime/']").each((i, a) => {
                             const info = Slickiss.parseUrl(a.href);
                             if (info && json[info.name])
@@ -113,12 +113,25 @@ class Slickiss {
                 Tooltip.hide();
 
         });
-        $(document).on('click', 'a:not(.unlinked,a[href="#"])', e => {
+        $(document).on('click', 'a:not(a[href="#"])', async e => {
             const el = e.currentTarget;
             if (settings.defaultserver != "default") {
                 let info = Slickiss.parseUrl(el.href, Slickiss.cts.EPISODE);
                 if (info && info.server != settings.defaultserver && el.href != location.href + '#')
                     el.href = info.stripped + "&s=" + settings.defaultserver;
+            }
+
+            let data;
+            if (e.shiftKey && (data = Slickiss.parseUrl(el.href)) && data.anime) {
+                e.preventDefault();
+                const batch = await Chrome.get('batchQueue');
+                if (data.anime in batch)
+                    Assets.toast('Anime is already on the list');
+                else {
+                    batch[data.anime] = { date: getDisplayDate() };
+                    Chrome.set({ batchQueue: batch });
+                    Assets.toast('Anime was added to the batch list');
+                }
             }
         });
     }
@@ -175,29 +188,29 @@ class Slickiss {
     }
 
 }
+if (location.protocol != 'chrome-extension:') {
+    $(document).on('ready', async e => { new Slickiss; });
 
-$(document).on('ready', async e => { new Slickiss; });
 
+    if (!Slickiss.isContext(location.href, Slickiss.cts.CAPTCHA))
+        $(document.documentElement).append([
+            $('<style/>', { class: 'slickExtra', text: 'body{display:none;}' }),
+            $("<img/>", {
+                id: 'pageLoading',
+                src: chrome.extension.getURL("imgs/mobchara_3.png"),
+                class: 'slickExtra slickFloating'
+            }),
+            $('<h1/>', { class: 'bigChar slickExtra', text: 'Loading...' })
+        ]);
 
-if (!Slickiss.isContext(location.href, Slickiss.cts.CAPTCHA))
-    $(document.documentElement).append([
-        $('<style/>', { class: 'slickExtra', text: 'body{display:none;}' }),
-        $("<img/>", {
-            id: 'pageLoading',
-            src: chrome.extension.getURL("imgs/mobchara_3.png"),
-            class: 'slickExtra slickFloating'
-        }),
-        $('<h1/>', { class: 'bigChar slickExtra', text: 'Loading...' })
-    ]);
+    if (
+        (location.host != 'kissanime.ru' && (location.hash != '#ignore' || (location.hash = ''))) ||
+        Slickiss.isContext(location.href, Slickiss.cts.EPISODE) && location.hash == '#player'
+    ) {
+        window.stop();
+        Player.deploy();
+    }
 
-if (
-    (location.host != 'kissanime.ru' && (location.hash != '#ignore' || (location.hash = ''))) ||
-    Slickiss.isContext(location.href, Slickiss.cts.EPISODE) && location.hash == '#player'
-) {
-    window.stop();
-    Player.deploy();
 }
-
-
 
 

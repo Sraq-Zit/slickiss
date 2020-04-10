@@ -225,7 +225,7 @@ class DlGrabber {
      * additional?: {poster?:string,title?:string,qualities?:{'1080p'?:string'720p'?:string'480p'?:string}}
      * }>}
      */
-    static grabs = (url, srv, process, method = 'get', data = null, tries = 5) => new Promise(resolve => $.ajax({
+    static grabs = (url, srv, process, method = 'get', data = null, tries = 0) => new Promise(resolve => $.ajax({
         dataType: 'html', type: method, url: url, data: data,
         success: r => {
             try {
@@ -246,7 +246,7 @@ class DlGrabber {
         },
         error: (xhr, err, status) => {
             if (!tries) resolve({ server: srv, success: 0, response: err });
-            setTimeout(() => this.grabs(url, srv, process, method, --tries).then(r => resolve(r)), 1000);
+            setTimeout(() => this.grabs(url, srv, process, method, data, --tries).then(r => resolve(r)), 1000);
         }
     }));
 }
