@@ -130,7 +130,10 @@ class Slickiss {
                 else {
                     batch[data.anime] = { date: getDisplayDate() };
                     Chrome.set({ batchQueue: batch });
-                    Assets.toast('Anime was added to the batch list');
+                    Assets.toast(`
+                        Anime was added to the batch list (${Object.keys(batch).length} items)
+                        <a href='/#batch' target="slickiss_batch_manager"> Manage your batch </a>
+                    `);
                 }
             }
         });

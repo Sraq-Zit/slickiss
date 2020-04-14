@@ -1,6 +1,10 @@
 # TODO list
  - [x] Feature: Multiple batch
+ - [ ] New Slickiss watch interface
  - [ ] Feature: Preload servers links
+ - Multiple batch: select all (only for visible ones)
+ - Multiple batch: add select non watched only
+ - Multiple batch: add tool to show grabbed links again even after getting closed
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
  - Feature: Automatique report for new ads and popups

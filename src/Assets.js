@@ -14,7 +14,7 @@ class Assets {
                 text: 'X',
                 css: {
                     href: '#', position: 'absolute', top: '20px', left: '20px', color: 'white',
-                    border: '1px solid white', padding: '0px 5px', cursor: 'pointer'
+                    border: '1px solid white', padding: '0px 5px', cursor: 'pointer', 'z-index': 1
                 }
             }).on('click', (e) => e.preventDefault() || $(e.currentTarget).parent().fadeOut()),
         ]);
@@ -125,7 +125,7 @@ class Assets {
      */
     static toast(msg, timeout = 2000, onfadeout) {
         const toast = ($('#slickiss-toast').length && $('#slickiss-toast')) || $('<div/>', { id: 'slickiss-toast' });
-        toast.text(msg).show();
+        toast.html(msg).show();
         $(document.documentElement).append(toast);
         clearTimeout(toast[0].timer);
         toast[0].timer = setTimeout(() => toast.fadeOut(500, onfadeout), timeout);

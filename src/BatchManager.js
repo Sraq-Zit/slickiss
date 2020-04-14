@@ -3,6 +3,25 @@ class BatchManager {
 
     /** Load batch queue and initialize elements */
     static async init() {
+
+        const tipStyle = {
+            text: 'A',
+            css: {
+                top: '120%', left: '50%',
+                position: 'absolute', transform: 'translateX(-50%)',
+                'font-family': '"Nunito", sans-serif', 'font-size': '1rem', 'font-weight': 'bolder'
+            }
+        };
+        $('header i').addClass('position-relative')
+            .each(
+                (_i, el) => (tipStyle.text = el.title[0]) && $(el).append($('<span>', tipStyle))
+            );
+        sleep(1e3).then(() => $('header i>span, .help').fadeOut() && $('.fa-info-circle').fadeIn());
+
+        $('.fa-info-circle').on(
+            'mouseenter mouseleave', e => $('header i>span,.help')[e.type == 'mouseenter' ? 'show' : 'hide']()
+        );
+
         chrome.storage.sync.onChanged.addListener(async v => {
             if (v.batchQueue && Object.keys(v.batchQueue.oldValue).length < Object.keys(v.batchQueue.newValue).length)
                 for (const url in await Chrome.get('batchQueue'))
@@ -20,6 +39,10 @@ class BatchManager {
         if (!this.queue) return;
         for (const url in this.queue) this.createCard(url, this.queue[url].date);
         this.downloadBtn.on('click', () => {
+            if (this.isDownloading)
+                return Assets.toast('Please wait until the current process finishes!');
+
+            this.isDownloading = true;
             let c = 0;
             const board = new EpisodeListing();
             board.setHandlers();
@@ -46,11 +69,34 @@ class BatchManager {
                     board.downloads = { ...board.downloads, ...mgr.downloads };
                     board.servers = board.servers ? mgr.servers.concat(board.servers) : mgr.servers;
                     board.episodes = board.episodes ? mgr.episodes.concat(board.episodes) : mgr.episodes;
-                    if (!--c) board.showDownloads();
+                    board.servers = board.servers && board.servers.reverse();
+                    if (!--c) {
+                        $('i.show-list').off('click').on('click', e => board.showDownloads()).click();
+                        this.isDownloading = false;
+                    }
                 });
 
             }
         });
+        $('i.add').on('click', e => {
+            const msg = Assets.msgArea();
+            $('body').prepend(msg)
+            msg.append($('<iframe/>', { class: 'h-75 w-75 m-5', src: '/' }))
+                .append($('<div/>', {
+                    class: 'position-absolute p-5 w-100 text-center h4 text-light',
+                    text: `Hold shift key and click any Anime link and it should be added. 
+                            You can also add from other tabs`,
+                    css: { bottom: 0, 'z-index': 4 }
+                }))
+                .show();
+        });
+
+        $('i.done').on('click', e => {
+            if (!$('.card').length) return;
+            $('.card:not(.selected)').trigger(new $.Event('click', { ctrlKey: true }));
+            $('i.remove-selected').click();
+        });
+
         $('i.check-all').on('click', e => {
             const el = $(e.currentTarget);
             for (const k in this.data)
@@ -59,16 +105,25 @@ class BatchManager {
 
             el.toggleClass('fa-circle');
         });
+        $('i.check-visible').on('click', e => {
+            $('.listing input:visible').length == $('.listing input:visible:checked').length ?
+                $('.listing input:visible').click()
+                :
+                $('.listing input:visible:not(:checked)').click();
+
+            $('i.check-all')[$('.listing input:not(:checked)').length ? 'addClass' : 'removeClass']('fa-circle');
+        });
         $('i.remove-selected').on('click', async e => {
-            if (!$('.card.selected').length) return Assets.toast('No selected item(s)');
+            const selected = $('.card.selected').length;
+            if (!selected) return Assets.toast('No selected item(s)');
             const p = await new Prompt(
                 async () => $('.card.selected')
                     .data('noPrompt', true)
                     .find('i.remove')
                     .click()
             ).load();
-            p.bigTitle.text('Do you want to remove selected items ?');
-            p.subTitle.text(`${$('.card.selected').length} items`);
+            p.bigTitle.text(`Do you want to remove ${selected == $('.card').length ? 'All' : 'selected'} items ?`);
+            p.subTitle.text(selected == $('.card').length ? '' : selected + 'items');
             p.show();
         });
     }
@@ -152,6 +207,17 @@ class BatchManager {
 
 
 
+    /** Whether a download process is on going
+     * @type {boolean}
+     */
+    static get isDownloading() { return Boolean(this.d) };
+    static set isDownloading(b) {
+        this.d = b;
+        $('i.fa-download')[b ? 'addClass' : 'removeClass']('text-muted');
+        $('i.fa-download').css('cursor', b ? 'initial' : '');
+    };
+
+
     /** Container for all anime cards
      * @type {JQuery<HTMLDivElement>}
      */
@@ -201,10 +267,13 @@ window.stop();
 
 
 $(document).on('keydown', e => {
-    if (e.ctrlKey && e.originalEvent.code == 'KeyQ' && !$(':focus').length) {
+    if ($(':focus').length) return;
+    if (e.ctrlKey && e.originalEvent.code == 'KeyQ') {
         e.preventDefault();
         $('.card:not(.selected)').trigger(new $.Event('click', { ctrlKey: true }));
+        return;
     }
+    $(`header i[title^=${e.key.toUpperCase()}]`).click();
 });
 window.onfocus = async e => {
     await sleep(2000);

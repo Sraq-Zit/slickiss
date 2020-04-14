@@ -11,6 +11,12 @@
             background-color: #161616;
         }
 
+        .container .h1,
+        .container .h2,
+        .container .h3,
+        .container .h4,
+        .container .h5,
+        .container .h6,
         .container h1,
         .container h2,
         .container h3,
@@ -23,10 +29,8 @@
             color: #fff;
         }
 
-
-        .new {
-            background-color: #263b28;
-            transition: background-color 3s ease;
+        .help i {
+            width: 15px;
         }
 
         .cursor-pointer {
@@ -58,6 +62,11 @@
             background-color: #111111;
             border: 1px solid #333333;
             transition: all .5s ease;
+        }
+
+        .new {
+            background-color: #263b28;
+            transition: background-color 3s ease;
         }
 
         .card+.card {
@@ -163,17 +172,25 @@
     <header class="header header-transparent" id="header-main">
         <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm mb-3 text-light">
             <div class="container px-0">
-                <div class="navbar-nav align-items-center p-4">
+                <div class="navbar-nav align-items-center p-3" style="font-size: 1.5rem;">
                     <div class="row w-100">
                         <div class="col p-0">
-                            <i class="cursor-pointer fa fa-plus mx-2 text-success" title="Add new Anime"></i>
+                            <i class="cursor-pointer fa fa-plus mx-2 text-success add" title="D - Add new Anime"></i>
                             <i class="cursor-pointer fa fa-minus mx-2 text-danger remove-selected"
                                 title="Remove selected items"></i>
-                            <i class="cursor-pointer fa fa-download mx-2 text-info" title="Grab all download links"></i>
+                            <i class="cursor-pointer fa fa-download mx-2 text-primary"
+                                title="Grab all download links"></i>
+                            <i class="cursor-pointer fa fa-list-ul mx-2 text-warning show-list"
+                                title="L - List last grabbed links"></i>
+                            <i class="cursor-pointer fa fa-clipboard-check mx-2 done"
+                                title="X - Finish and clear list"></i>
+                            <i class="far fa-info-circle mx-2 text-info" style="cursor: help; display: none;"></i>
                         </div>
                         <div class="col p-0 text-right align-items-center justify-content-end d-flex">
                             <i class="cursor-pointer far fa-circle fa-check-circle mx-2 check-all"
-                                title="Check all"></i>
+                                title="A - Check all"></i>
+                            <i class="cursor-pointer far fa-check-double mx-2 check-visible"
+                                title="V - Check visible"></i>
                         </div>
                     </div>
                 </div>
@@ -184,8 +201,38 @@
 
 
 
-    <div class="container">
+    <div class="container position-relative">
+
         <div class="row">
+
+            <div class="position-absolute h-100 w-100 text-center text-secondary bg-light shadow-sm p-3 help"
+                style="top:0;left:0; z-index: 2; font-weight: bold;">
+                <div class="row">
+                    <div class="col-5 p-4 text-left">
+                        Click while holding <code class="text-light bg-secondary border p-1">Ctrl</code> to select
+                        multiple Anime <br>
+                        <code class="text-light bg-secondary border p-1">Ctrl + A</code> Select all Anime <br>
+                        <i class="fa fa-ban text-danger mr-2"></i> Remove Anime from list <br>
+                        <i class="fas fa-external-link-alt text-info mr-2"></i> Open Anime in new tab <br>
+                        <hr>
+                        <i class="fa fa-plus mr-2 text-success"></i>
+                        Add new Anime to the list<br>
+                        <i class="fa fa-minus mr-2 text-danger"></i>
+                        Remove Anime from list<br>
+                        <i class="fa fa-download mr-2 text-primary"></i>
+                        Start the process of grabbing download links<br>
+                        <i class="fa fa-list-ul mr-2 text-warning"></i>
+                        Show last list of grabbed links if available<br>
+                        <i class="fa fa-clipboard-check mr-2 done"></i>
+                        Clear the list <br>
+                    </div>
+                    <div class="col p-4 text-left">
+                        <i class="far fa-check-circle mr-2"></i> (Un)Check all episodes <br>
+                        <i class="far fa-check-double mr-2"></i> (Un)Check all shown episodes
+                    </div>
+                </div>
+            </div>
+
             <div class="col-5 anime overflow-auto" style="height:85vh;">
                 <div class="card card-active-listener sample">
                     <div class="card-body">

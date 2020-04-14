@@ -42,6 +42,10 @@ const getDisplayDate = (d = new Date) => {
     today.setMinutes(0);
     today.setSeconds(0);
     today.setMilliseconds(0);
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    d.setMilliseconds(0);
     diff = today.getTime() - d.getTime(); // get the difference between today(at 00:00:00) and the date
     if (d.getTime() == today.getTime()) {
         return "Today";
