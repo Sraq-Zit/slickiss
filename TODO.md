@@ -1,7 +1,7 @@
 # TODO list
  - [x] Feature: Multiple batch
+ - [x] Feature: Preload servers links
  - [ ] New Slickiss watch interface
- - [ ] Feature: Preload servers links
  - Multiple batch: select all (only for visible ones)
  - Multiple batch: add select non watched only
  - Multiple batch: add tool to show grabbed links again even after getting closed
