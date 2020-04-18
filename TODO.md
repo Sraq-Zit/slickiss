@@ -2,6 +2,7 @@
  - [x] Feature: Multiple batch
  - [x] Feature: Preload servers links
  - [x] Block new ads (You can use adblock if Slickiss is enabled)
+ - [ ] Bug: Kissanime display not working when slickiss player is disabled
  - [ ] Update ban tips. Kissanime is now banning wrt account rather than only the ip
  - [ ] New Slickiss watch interface
  - Multiple batch: select all (only for visible ones)
