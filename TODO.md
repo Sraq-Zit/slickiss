@@ -1,7 +1,8 @@
 # TODO list
  - [x] Feature: Multiple batch
  - [x] Feature: Preload servers links
- - [ ] Block new ads
+ - [x] Block new ads
+ - [ ] Update ban tips. Kissanime is now banning wrt account rather than only the ip
  - [ ] New Slickiss watch interface
  - Multiple batch: select all (only for visible ones)
  - Multiple batch: add select non watched only
