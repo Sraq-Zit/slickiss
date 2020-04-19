@@ -32,10 +32,13 @@ $(document).ready(() => {
         SettingManager.save();
 
         $("body").fadeOut(250, function () {
-            $("body").css("height", "50px").html("<h1 style='color: #d5f406; font-size:30px; text-align:center;'> Saved ! " + (reload ? "Reloading.." : "") + " </h1>").show();
+            $("body").css("height", "50px")
+                .html("<h1 style='color: #d5f406; font-size:30px; text-align:center;'> Saved ! " + (reload ? "Reloading.." : "") + " </h1>")
+                .show();
             setTimeout(function () {
                 if (reload) chrome.tabs.reload();
                 window.close();
+                if (!reload) location.reload();
             }, 700);
         });
     });

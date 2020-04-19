@@ -63,7 +63,7 @@ input[type=checkbox]:checked::before {
 
 .listing tr>td:nth-child(1) {
     padding-right: 0;
-    max-width: initial;
+    /* max-width: initial; */
 }
 
 #disqus_thread {
@@ -227,8 +227,8 @@ textarea.decorated {
     background: inherit !important;
 }
 
-.wrapper>.listing tr>td:first-child:before,
-.wrapper>.listing tr>th:not(.done):first-child:before {
+#episodes>.listing tr>td:first-child:before,
+#episodes>.listing tr>th:not(.done):first-child:before {
     cursor: pointer;
     margin-right: 5px;
     content: "\25B6";
@@ -240,17 +240,17 @@ textarea.decorated {
     background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/prepare.png);
 }
 
-.wrapper>.listing tr>td:first-child.retrieving:before {
+#episodes>.listing tr>td:first-child.retrieving:before {
     cursor: unset;
     background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/small-loader.gif);
 }
 
-.wrapper>.listing tr>td:first-child.ready:before {
+#episodes>.listing tr>td:first-child.ready:before {
     cursor: unset;
     background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/ready.gif);
 }
 
-.wrapper>.listing tr>td:first-child.playing:before {
+#episodes>.listing tr>td:first-child.playing:before {
     cursor: unset;
     content: "\25B6";
     background-image: unset;

@@ -17,7 +17,7 @@ class Anime {
             this.sManager = this.bkManager.clone().attr('class', 'iconStyle seenIcon disabled')
         );
 
-        if (Slickiss.isContext(this.url, Slickiss.cts.EPISODE)) this.url = Slickiss.parseUrl(this.url).anime;
+        if (S.isContext(this.url, S.cts.EPISODE)) this.url = S.parseUrl(this.url).anime;
         this.listing = this.doc.find('#leftside .listing');
         Bookmark.getAnimeBookmarkInfo(this.url).then(info => {
             for (const k in info)
@@ -83,7 +83,7 @@ class Anime {
     }
 
     /** Retrieves anime data from url
-     * @param {*} url URL of the requested anime
+     * @param {string} url URL of the requested anime
      * @return {Promise<{
             url: string;
             name: string;
@@ -98,7 +98,9 @@ class Anime {
         }>}
      */
     static async getAnimeData(url) {
-        if (!Slickiss.isContext(url, Slickiss.cts.ANIME))
+        const info = S.parseUrl(url);
+        url = info.anime;
+        if (!info.anime)
             return console.error('Requested URL isn\'t an Anime URL') || null;
         try {
             const req = await fetch(url);

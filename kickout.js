@@ -1,12 +1,17 @@
 let b;
 Chrome.get().then(s => settings = s);
+chrome.storage.sync.onChanged.addListener(async v => {
+    for (const k in v)
+        if (typeof v[k].newValue == 'undefined') delete settings[k];
+        else settings[k] = v[k].newValue;
+    // settings = await Chrome.get();
+});
 
 
 const blocked = chrome.runtime.getManifest().permissions
     .filter(e => Boolean(b === true || (b = (e[0] == '*' && (b === false || null)))));
 chrome.webRequest.onBeforeRequest.addListener(
     function (details) {
-        Chrome.get().then(s => settings = s);
         b = true;
         const initiators = chrome.runtime.getManifest().permissions
             .filter(v => b && (b = (v[0] == '*')))
@@ -16,7 +21,7 @@ chrome.webRequest.onBeforeRequest.addListener(
                 return {
                     cancel: Boolean(
                         !details.url.includes("Scripts/video-js/video.js") ||
-                        Number(settings.lite || !settings['servers.beta'])
+                        Number(settings.lite && settings['servers.beta'])
                     )
                 };
     }, {
@@ -26,7 +31,6 @@ chrome.webRequest.onBeforeRequest.addListener(
 
 chrome.webRequest.onHeadersReceived.addListener(
     function (info) {
-        Chrome.get().then(s => settings = s);
         var headers = info.responseHeaders;
         var index = headers.findIndex(x => x.name.toLowerCase() == "x-frame-options");
         if (index != -1) {

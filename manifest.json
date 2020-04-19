@@ -1,6 +1,6 @@
 {
     "name": "Slickiss",
-    "version": "2.0.4",
+    "version": "2.3.0",
     "manifest_version": 2,
     "description": "Hides ads and Captcha in Kissanime and offers many other functionalities like notifications for Anime, quick download, and more",
     "browser_action": {
@@ -20,12 +20,14 @@
         "*://www.novelplanet.me/*",
         "*://cutt.ly/*",
         "*://nraisgroupe.com/*",
+        "cookies",
         "storage",
         "activeTab",
         "notifications",
         "contextMenus",
         "webRequest",
         "webRequestBlocking",
+        "*://soskinlab.com/*",
         "*://vagwyn.pw/*",
         "*://kenfeeask.com/*",
         "*://gigbyefly.com/*",
@@ -85,9 +87,7 @@
     "web_accessible_resources": [
         "imgs/*",
         "webfonts/*",
-        "player.html",
-        "batch.html",
-        "prompt.html",
+        "*.html",
         "*.css"
     ],
     "content_scripts": [

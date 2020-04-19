@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="////bootstrap.min.css" onload="$('.slickExtra').remove()">
+    <style>
+        body {
+            background-color: #161616;
+        }
+
+        .container .h1,
+        .container .h2,
+        .container .h3,
+        .container .h4,
+        .container .h5,
+        .container .h6,
+        .container h1,
+        .container h2,
+        .container h3,
+        .container h4,
+        .container h5,
+        .container h6 {
+            margin-bottom: .5rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        iframe[src*='disqusservice.com'] {
+            display: none !important;
+        }
+
+        .animate {
+            transition: all .5s ease;
+        }
+
+        *:not(.disabled):hover>.tooltip {
+            display: block !important;
+            pointer-events: none;
+        }
+
+        .border-left,
+        .border-right,
+        .border-top,
+        .border-bottom {
+            border-color: #333333 !important;
+        }
+
+        .help i {
+            width: 15px;
+        }
+
+        .cursor-pointer:not(.disabled) {
+            cursor: pointer;
+        }
+
+        code {
+            word-break: normal !important;
+            font-size: 1.1em;
+            color: #d5f406;
+        }
+
+        .sub,
+        table td {
+            color: rgb(167, 167, 167);
+        }
+
+        .bg-k {
+            background-color: #111111;
+        }
+
+
+        .anime {
+            direction: rtl;
+        }
+
+        .card {
+            direction: ltr;
+            cursor: pointer;
+            background-color: #111111;
+            border: 1px solid #333333;
+            transition: all .5s ease;
+        }
+
+        .new {
+            background-color: #263b28;
+            transition: background-color 3s ease;
+        }
+
+        .card+.card {
+            border-top: unset;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .anime>.card:not(:last-child) {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .avatar,
+        .avatar>img {
+            height: 3.125rem;
+            min-height: 3.125rem;
+            width: 3.125rem;
+            min-width: 3.125rem;
+        }
+
+        .avatar,
+        .avatar>img {
+            border-radius: 50%;
+        }
+
+
+
+        .listing th,
+        .listing a {
+            color: white;
+        }
+
+        .listing th {
+            font-size: .8rem;
+        }
+
+        .listing td,
+        .listing th:nth-child(1) {
+            padding: 10px;
+        }
+
+
+        .listing tr>td:nth-child(2) {
+            max-width: unset !important;
+            padding-left: unset;
+        }
+
+        /*
+        .listing tr {
+            border-bottom: 1px solid #333333;
+        }*/
+
+        .listing a {
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        input[type=checkbox] {
+            margin-right: 10px;
+        }
+
+        .card.selected {
+            background-color: #333333;
+        }
+
+        .listing {
+            margin-bottom: 30px;
+            font-size: .7em;
+        }
+
+        td span,
+        td input[type=text] {
+            font-weight: bold;
+            font-size: .7em;
+        }
+
+        td {
+            width: unset !important;
+        }
+
+        .listing tr:not(:first-child) {
+            background-color: #111111;
+        }
+
+        .listing tr:hover:not(:first-child) {
+            background-color: #1111118f;
+        }
+
+        .card~#onempty {
+            display: none;
+        }
+
+        .listing a.episodeVisited,
+        .listing a:visited {
+            color: gray;
+        }
+
+        #navbar-top-main {
+            border-bottom: 1px solid #333333;
+        }
+
+
+        .sample {
+            display: none;
+        }
+
+        .iconStyle {
+            font-size: 1.6em;
+        }
+    </style>
+
+
+</head>
+
+<body class="overflow-hidden" style='font-family: "Nunito", sans-serif;'>
+
+    <!-- Loading -->
+    <style class="slickExtra">
+        body>*:not(.slickExtra) {
+            display: none !important;
+        }
+    </style>
+    <img id="pageLoading" src="chrome-extension://glplcnkocfhhcpbaafebblaadpkjnold/imgs/mobchara_3.png"
+        class="slickExtra slickFloating">
+    <!-- End loading -->
+
+    <!-- Header -->
+    <header class="header header-transparent">
+        <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm text-light" style="height: 13vh;">
+            <div class="mx-3 px-0 h-100" style="border-left: solid 20px #28a745;">
+                <div class="navbar-nav align-items-center h-100" style="font-size: 1.5rem;">
+                    <div class="row w-100 h-100">
+                        <!-- Anime name -->
+                        <div class="col-8 h-100 d-flex align-items-center">
+                            <a class="h4 text-light bigChar m-0" href="#"></a>
+                        </div>
+                        <!-- End anime name -->
+                        <!-- Tools -->
+                        <div class="col h3 m-0 p-0 text-right align-items-center justify-content-end d-flex">
+                            <a href="/" class="text-light mx-2" title="Home">
+                                <i class="fa fa-home"></i>
+                            </a>
+                            <a href="/BookmarkList" class="text-light mx-2" title="Bookmark List">
+                                <i class="fa fa-bookmark"></i>
+                            </a>
+                            <a href="/Profile" class="text-light mx-2" title="Profile settings">
+                                <i class="fa fa-user"></i>
+                            </a>
+                            <a href="#" class="text-light mx-2 position-relative setting" title="Slickiss settings">
+                                <i class="fa fa-cog"></i>
+                                <div class="position-absolute bg-k border-dark shadow" id="settings"
+                                    style="right: 0; top: 150%; width: 302px; height: 437px; z-index: 5; display: none;">
+                                    <iframe src="////popup.html" class="w-100 h-100" frameborder="0"></iframe>
+                                </div>
+                            </a>
+                        </div>
+                        <!-- End tools -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End header -->
+
+    <!-- Absolutely positioned blocs -->
+    <div class="position-relative">
+        <!-- Help -->
+        <div class="position-absolute text-center text-secondary bg-light shadow-sm p-1 mx-3 overflow-auto help"
+            style="top:0;left:0; z-index: 2; font-weight: bold; height: 86vh;">
+            <div class="row w-100">
+                <div class="col-8 p-4 text-left">
+                    <!-- Slickiss player guide -->
+                    <div class="h3 m-0">Slickiss player</div>
+                    <hr>
+                    This is a custom player it has the essentials and keep everything simple. <br>
+                    Hotkeys are available but can't be changed for now. They are defined as the following.
+                    <br class="mb-2">
+                    <div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-2">
+                                <code class="text-light bg-secondary border p-1">Space</code>
+                            </div>
+                            <div class="col"> Play/Pause </div>
+                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
+                                <code class="text-light bg-secondary border p-1">N</code></div>
+                            <div class="col"> Go to next episode</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-2">
+                                <code class="text-light bg-secondary border p-1">Left/Right</code>
+                            </div>
+                            <div class="col"> Navigate 3 seconds backward/forward</div>
+                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
+                                <code class="text-light bg-secondary border p-1">P</code></div>
+                            <div class="col"> Go to previous episode</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-2">
+                                <code class="text-light bg-secondary border p-1">Up/Down</code>
+                            </div>
+                            <div class="col"> Change volume</div>
+                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
+                                <code class="text-light bg-secondary border p-1">S</code>
+                            </div>
+                            <div class="col"> Skip opening/ending (forwards by 1min25sec)</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-2">
+                                <code class="text-light bg-secondary border p-1">F</code>
+                            </div>
+                            <div class="col"> Toggle fullscreen</div>
+                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
+                                <code class="text-light bg-secondary border p-1">D</code></div>
+                            <div class="col"> Download video</div>
+                        </div>
+                    </div>
+                    <br class="mt-2">
+
+                    Basic controls:
+                    <br class="mb-2">
+
+                    <div class="ml-3">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-play"></i>
+                                <i class="fa fa-pause"></i>
+                            </div>
+                            <div class="col"> Play / Pause</div>
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-compress"></i>
+                                <i class="fa fa-expand"></i>
+                            </div>
+                            <div class="col"> Toggle fullscreen </div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-volume"></i>
+                            </div>
+                            <div class="col"> Volume</div>
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-download"></i>
+                            </div>
+                            <div class="col"> Download</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-sync-alt"></i>
+                            </div>
+                            <div class="col"> Refresh only the page of the server</div>
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-cog"></i>
+                            </div>
+                            <div class="col"> Settings </div>
+                        </div>
+                    </div>
+                    <!-- End Slickiss player guide -->
+                    <hr>
+                    <!-- Servers Guide -->
+                    Slickiss now make servers' links ready to switch instantly! <br>
+                    You can do that when the servers appear like this
+                    <span class="bg-k rounded-pill cursor-pointer btn btn-outline-info">Server Name</span>
+                    <!-- End servers guide -->
+                </div>
+                <!-- Episodes list guide -->
+                <div class="col p-4 text-left">
+                    <div class="h3 m-0">Episodes list</div>
+                    <hr>
+                    Each episode has this tool <img src="////imgs/prepare.png" width="20px">.
+                    Clicking it will make this episode
+                    ready to navigate to without loading the window. <br>
+                    Once the icon changes to <img src="////imgs/ready.gif" width="20px"> You can instantly navigate to
+                    that episode
+                </div>
+                <!-- End episodes list guide -->
+            </div>
+        </div>
+        <!-- End help -->
+
+        <!-- Comment section -->
+        <div class="d-flex align-items-end justify-content-center position-absolute w-100 animate pb-3" id="__disqus"
+            style="background-color: #000000ec; z-index: 6; height: 88vh; margin-top: 120vh; display: none !important;">
+            <div class="position-absolute cursor-pointer closure" style="top: 0; transform: translateY(-50%);"
+                onclick="$('#__disqus').css('margin-top', '120vh')">
+                <i class="fas fa-comment-dots text-light d-flex justify-content-center" style="font-size: 3.5rem;"></i>
+                <i class="fas fa-chevron-down text-light d-flex justify-content-center"></i>
+            </div>
+
+            <div class="container overflow-auto text-light text-center" style="height: 90%; white-space: nowrap;"
+                id="disqus_thread">
+                Loading thread..
+            </div>
+        </div>
+        <!-- End comment section -->
+
+        <!-- Watchlist -->
+        <div class="d-flex align-items-center justify-content-center position-absolute w-100 animate p-5" id="bList"
+            style="background-color: #000000ec; z-index: 6; height: 88vh; margin-top: 120vh; display: none !important;">
+            <div class="position-absolute cursor-pointer closure" style="top: 0; transform: translateY(-50%);"
+                onclick="$('#bList').css('margin-top', '120vh')">
+                <i class="fas fa-list-alt text-light d-flex justify-content-center" style="font-size: 3.5rem;"></i>
+                <i class="fas fa-chevron-down text-light d-flex justify-content-center"></i>
+            </div>
+            <div class="h3 text-light wait">Inspecting bookmarks..</div>
+        </div>
+        <!-- End Watchlist -->
+    </div>
+    <!-- End Absolutely positioned blocs -->
+
+
+
+    <div class="row mx-3 border-left border-right border-bottom" style="height: 77vh;">
+        <div class="col-8 border-right p-0 h-100 position-relative">
+            <div id='status' class="position-absolute display-4 w-100 text-center text-muted"
+                style="left: 50%;top: 50%;transform: translate(-50%, -50%);opacity: .1;z-index: -1;"></div>
+
+            <iframe id="player" frameborder="0" class="w-100 h-100" allowfullscreen></iframe>
+        </div>
+        <div class="col h-100 overflow-auto px-0 py-2" id="episodes"></div>
+    </div>
+    <div class="row mx-3 d-flex align-items-center" style="height: 10vh;">
+        <div id="prev"
+            class="col-1 btn btn-success p-2 d-flex align-items-center justify-content-center cursor-pointer">
+            <i class="fa fa-chevron-left mr-2"></i>
+            Prev
+            <div class="tooltip bs-tooltip-top show position-absolute"
+                style="bottom: 110%; left: 50%; transform: translateX(-50%); display: none;">
+                <div class="arrow w-100 d-flex justify-content-center"></div>
+                <div class="tooltip-inner text-truncate" dir="rtl"></div>
+            </div>
+        </div>
+        <div class="col-6 overflow-auto" style="white-space: nowrap;" id="servers">
+            <!-- <span class="rounded-pill cursor-pointer btn btn-secondary disabled">Mp4upload</span> -->
+            <span class="bg-k rounded-pill cursor-pointer btn btn-outline-secondary sample"></span>
+        </div>
+        <div id='next'
+            class="col-1 btn btn-success p-2 d-flex align-items-center justify-content-center cursor-pointer">
+            Next
+            <i class="fa fa-chevron-right ml-2"></i>
+            <div class="tooltip bs-tooltip-top show position-absolute"
+                style="bottom: 110%; left: 50%; transform: translateX(-50%); display: none;">
+                <div class="arrow w-100 d-flex justify-content-center"></div>
+                <div class="tooltip-inner text-truncate" dir="rtl"></div>
+            </div>
+        </div>
+        <h4 class="col d-flex align-items-center justify-content-center m-0">
+            <i class="fa fa-comment-dots text-light mx-2 cursor-pointer" title="Show/Hide Comments"
+                onclick="$('#__disqus').show().css('margin-top', 0)"> </i>
+            <i class="fa fa-list-ul text-warning cursor-pointer mx-2" title="Show list of updated Anime"
+                onclick="$('#bList').show().css('margin-top', 0)"></i>
+            <i class="fa fa-info-circle text-info mx-2" style="cursor: help; z-index: 3;"></i>
+    </div>
+    </div>
+
+
+</body>
+
+</html>

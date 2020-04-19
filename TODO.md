@@ -1,11 +1,8 @@
 # TODO list
- - [x] Feature: Multiple batch
- - [x] Feature: Preload servers links
- - [x] Block new ads (You can use adblock if Slickiss is enabled)
- - [x] Bug fix: Kissanime display
- - [x] New Slickiss watch interface
- - [x] Update ban tips.
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
  - Feature: Automatique report for new ads and popups
+ - Firefox
+ - Userscript
+ - Compatibility with MALSyc, KissanimeEssentials, etc..
  - Create guide
