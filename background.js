@@ -26,6 +26,16 @@ var cmOp = {
 };
 chrome.contextMenus.create(cmOp);
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+
+    if (message.type == 'logout') {
+        (async () => {
+            await new Promise(r => chrome.cookies.remove({ url: 'https://kissanime.ru', name: 'usernameK' }, r));
+            await new Promise(r => chrome.cookies.remove({ url: 'https://kissanime.ru', name: 'passwordK' }, r));
+            sendResponse();
+        })();
+        return true;
+    }
+
     if (message.type === 'open_url')
         chrome.tabs.create({
             url: chrome.extension.getURL(message.data)

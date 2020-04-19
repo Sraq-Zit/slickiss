@@ -14,17 +14,17 @@ class Slickiss {
     };
     static get hrefPatterns() {
         return {
-            [Slickiss.cts.HOME]: /(https?:\/\/)?kissanime\.ru\/?(#.*)?$/g,
-            [Slickiss.cts.ANIME]: /(https?:\/\/)?kissanime\.ru\/Anime\/[^/]+?\/?(#.*)?$/g,
-            [Slickiss.cts.EPISODE]: /(https?:\/\/)?kissanime\.ru\/Anime\/[^/]+?\/[^/]+?\/?(#.*)?$/g,
-            [Slickiss.cts.CAPTCHA]: /(https?:\/\/)?kissanime\.ru\/Special\/AreYouHuman.*/g,
-            [Slickiss.cts.LISTING]: /(https?:\/\/)?kissanime\.ru\/(AnimeList.*|.+LatestUpdate)(#.*)?/g,
-            [Slickiss.cts.BOOKMARKS]: /.+?BookmarkList\/?(#.*)?$/g,
-            [Slickiss.cts.BANNED]: /(https?:\/\/)?kissanime\.ru\/ToYou\/Banned\/?$/g,
+            [S.cts.HOME]: /(https?:\/\/)?kissanime\.ru\/?(#.*)?$/g,
+            [S.cts.ANIME]: /(https?:\/\/)?kissanime\.ru\/Anime\/[^/]+?\/?(#.*)?$/g,
+            [S.cts.EPISODE]: /(https?:\/\/)?kissanime\.ru\/Anime\/[^/]+?\/[^/]+?\/?(#.*)?$/g,
+            [S.cts.CAPTCHA]: /(https?:\/\/)?kissanime\.ru\/Special\/AreYouHuman.*/g,
+            [S.cts.LISTING]: /(https?:\/\/)?kissanime\.ru\/(AnimeList.*|.+LatestUpdate)(#.*)?/g,
+            [S.cts.BOOKMARKS]: /.+?BookmarkList\/?(#.*)?$/g,
+            [S.cts.BANNED]: /(https?:\/\/)?kissanime\.ru\/ToYou\/Banned\/?$/g,
         };
     };
     constructor(href) {
-        this.href = Slickiss.absolute(typeof href == 'string' ? href : location.href);
+        this.href = S.absolute(typeof href == 'string' ? href : location.href);
         this.base = typeof href == 'undefined';
         if (this.isBase()) {
             if ($("body").html().includes("One more step")) {
@@ -37,30 +37,35 @@ class Slickiss {
                 throw new Error("Cloudflare");
             }
             switch (this.getContext()) {
-                case Slickiss.cts.BANNED:
+                case S.cts.BANNED:
                     let bar;
                     $('.bigBarContainer').after(bar = $('.bigBarContainer').clone());
-                    bar.find('.barTitle').html('Slickiss\'s Magical Tips');
+                    bar.find('.barTitle').html('Slickiss');
                     bar.find('.barContent')
-                        .html(
-                            `In general I don't allow Kissanime to report ban to the server but if it
-                            happened, probably because they changed something so kindly let me know
-                            through review or email: kingofmestry@gmail.com<br>
-                            - To undo the ban just restart your router to get a new IP`
-                        );
+                        .html(`In general Slickiss doesn't allow Kissanime to ban
+                            but if it happened, probably because something was changed<br>
+                            <strike>- To undo the ban just restart your router to get a new IP</strike>
+                            <br>`)
+                        .append($('<a/>', { href: '#', text: 'Logout' }).on('click', async e => {
+                            e.preventDefault();
+                            $(e.currentTarget).text('Please wait..').css('cursor', 'wait').off('click');
+                            await new Promise(r => chrome.runtime.sendMessage(undefined, { type: 'logout' }, {}, r));
+                            $(e.currentTarget).text('Reloading..');
+                            location.href = '/';
+                        }));
                     break;
-                case Slickiss.cts.EPISODE:
-                    if (Slickiss.parseUrl(location.href).server == 'default')
+                case S.cts.EPISODE:
+                    if (S.parseUrl(location.href).server == 'default')
                         return location.href = $('#selectServer').val();
                     new Episode;
                     break;
-                case Slickiss.cts.ANIME:
+                case S.cts.ANIME:
                     new Anime;
                     break;
-                case Slickiss.cts.BOOKMARKS: break;
-                case Slickiss.cts.HOME:
+                case S.cts.BOOKMARKS: break;
+                case S.cts.HOME:
                     $('a[href*=Episode-001].textDark').prev('a').addClass('new');
-                case Slickiss.cts.LISTING:
+                case S.cts.LISTING:
                     $('a[href*=Episode-001]').parents('tr').find('a').addClass('new')
 
                 default:
@@ -80,7 +85,7 @@ class Slickiss {
                     });
                     $(document).on('ready', Bookmark.getBookmarks(true).then(
                         json => $("a[href*='Anime/']").each((i, a) => {
-                            const info = Slickiss.parseUrl(a.href);
+                            const info = S.parseUrl(a.href);
                             if (info && json[info.name])
                                 $(a).addClass(json[info.name].watched ? 'bookmarked_seen' : 'bookmarked');
                         })
@@ -94,15 +99,15 @@ class Slickiss {
 
     setup() {
         this.setHandlers();
-        $(".slickExtra").remove();
+        $("html > .slickExtra").remove();
     }
 
     setHandlers() {
         $(document).on('mouseenter mouseleave', 'a', e => {
-            if (this.isContext(Slickiss.cts.EPISODE)) return;
+            if (this.isContext(S.cts.EPISODE)) return;
             const el = e.currentTarget;
-            const animeInfo = Slickiss.parseUrl(el.href, Slickiss.cts.ANIME) || Slickiss.parseUrl(el.href, Slickiss.cts.EPISODE);
-            const locInfo = Slickiss.parseUrl(location.href);
+            const animeInfo = S.parseUrl(el.href, S.cts.ANIME) || S.parseUrl(el.href, S.cts.EPISODE);
+            const locInfo = S.parseUrl(location.href);
 
             if (!animeInfo) return Tooltip.hide();
             if (locInfo && locInfo.name == animeInfo.name) return Tooltip.hide();
@@ -116,13 +121,13 @@ class Slickiss {
         $(document).on('click', 'a:not(a[href="#"])', async e => {
             const el = e.currentTarget;
             if (settings.defaultserver != "default") {
-                let info = Slickiss.parseUrl(el.href, Slickiss.cts.EPISODE);
+                let info = S.parseUrl(el.href, S.cts.EPISODE);
                 if (info && info.server != settings.defaultserver && el.href != location.href + '#')
                     el.href = info.stripped + "&s=" + settings.defaultserver;
             }
 
             let data;
-            if (e.shiftKey && (data = Slickiss.parseUrl(el.href)) && data.anime) {
+            if (e.shiftKey && (data = S.parseUrl(el.href)) && data.anime) {
                 e.preventDefault();
                 const batch = await Chrome.get('batchQueue');
                 if (data.anime in batch)
@@ -142,30 +147,30 @@ class Slickiss {
 
 
     isBase = () => this.base;
-    isContext = ctx => typeof ctx == 'number' && Slickiss.hrefPatterns[ctx].test(this.href);
+    isContext = ctx => typeof ctx == 'number' && S.hrefPatterns[ctx].test(this.href);
 
     static absolute = url => $('<a/>', { href: url })[0].href;
     static stripEpUrl = url => url.replace(/(&|\?)s=[^&]*/g, '$1').replace(/(\?|&)&/g, '$1').replace(/&$/g, '');
     static isContext = (href, ctx) => new Slickiss(href).isContext(ctx);
     static getContext = href => new Slickiss(href).getContext();
     static setServer = (url, server) => {
-        const info = this.parseUrl(url, Slickiss.cts.EPISODE);
+        const info = this.parseUrl(url, S.cts.EPISODE);
         return info && info.stripped + `&s=${server}`;
     }
     static parseUrl(url, ctx) {
         url = url.replace(/#.*$/g, '');
         if (!ctx) ctx = this.getContext(url);
-        if (!Slickiss.isContext(url, ctx)) return null;
+        if (!S.isContext(url, ctx)) return null;
         const anime = /.+?\/Anime\/.+?(\/|$|#)/g.exec(url);
         const name = /.+?\/Anime\/(.+?)(\/|$|#)/g.exec(url);
         switch (ctx) {
-            case Slickiss.cts.ANIME:
+            case S.cts.ANIME:
                 return {
                     ctx: ctx,
                     anime: anime && anime[0],
                     name: name && name[1]
                 };
-            case Slickiss.cts.EPISODE:
+            case S.cts.EPISODE:
                 const server = /(\?|&)s=(.+?)(&|$|#)/g.exec(url);
                 const id = /(\?|&)id=(.+?)(&|$|#)/g.exec(url);
                 return {
@@ -174,7 +179,7 @@ class Slickiss {
                     name: name && name[1],
                     server: server && server[2],
                     id: id && id[2],
-                    stripped: Slickiss.stripEpUrl(url)
+                    stripped: S.stripEpUrl(url)
                 };
 
             default:
@@ -183,32 +188,27 @@ class Slickiss {
     }
 
     getContext() {
-        for (const c in Slickiss.cts)
-            if (this.isContext(Slickiss.cts[c]))
-                return Slickiss.cts[c];
+        for (const c in S.cts)
+            if (this.isContext(S.cts[c]))
+                return S.cts[c];
 
         return null;
     }
 
 }
+
+const S = Slickiss;
+
 if (location.protocol != 'chrome-extension:') {
     $(document).on('ready', async e => { new Slickiss; });
 
 
-    if (!Slickiss.isContext(location.href, Slickiss.cts.CAPTCHA))
-        $(document.documentElement).append([
-            $('<style/>', { class: 'slickExtra', text: 'body{display:none;}' }),
-            $("<img/>", {
-                id: 'pageLoading',
-                src: chrome.extension.getURL("imgs/mobchara_3.png"),
-                class: 'slickExtra slickFloating'
-            }),
-            $('<h1/>', { class: 'bigChar slickExtra', text: 'Loading...' })
-        ]);
+    if (!S.isContext(location.href, S.cts.CAPTCHA))
+        $(document.documentElement).append(Assets.waitMsg());
 
     if (
         (location.host != 'kissanime.ru' && (location.hash != '#ignore' || (location.hash = ''))) ||
-        Slickiss.isContext(location.href, Slickiss.cts.EPISODE) && location.hash == '#player'
+        S.isContext(location.href, S.cts.EPISODE) && location.hash == '#player'
     ) {
         window.stop();
         Player.deploy();
