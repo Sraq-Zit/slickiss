@@ -1,4 +1,8 @@
 
+chrome.runtime.onInstalled.addListener(() => chrome.tabs.create({
+    url: chrome.extension.getURL('Updates.html')
+}))
+
 chrome.contextMenus.create({
     title: "Add anime batch to queue (Shift + Click)",
     contexts: ["link"],
