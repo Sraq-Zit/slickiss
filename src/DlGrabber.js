@@ -147,7 +147,8 @@ class DlGrabber {
              **/
             alpha: (url, srv = 'alpha') => new Promise(async resolve => {
                 let html = await c(url).solve();
-                html = html.replace(`$('#slcQualix').val()`, `'${$(html.noImgs).find('#slcQualix').val()}'`);
+                html = html.replace(`$('#slcQualix').val()`, `'${$(html.noImgs).find('#slcQualix').val()}'`)
+                .replace(`ovelWrap($(this).val()`, `ovelWrap('${$(html.noImgs).find('#slcQualix').val()}'`);
                 const match = /ovelWrap\(.+'\)/g.exec(html);
                 const css = await fetch("/Scripts/css.js").then(t => t.text()),
                     vr = await fetch("/Scripts/vr.js?v=1").then(t => t.text());
@@ -180,6 +181,8 @@ class DlGrabber {
             beta3: url => this.handlers.alpha(url, 'beta3'),
             /** @param {string} url */
             beta4: url => this.handlers.alpha(url, 'beta4'),
+            /** @param {string} url */
+            beta5: url => this.handlers.alpha(url, 'beta5'),
             /** @param {string} url */
             beta360p: url => this.handlers.alpha(url, 'beta360p'),
             /** @param {string} url */

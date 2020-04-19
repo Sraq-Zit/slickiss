@@ -29,6 +29,7 @@ let settings = {
     quality: "720p",
     'servers.mp4upload': true,
     'servers.nova': true,
+    'servers.beta': true,
     shortcuts: true,
     ttip: true,
     updates: ["0"]

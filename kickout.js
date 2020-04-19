@@ -20,7 +20,7 @@ chrome.webRequest.onBeforeRequest.addListener(
             if (details.initiator && details.initiator.includes(init))
                 return {
                     cancel: Boolean(
-                        !details.url.includes("Scripts/video-js/video.js") ||
+                        !details.url.includes("Scripts/video-js/video") ||
                         Number(settings.lite && settings['servers.beta'])
                     )
                 };

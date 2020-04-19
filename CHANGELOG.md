@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.3.1 (19/04/2020)
+
+- Bug fix: Disabling "solve captcha" doesn't work
+- Supports new beta (Beta5)
+
+---
+
 ## v2.3.0 (19/04/2020)
 
 - Feature: Multiple batch (Ability to download from different Anime at once)

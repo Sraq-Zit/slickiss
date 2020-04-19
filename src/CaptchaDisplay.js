@@ -1,10 +1,16 @@
 class CaptchaDisplay {
-    static init() {
+    static async init() {
+        if (!(await Chrome.get('captcha'))) {
+            $('html').show();
+            throw 'Solving captcha disabled';
+        }
         window.stop();
+        $('html').show();
         document.documentElement.innerHTML = `
             <link href="/Content/css/tpl_style.css?v=7" rel="stylesheet" type="text/css">
             <body></body>
         `;
+        document.title = 'I\'m not a human I\'m a robot :D'
         const size = 200;
         const css = { height: size, width: size };
         this.log = $('<div/>', {
@@ -18,7 +24,7 @@ class CaptchaDisplay {
         this.img1 = $('<img/>', { src: chrome.extension.getURL('/imgs/angry-loli.png'), css: css });
         this.img2 = $('<img/>', { src: chrome.extension.getURL('/imgs/angry-loli.png'), css: css });
         css.left = '50%';
-        css.transform= 'translateX(-50%)';
+        css.transform = 'translateX(-50%)';
         css.position = 'absolute';
         this.num1 = $('<img/>', { css: css });
         this.num2 = $('<img/>', { css: css });
@@ -98,7 +104,10 @@ class CaptchaDisplay {
     }
 
 }
-if (location.href.includes('kissanime.ru/Special/AreYouHuman')) {
-    CaptchaDisplay.init();
-    CaptchaDisplay.solve();
+$('html').hide();
+if (location.href.includes('kissanime.ru/Special/AreYouHuman') && location.hash != '#nosolve') {
+    (async () => {
+        await CaptchaDisplay.init();
+        CaptchaDisplay.solve();
+    })();
 }
