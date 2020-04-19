@@ -129,7 +129,7 @@ class Slickiss {
             let data;
             if (e.shiftKey && (data = S.parseUrl(el.href)) && data.anime) {
                 e.preventDefault();
-                const batch = await Chrome.get('batchQueue');
+                const batch = (await Chrome.get('batchQueue')) || {};
                 if (data.anime in batch)
                     Assets.toast('Anime is already on the list');
                 else {

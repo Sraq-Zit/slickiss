@@ -13,7 +13,7 @@ class Bookmark {
             const listing = await this.getBookmarks();
             if (!listing) return listing;
             const data = {};
-            listing.find('.aAnime').each((i, a) => data[Slickiss.parseUrl(a.href).name] = {
+            listing.find('.aAnime').each((i, a) => data[S.parseUrl(a.href).name] = {
                 name: $(a).text().trim(),
                 url: a.href,
                 watched: $(a).parent().parent().find('a[style*=inline]')[0].className == 'aRead'
@@ -67,22 +67,22 @@ class Bookmark {
             for (var i in data[key])
                 listing.append(data[key][i]);
 
-        var wrapper = $("<div/>", {
-            class: 'listingWr',
-            html: `<img src='${chrome.extension.getURL("imgs/Notifications.png")}' width=50>`
-        }).append(listing);
+        // var wrapper = $("<div/>", {
+        //     class: 'listingWr',
+        //     html: `<img src='${chrome.extension.getURL("imgs/Notifications.png")}' width=50>`
+        // }).append(listing);
 
-        listing.wrap("<div class='listing'></div>");
-        listing.on("mouseenter", "td", function () {
-            if ($(this).attr("data-title"))
-                $(".ttip").css("opacity", ".8")
-                    .html($(this).attr("data-title"));
+        // listing.wrap("<div class='listing'></div>");
+        // listing.on("mouseenter", "td", function () {
+        //     if ($(this).attr("data-title"))
+        //         $(".ttip").css("opacity", ".8")
+        //             .html($(this).attr("data-title"));
 
-        }).on("mouseleave", "td", function () {
-            $(".ttip").css("opacity", "");
-        });
+        // }).on("mouseleave", "td", function () {
+        //     $(".ttip").css("opacity", "");
+        // });
 
-        return wrapper;
+        return listing;
     }
 
     static async getAnimeID(anime) {
@@ -92,7 +92,7 @@ class Bookmark {
             if (typeof anime == 'number')
                 resolve(anime);
             else if (typeof anime == 'string')
-                fetch(Slickiss.parseUrl(anime).anime).then(t => t.text())
+                fetch(S.parseUrl(anime).anime).then(t => t.text())
                     .then(r => {
                         let id = /animeID=(\d+)/g.exec(r);
                         resolve(this.cache.animeIDs[anime] = (id && id[1]));

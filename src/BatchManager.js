@@ -23,7 +23,12 @@ class BatchManager {
         );
 
         chrome.storage.sync.onChanged.addListener(async v => {
-            if (v.batchQueue && Object.keys(v.batchQueue.oldValue).length < Object.keys(v.batchQueue.newValue).length)
+            if (v.batchQueue &&
+                (
+                    !v.batchQueue.oldValue ||
+                    Object.keys(v.batchQueue.oldValue).length < Object.keys(v.batchQueue.newValue).length
+                )
+            )
                 for (const url in await Chrome.get('batchQueue'))
                     if (!(md5(url) in this.data)) {
                         this.createCard(url, v.batchQueue.newValue[url].date);
@@ -36,7 +41,9 @@ class BatchManager {
         this.listings = this.listings || $('.listings');
         this.downloadBtn = this.downloadBtn || $('i.fa-download');
         this.queue = await Chrome.get('batchQueue');
-        if (!this.queue) return;
+        if (typeof this.queue == 'undefined')
+            (this.queue = {}) && await Chrome.set({ batchQueue: {} });
+
         for (const url in this.queue) this.createCard(url, this.queue[url].date);
         this.downloadBtn.on('click', () => {
             if (this.isDownloading)

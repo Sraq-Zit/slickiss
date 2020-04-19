@@ -137,6 +137,8 @@ class Player {
             downloadAborted: this.container.find(".controlIcon.svg.downloadAbortedIcon")
         };
 
+        MessageManager.attachListener(e => { if (e.data.type) $(document).trigger(e.data) });
+
         $(window).on('resize', e => this.onVidTimeupdate() || this.onVidProgress());
 
         $(document).on('mousemove', e => this.onmousemove(e));
@@ -565,8 +567,9 @@ class Player {
         await player.init();
         document.documentElement.innerHTML = '<body></body>';
         $('body').css('margin', 0).append(player.container);
+        $('html').attr('overflow', 'hidden');
         if (!(sName in DlGrabber.handlers))
-            return Assets.toast('Whoops! Server not supported by Slickiss.') && player;
+            return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance') && player;
         const r = data || await DlGrabber.handlers.auto(location.href);
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);

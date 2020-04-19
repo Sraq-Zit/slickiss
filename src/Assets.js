@@ -1,5 +1,20 @@
 class Assets {
 
+    /** Array of elements for wait display
+     * @returns {JQuery<HTMLElement>[]}
+     */
+    static waitMsg() {
+        return [
+            $('<style/>', { class: 'slickExtra', text: 'body{display:none;}' }),
+            $("<img/>", {
+                id: 'pageLoading',
+                src: chrome.extension.getURL("imgs/mobchara_3.png"),
+                class: 'slickExtra slickFloating'
+            }),
+            $('<h1/>', { class: 'bigChar slickExtra text-light', text: 'Loading...' })
+        ]
+    }
+
     /** Element presenting an area over the page to show desired notice
      * @returns {JQuery<HTMLDivElement>}
      */

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="fontawesome.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+        body {
+            background-color: #161616;
+        }
+
+        .container .h1,
+        .container .h2,
+        .container .h3,
+        .container .h4,
+        .container .h5,
+        .container .h6,
+        .container h1,
+        .container h2,
+        .container h3,
+        .container h4,
+        .container h5,
+        .container h6 {
+            margin-bottom: .5rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        iframe[src*='disqusservice.com'] {
+            display: none !important;
+        }
+
+        .animate {
+            transition: all .5s ease;
+        }
+
+        *:not(.disabled):hover>.tooltip {
+            display: block !important;
+            pointer-events: none;
+        }
+
+        .border-left,
+        .border-right,
+        .border-top,
+        .border-bottom {
+            border-color: #333333 !important;
+        }
+
+        .help i {
+            width: 15px;
+        }
+
+        .cursor-pointer:not(.disabled) {
+            cursor: pointer;
+        }
+
+        code {
+            word-break: normal !important;
+            font-size: 1.1em;
+            color: #d5f406;
+        }
+
+        .sub,
+        table td {
+            color: rgb(167, 167, 167);
+        }
+
+        .bg-k {
+            background-color: #111111;
+        }
+
+
+        .anime {
+            direction: rtl;
+        }
+
+        .card {
+            direction: ltr;
+            cursor: pointer;
+            background-color: #111111;
+            border: 1px solid #333333;
+            transition: all .5s ease;
+        }
+
+        .new {
+            background-color: #263b28;
+            transition: background-color 3s ease;
+        }
+
+        .card+.card {
+            border-top: unset;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .anime>.card:not(:last-child) {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .avatar,
+        .avatar>img {
+            height: 3.125rem;
+            min-height: 3.125rem;
+            width: 3.125rem;
+            min-width: 3.125rem;
+        }
+
+        .avatar,
+        .avatar>img {
+            border-radius: 50%;
+        }
+
+
+
+        .listing th,
+        .listing a {
+            color: white;
+        }
+
+        .listing th {
+            font-size: .8rem;
+        }
+
+        .listing td,
+        .listing th:nth-child(1) {
+            padding: 10px;
+        }
+
+
+        .listing tr>td:nth-child(2) {
+            max-width: unset !important;
+            padding-left: unset;
+        }
+
+        /*
+        .listing tr {
+            border-bottom: 1px solid #333333;
+        }*/
+
+        .listing a {
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        input[type=checkbox] {
+            margin-right: 10px;
+        }
+
+        .card.selected {
+            background-color: #333333;
+        }
+
+        .listing {
+            margin-bottom: 30px;
+            font-size: .7em;
+        }
+
+        td span,
+        td input[type=text] {
+            font-weight: bold;
+            font-size: .7em;
+        }
+
+        td {
+            width: unset !important;
+        }
+
+        .listing tr:not(:first-child) {
+            background-color: #111111;
+        }
+
+        .listing tr:hover:not(:first-child) {
+            background-color: #1111118f;
+        }
+
+        .card~#onempty {
+            display: none;
+        }
+
+        .listing a.episodeVisited,
+        .listing a:visited {
+            color: gray;
+        }
+
+        #navbar-top-main {
+            border-bottom: 1px solid #333333;
+        }
+
+
+        .sample {
+            display: none;
+        }
+
+        .iconStyle {
+            font-size: 1.6em;
+        }
+    </style>
+
+
+</head>
+
+<body class="overflow-hidden" style='font-family: "Nunito", sans-serif;'>
+
+    <!-- Header -->
+    <header class="header header-transparent">
+        <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm text-light" style="height: 13vh;">
+            <div class="mx-3 px-0 h-100" style="border-left: solid 20px #28a745;">
+                <div class="navbar-nav align-items-center h-100" style="font-size: 1.5rem;">
+                    <div class="row w-100 h-100">
+                        <div class="col h-100 d-flex align-items-center h1 pl-3">
+                            What's new !
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End header -->
+
+    <div class="container text-light pt-4">
+        <div class="h3">New player interface</div>
+        <hr class="border border-dark">
+        <ul>
+            <li>Better design</li>
+            <li>Better user experience</li>
+            <li>Comments are now available to see</li>
+            <li>Hotkeys outside Slickiss are not interfered</li>
+            <li>Server links made ready to use without reloading the page</li>
+            <li>Hover over <i class="fa fa-info-circle text-info"></i> for help</li>
+        </ul>
+        <div class="h3 mt-5">Multiple batch</div>
+        <hr class="border border-dark">
+        This gives you the ability to pile up a set of Anime and grab all or selected download links. <br>
+        It can be useful when trying to download all new episodes of the week too ! <br>
+        Put mouse over a link to an Anime (or episode of it) hold <code class="p-1 bg-light text-dark">Shift</code> and
+        click, that would be added to your list<br><br>
+        <a href="https://kissanime.ru/#batch" target="slickiss_batch_manager" class="h3 text-success">
+            Check it out !
+        </a>
+    </div>
+
+</body>
+
+</html>

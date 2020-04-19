@@ -7,12 +7,12 @@ class DlGrabber {
     }
 
     async grab() {
-        if (!Slickiss.isContext(this.url, Slickiss.cts.EPISODE)) {
+        if (!S.isContext(this.url, S.cts.EPISODE)) {
             console.warn(this.url, `The url provided is not for an episode`);
             return null;
         }
         this.onprogress(DlGrabber.progress.RETRIEVE);
-        this.doc = $(await c(Slickiss.stripEpUrl(this.url)).solve());
+        this.doc = $(await c(S.stripEpUrl(this.url)).solve());
         this.getServers();
 
         this.onprogress(DlGrabber.progress.OPEN);
@@ -36,6 +36,7 @@ class DlGrabber {
                 c(this.servers[server]).solve().then(html => {
                     this.onprogress(DlGrabber.progress.RESPONSE, { server: server });
                     this.urls[server] = DlGrabber.extractMovieIframe(html);
+                    this.urls[server] = this.urls[server] || (this.servers[server] + '#player');
                     if (Object.keys(this.urls).length == Object.keys(this.servers).length)
                         resolve();
                 });
@@ -67,9 +68,9 @@ class DlGrabber {
     }
 
     getServers() {
-        this.servers = {};
+    this.servers = {};
         this.doc.find('#selectServer > option').each((i, el) => {
-            const data = Slickiss.parseUrl(el.value);
+            const data = S.parseUrl(el.value);
             if ($(el).is(':selected')) this.default = data.server;
             this.servers[data.server] = el.value;
         });

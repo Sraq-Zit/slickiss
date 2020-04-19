@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.3.0 (19/04/2020)
+
+- Feature: Multiple batch (Ability to download from different Anime at once)
+- Feature: Preload servers links 
+- Enhancement: New player interface
+- Bug fix: Slickiss display logic
+- New ad blocks
+- Update ban tips
+
+---
+
 ## v2.0.4 (05/04/2020)
 
 - Block new ad and popups

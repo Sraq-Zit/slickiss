@@ -1,26 +1,16 @@
 class Episode {
-    isLight = () => settings.lite || !settings['servers.beta'];
+    isLight = () => settings.lite &&
+        (!S.parseUrl(location.href).server.includes('beta') || settings['servers.beta']);
 
     constructor() {
         this.requests = new Set([location.href]);
-        this.tasks = [];
-        this.anime = {
-            episodes: {
-                [Slickiss.stripEpUrl(location.href)]: {
-                    contents: $('html').clone(),
-                    url: location.href
-                }
-            }
-        };
-
         this.backup();
 
         if ($("#btnBookmarkManager").length) $("#btnBookmarkManager")[0].click();
 
         if (this.isLight()) {
-            this.lightenInterface();
-            this.loadUnwatchedAnimeList();
-            this.createDummies();
+            this.load().then(Episode.createDummies);
+            // this.lightenInterface();
 
         } else {
             $('iframe[id*=adsIfrme]').remove();
@@ -51,193 +41,198 @@ class Episode {
 
     }
 
-    lightenInterface() {
 
-        this.bookmark = $("#divBookmark").hide();
-        let index1 = $("#selectEpisode").attr('onchange', 'window.location = this.value').parent().clone(),
-            index21 = $("#btnPrevious").parent().clone(),
-            index22 = $("#btnNext").parent().clone(),
-            controls = $("#selectServer").parent(),
-            disqus_thread = $("#disqus_thread").clone();
+    /** Load components for the player */
+    async load() {
+        /** Info of the curent Anime */
+        const iframe = $('#divContentVideo iframe, #centerDivVideo iframe');
+        const next = $('#btnNext').parent().attr('href');
+        const prev = $('#btnPrevious').parent().attr('href');
+        const title = document.title.split(' - ')[0];
+        this.src = iframe.length ? iframe[0].src : `${location.href}#player`;
+        $('#selectServer>option')
+            .toArray()
+            .map(el => this.servers[S.parseUrl(el.value).server] = { url: el.value, name: $(el).text().trim() });
+        $('body').empty().append(Assets.waitMsg().slice(1));
+        Episode.createDummies();
+        this.animeData = await Anime.getAnimeData(location.href);
+        document.documentElement.innerHTML = await Assets.loadAssetFromFile('player_ui.html');
+        document.title = title;
+        this.loadUnwatchedAnimeList();
+        $('#episodes').append(this.listing = this.animeData.listing);
+        $('.bigChar').attr('href', this.animeData.url).text(this.animeData.name);
+        new Anime;
+        this.listing.find('tr > td:first-child').attr('title', 'Click to prepare this episode while you are watching the current one');
+        this.listing.find('a').parent().on('click', e => {
+            if ($(e.target).is('a')) return;
 
-        this.divContent.find('#divVideo').css('width', '').replaceWith(this.divContent.find("#divMyVideo"));
+            const a = $(e.currentTarget).children('a').addClass('episodeVisited')[0];
+            this.sendEpisodeRequest(S.setServer(a.href, settings.defaultserver));
+        });
+        this.listing.addClass('w-100');
+        this.listing.find('a').each((i, el) => $(el).text($(el).text().replace(this.animeData.name, '')));
+        this.listing.find('tr > th').eq(1).attr('width', '30%');
+        this.listing.find('tr > th:first-child')
+            .attr('width', '70%')
+            .attr('title', 'Click to prepare all episodes')
+            .on('click', e => $(e.currentTarget).addClass('done') && this.listing.find('td').click());
+        this.iframe = $('iframe#player').attr('src', this.src);
+        this.nextBtn = $('#next').data('url', next || '').addClass(next ? '' : 'disabled');
+        this.prevBtn = $('#prev').data('url', prev || '').addClass(prev ? '' : 'disabled');
+        this.epStatus = $('#status').text(document.title.replace(this.animeData.name, ''));
+        this.srvContainer = $('#servers');
+        $('body').append(`
+            <script>
+                var disqus_shortname = 'kissanime';
+                var disqus_url = '${S.parseUrl(location.href).stripped}';
 
-        $("#formSearch > *:not(p, #result_box)").remove();
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            </script>
+        `)
+        this.markEpisode(location.href, 'ready', false);
+        this.update();
+        this.srvContainer.on('click', 'span:not(.disabled)', e => {
+            const server = $(e.currentTarget);
+            const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
+            const activatedEl = $('.' + activated.replace(/ /g, '.'));
+            activatedEl.attr('class', server.attr('class'));
+            if (server.hasClass('preloaded')) {
+                this.iframe.attr('src', server.data('iframe_url'));
+                window.history.pushState({}, "", server.data('url'));
+            } else
+                location.href = server.data('url');
 
-        $("#search").css("width", "100%").wrap('<div class="wrapper2"></div>');
-        $("#search").find("#keyword").css("width", "60%");
-
-        var search = $(".wrapper2").css({
-            position: 'absolute',
-            right: '2%',
-            top: '0',
-            'text-align': 'left',
-            'max-height': '535px',
-            width: '25%'
+            server.attr('class', activated);
+        });
+        this.nextBtn.add(this.prevBtn).on('click', e => {
+            $(`.listing a[href*="id=${S.parseUrl($(e.currentTarget).data('url')).id}"]`)[0].click();
         });
 
-        $("html").append(this.bookmark);
-        let nav = [index21, index22];
-        let navIds = ["btnPrevious", "btnNext"];
-        // fill missing navigation in case of extremities
-        for (const i in nav)
-            if (!nav[i].length)
-                nav[i] = $('<div/>', {
-                    html: `<div id='${navIds[i]}'></div>`
-                }).hide();
-
-        index1.append(nav)
-            .removeAttr('style')
-            .css('text-align', 'center');
-
-        if (!this.divContent.find('iframe').length) {
-            this.divContent.find('#divMyVideo').html(
-                `<iframe id="my_video_1" style="width: 854px; height: 552px; border: 0px;"
-                    src="${location.href}#player"
-                    allowfullscreen="true" webkitallowfullscreen="true" scrolling="no" mozallowfullscreen="true">
-                </iframe>`
-            );
-        }
-        let vid = this.divContent.css({
-            'display': '',
-            'width': '70%',
-            'height': 'calc(97% - 100px)',
-            'text-align': 'center',
-            'margin-bottom': '70px'
-        }).prepend([index1, controls]);
-
-        $("html").append(vid);
-
-        $("body").html("")
-            .css('position', 'relative')
-            .append([
-                vid,
-                $("<a/>", {
-                    class: 'bigChar home',
-                    href: "//" + location.host,
-                    style: 'margin-right: 50px;',
-                    text: 'Home'
-                })
-            ]).prepend(this.bookmark);
-
-        this.iframe = this.divContent.find("iframe");
-        this.iframe.css({
-            width: '100%',
-            height: '100%',
-            'text-align': 'center'
-        }).attr('src');
-
-        $("#switch").remove();
-
-        $(document).ready(() => {
-            if ($("#selectEpisode").length === 0)
-                this.divContent.wrap('<div class="extra-wrapper"></div>');
-            $(".extra-wrapper").prepend(index1);
+        $(window).on('popstate', () => $(`.listing a[href*="id=${S.parseUrl(location.href).id}"]`).click());
+        $(document).on(
+            'click',
+            e => $('.setting,.setting>.fa-cog').is(e.target) ?
+                e.preventDefault() || $('#settings').toggle() : $('#settings').hide()
+        );
+        $('.fa-info-circle').on('mouseenter mouseleave', e => {
+            $('.help')[e.type == 'mouseenter' ? 'show' : 'hide']();
         });
 
-        $("*").on('click', e => $("#result_box").hide());
+        document.body.scrollIntoView();
+        if (!settings.guideSkip)
+            sleep(2000).then(() => $('.help').fadeOut() && Chrome.set({ guideSkip: true }));
+        else
+            $('.help').hide();
 
-        $("body").prepend(
-            $("<div />", {
-                'id': 'captchaContainer',
-                'style': 'overflow: hidden;'
-            }).height(0)
-        ).append(search);
+        this.listenToShortcuts();
+        this.prepareEpisodes();
 
-
-        $(".wrapper > .listing a").each(e => {
-            if (location.href.includes(e.currentTarget.href)) {
-                this.iframe[0].contentWindow.postMessage({
-                    title: $(e.currentTarget).text().trim()
-                }, "*");
-                return false;
-            }
-        });
-
-
-        this.loadAnimeData();
-        this.setUpShortcutsTunnel();
-        this.prepareUpNextPrevEp();
     }
+
+
+    /** Update components and attributes */
+    update() {
+        this.srvContainer.children(':not(.sample)').remove();
+        const sample = this.srvContainer.find('.sample').clone().removeClass('sample');
+        const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
+        const default_ = sample.attr('class');
+        const preloaded = 'preloaded ' + default_.replace('secondary', 'info');
+        for (const k in this.servers) {
+            let server = sample.clone()
+                .data('url', this.servers[k].url)
+                .text(this.servers[k].name);
+
+            if (k == S.parseUrl(location.href).server)
+                server.attr('class', activated);
+
+            this.srvContainer.append(server.addClass(k));
+        }
+
+        const id = S.parseUrl(location.href).id;
+        (id in this.cache ? new Promise(r => r(this.cache[id])) : grab(location.href)).then(dlg => {
+            this.cache[id] = dlg;
+            for (const k in dlg.urls) {
+                this.srvContainer.find('.' + k)
+                    .not('.disabled')
+                    .attr('class', preloaded)
+                    .data('iframe_url', dlg.urls[k]);
+                this.srvContainer.find('.disabled.' + k).addClass('preloaded');
+            }
+        })
+
+
+        for (const btn of [this.nextBtn, this.prevBtn])
+            if (btn.data('url') && btn.removeClass('disabled')) {
+                btn.find('.tooltip-inner').text(
+                    this.listing.find(`a[href*='id=${S.parseUrl(btn.data('url')).id}']`).text()
+                        .replace(this.animeData.name, '').trim()
+                );
+            } else btn.addClass('disabled');
+
+
+        this.markEpisode();
+    }
+
 
     async loadUnwatchedAnimeList() {
-        $(".ttip").remove();
         let list = await Bookmark.getOngoingUnwatchedList();
-        $("#divMyVideo").css("height", "100%")
-            .prepend("<div class='ttip'></div>")
-            .prepend(list);
+        if (list) {
+            if (!list.find('td').length)
+                list.html('No new episodes of on-going Anime in your list');
+            const ttip = $('<div/>', { class: 'col' })
+                .append($('<div/>', { class: 'h-50 row info_' }))
+                .append(
+                    $('<h4/>', { class: 'row d-flex align-items-start h-50 justify-content-center' })
+                );
+
+            list = $('<div/>', { class: 'text-light w-100 h-100 p-4 m-5 overflow-auto row bg-k border boder-dark shadow' })
+                .append(list.removeClass('listing').addClass('col-7 mr-4'))
+                .append(ttip);
+
+            list.find('td').on('mouseleave', e => list.find('.info_').html(''));
+            list.find('td').on(
+                'mouseenter',
+                e => list.find('.info_').html(
+                    $(e.currentTarget).data('title')
+                        .replace(/<a .+?>/g, '<div class="h3 text-info">')
+                        .replace(/<\/a>/g, '</div>')
+                )
+            );
+            list.find('a:not(th a)').addClass('text-success');
+        } else list = $('<div/>', { text: 'No bookmarks available.', class: 'display-4 text-muted' });
+        $('#bList').find('.wait').remove();
+        $('#bList').append(list);
     }
 
-    // load episodes links and anime page
-    loadAnimeData(i = 10, callback) {
-        if (typeof callback != 'function') callback = r => {
-            let doc = $(r.noImgs);
-            $('.home').after(doc.find('.bigChar'));
-            this.anime.obj = new Anime;
-            $('body').prepend(doc.find('.listing').css('width', '90%'));
-            this.listing = $('.listing');
-            this.listing.wrap('<div class="wrapper"></div>');
-            this.listing.find('tr > td:first-child').attr('title', 'Click to prepare this episode while you are watching the current one');
-            this.listing.find('a')
-                .each((i, el) => $(el).attr('href', el.href).parent().on('click', e => {
-                    const a = $(e.currentTarget).children('a')[0];
-                    this.sendEpisodeRequest(Slickiss.setServer(a.href, settings.defaultserver));
-                }));
-            this.listing.find('tr > th:first-child')
-                .attr('title', 'Click to prepare all episodes')
-                .on('click', e => {
-                    $(e.currentTarget).addClass('done');
-                    this.listing.find('td').click();
-                });
-            $('.wrapper').css({
-                position: 'absolute',
-                right: '0',
-                top: '50px',
-                'overflow-x': 'hidden',
-                'text-align': 'left',
-                'max-height': 'calc(97% - 100px)',
-                width: '29%'
-            });
-            this.runTasks();
-            parent.postMessage(location.href, "*");
-        };
-
-        $.ajax({
-            dataType: 'html',
-            type: 'get',
-            url: Slickiss.parseUrl(location.href).anime,
-            success: r => callback(r),
-            error: r => i > 0 ? this.loadAnimeData(--i) : $("body").append("<div style='color:red'>Could not load anime info</div>")
-        });
-    }
 
     // execute key actions outside the video through the iframe
-    setUpShortcutsTunnel() {
-        if (!$("video").length)
-            $(document).on("keypress keyup keydown", e => {
-                if ($("input").is(":focus"))
-                    return;
-                this.divContent.find('iframe')[0].contentWindow.focus();
-                this.divContent.find('iframe')[0].contentWindow.postMessage({
-                    type: e.type,
-                    which: e.which,
-                    ctrlKey: e.ctrlKey,
-                    shiftKey: e.shiftKey,
-                    altKey: e.altKey,
-                }, "*");
-            });
+    listenToShortcuts() {
+        $(document).on("keypress keyup keydown", e => {
+            if (e.originalEvent.code == "Escape") $('.closure').click();
+            // this.iframe[0].contentWindow.focus();
+            this.iframe[0].contentWindow.postMessage({
+                originalEvent: { code: e.originalEvent.code },
+                type: e.type,
+                which: e.which,
+                ctrlKey: e.ctrlKey,
+                shiftKey: e.shiftKey,
+                altKey: e.altKey,
+            }, "*");
+        });
 
-        MessageManager.attachListener(function (e) {
+        MessageManager.attachListener(e => {
             switch (e.data) {
                 case 'finished':
-                    if (!$("#btnNext").is(':visible') && $('.seenIcon:not(.seen)').length)
+                    if (this.nextBtn.is('.disabled'))
                         $('.seenIcon:not(.seen)').click();
                     break;
                 case 'prevEp':
-                    $("#btnPrevious:visible").click();
+                    this.prevBtn.not('.disabled').click();
                     break;
                 case 'nextEp':
-                    $("#btnNext:visible").click();
+                    this.nextBtn.not('.disabled').click();
                     break;
 
                 default:
@@ -248,97 +243,71 @@ class Episode {
     }
 
 
-    prepareUpNextPrevEp() {
+    prepareEpisodes() {
 
-        this.onReady(() => {
-            this.markEpisode();
-            this.requestPrevNextEpisode();
-        });
+        this.requestPrevNextEpisode();
 
-        $(document).on('click', 'a', e => {
-            let href = Slickiss.stripEpUrl(e.currentTarget.href);
-            if (href in this.anime.episodes) {
+        $(document).on('click', '.listing a', e => {
+            let id = S.parseUrl(e.currentTarget.href).id;
+            if (id in this.cache) {
                 e.preventDefault();
-                this.setuptQuickAccess(this.anime.episodes[href].url, this.anime.episodes[href].contents);
+                this.quickAccess(this.cache[id]);
                 this.requestPrevNextEpisode();
-                this.markEpisode();
-                $(el).off('click');
+                $(e.currentTarget).off('click');
             }
         });
     }
 
-    setuptQuickAccess(href) {
-        href = Slickiss.stripEpUrl(href);
-        let contents = $('<div/>').append(this.anime.episodes[href].contents.clone());
 
-        window.history.pushState({
-            "pageTitle": contents.find('title').text()
-        }, "", this.anime.episodes[href].url);
+    /** Apply quick navigation to the clicked item
+     * @param {DlGrabber} dlg Object containing data of the episode navigated
+     */
+    quickAccess(dlg) {
+        const server = S.parseUrl(location.href).server;
+        const next = dlg.doc.find('#btnNext').parent().attr('href');
+        const prev = dlg.doc.find('#btnPrevious').parent().attr('href');
 
+        this.nextBtn = $('#next').data('url', next || '').addClass(next ? '' : 'disabled');
+        this.prevBtn = $('#prev').data('url', prev || '').addClass(prev ? '' : 'disabled');
 
-        let ifrm = "#divMyVideo iframe",
-            selEp = "#selectEpisode",
-            selSv = "#selectServer",
-            prev = "#btnPrevious",
-            next = "#btnNext";
+        document.title = dlg.doc.filter('title').text().split('-')[0];
 
-        $(ifrm).attr("src", DlGrabber.extractMovieIframe(contents.html()));
-        $(selEp).replaceWith(contents.find(selEp));
-        $(selSv).replaceWith(contents.find(selSv));
+        this.epStatus.text(document.title.replace(this.animeData.name, ''));
 
-        for (const n of [prev, next])
-            if (!contents.find(n).length)
-                $(n).parent().hide()
-            else
-                $(n).parent().replaceWith(contents.find(n).parent());
+        this.iframe.attr('src', 'about:blank');
+        sleep(100).then(() => this.iframe.attr('src', dlg.urls[server]));
 
+        window.history.pushState({}, "", dlg.servers[server]);
+
+        this.update();
 
     }
 
     async sendEpisodeRequest(url) {
-        const surl = Slickiss.stripEpUrl(url);
-        if (!(surl in this.anime.episodes)) {
+        const id = S.parseUrl(url).id;
+        if (!(id in this.cache)) {
             if (url in this.requests) return;
             this.markEpisode(url, 'retrieving', 0);
-            this.requests[surl] = '';
-            this.anime.episodes[surl] = {
-                contents: $(await c(url).solve()),
-                url: url
-            };
+            this.requests[id] = '';
+            this.cache[id] = await grab(url);
         }
-        this.markEpisode(surl, 'ready', 0);
+        this.markEpisode(url, 'ready', 0);
     }
 
     requestPrevNextEpisode() {
-        if (settings.prepareNextPrev && window.self === window.top) {
-            for (const id of ["#btnPrevious", "#btnNext"]) {
-                if (!$(id).length || !$(id).parent().attr('href')) continue;
-                let ep = $(id).parent().attr('href').changeServer(settings.defaultserver);
-                this.sendEpisodeRequest(ep);
-            }
-
-        }
+        if (settings.prepareNextPrev && self === top)
+            for (const btn of [this.nextBtn, this.prevBtn])
+                this.sendEpisodeRequest(btn.data('url'));
     }
 
     markEpisode(url = location.href, marker = 'playing', unique = 1) {
         if (unique) $(`.${marker}`).removeClass(marker);
-        url = Slickiss.stripEpUrl(url);
-        let el = this.listing.find(`a[href^='${url}']`).parent('td');
+        const id = S.parseUrl(url).id;
+        let el = this.listing.find(`a[href*='id=${id}']`).parent('td');
         if (marker == 'playing') el[0] && el[0].scrollIntoViewIfNeeded();
         el.addClass(marker);
     }
 
-    // stack callbacks to run upon episodes load
-    onReady(task) {
-        if (typeof task == 'function')
-            this.tasks.push(task);
-    }
-
-    // run callbacks
-    runTasks() {
-        for (let task of this.tasks) task();
-        this.tasks = [];
-    }
 
     // recover deleted content caused by adblock
     backup() {
@@ -354,8 +323,9 @@ class Episode {
                 $("#divContentVideo, #divContentVideo").replaceWith(this.divContent = el);
         });
     }
+
     // dummies for player [alpha / beta]
-    createDummies() {
+    static createDummies() {
         $("body").append(`<div id='divFileName' class='dummy'></div>
                     <div id='centerDivVideo'></div>
                     <div id='divVideo'></div>
@@ -364,4 +334,51 @@ class Episode {
         for (var i in glxTsIds)
             $("body > .dummy").eq(0).append("<div id='glx-" + glxTsIds[i] + "-container'></div>");
     }
+
+
+    /** URL of the iframe containing the episode to play
+     * @type {string}
+     */
+    src
+
+    /** Iframe element of the player
+     * @type {JQuery<HTMLIFrameElement>}
+     */
+    iframe
+
+    /** Table elements of Anime episodes
+     * @type {JQuery<HTMLTableElement>}
+     */
+    listing
+
+    /** Button element links to the next episode
+     * @type {JQuery<HTMLDivElement>}
+     */
+    nextBtn
+
+    /** Button element links to the previous episode
+     * @type {JQuery<HTMLDivElement>}
+     */
+    prevBtn
+
+    /** Placeholder containing the name of the episode playing
+     * @type {JQuery<HTMLDivElement>}
+     */
+    epStatus
+
+    /** Available servers' urls
+     * @type {string[]}
+     */
+    servers = {}
+
+    /** Cache servers links
+     * @type {DlGrabber[]}
+     */
+    cache = {}
+
+    /** Container of the available servers' components
+     * @type {JQuery<HTMLDivElement>}
+     */
+    srvContainer
+
 }
