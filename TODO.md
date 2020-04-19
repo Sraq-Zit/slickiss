@@ -4,7 +4,7 @@
  - [x] Block new ads (You can use adblock if Slickiss is enabled)
  - [x] Bug fix: Kissanime display
  - [x] New Slickiss watch interface
- - [ ] Update ban tips. Kissanime is now banning wrt account rather than only the ip
+ - [x] Update ban tips.
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
  - Feature: Automatique report for new ads and popups
