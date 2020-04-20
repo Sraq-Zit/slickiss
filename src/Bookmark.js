@@ -1,11 +1,16 @@
+/** Bookmarks manager */
 class Bookmark {
+    /** Cache for anime IDs */
     static cache = {
         bookmarks: {},
         animeIDs: {}
     };
 
 
-
+    /** Retrieves bookmarks either as html element or structured to json
+     * @param {boolean} json If the return value is a json object
+     * @returns {Promise<{name: string; url: string; watched: boolean;}[]|JQuery<HTMLTableElement>>}
+     */
     static async getBookmarks(json) {
         const cached = this.cache.bookmarks.time && Date.now() - this.cache.bookmarks.time < 1000 * 60 * 5;
         if (json) {
@@ -34,9 +39,9 @@ class Bookmark {
         });
     }
 
-
-
-
+    /** Generate a list of bookmarked Anime with new episodes not yet watched
+     * @returns {Promise<JQuery<HTMLTableElement>>}
+     */
     static async getOngoingUnwatchedList() {
         let listing = await this.getBookmarks();
         let data = {};
@@ -67,24 +72,13 @@ class Bookmark {
             for (var i in data[key])
                 listing.append(data[key][i]);
 
-        // var wrapper = $("<div/>", {
-        //     class: 'listingWr',
-        //     html: `<img src='${chrome.extension.getURL("imgs/Notifications.png")}' width=50>`
-        // }).append(listing);
-
-        // listing.wrap("<div class='listing'></div>");
-        // listing.on("mouseenter", "td", function () {
-        //     if ($(this).attr("data-title"))
-        //         $(".ttip").css("opacity", ".8")
-        //             .html($(this).attr("data-title"));
-
-        // }).on("mouseleave", "td", function () {
-        //     $(".ttip").css("opacity", "");
-        // });
-
         return listing;
     }
 
+    /** Get Anime id through its page
+     * @param {string|number} anime Anime URL, or ID in which case it's returned
+     * @returns {Promise<number>}
+     */
     static async getAnimeID(anime) {
         return await new Promise(resolve => {
             if (anime in this.cache.animeIDs && this.cache.animeIDs[anime])
@@ -105,6 +99,9 @@ class Bookmark {
         });
     }
 
+    /** Get Anime info wrt the current account's bookmark list
+     * @param {string|number} anime Anime URL or ID
+     */
     static async getAnimeBookmarkInfo(anime) {
         let animeID = await this.getAnimeID(anime);
         let data = await fetch('/CheckBookmarkStatus', {
@@ -122,6 +119,14 @@ class Bookmark {
 
 
     // bookmarking
+    /** Bookmark / Unbookmark Anime opposed to its current status
+     * @param {string|number} anime Anime URL or ID
+     * @returns {{
+            success: boolean,
+            bookmarked?: boolean,
+            response: string
+        }}
+     */
     static async toggleBookmark(anime) {
         try {
             let info = await this.getAnimeBookmarkInfo(anime);
@@ -139,14 +144,27 @@ class Bookmark {
         }
     }
 
+    /** Bookmark Anime
+     * @param {string|number} anime Anime URL or ID
+     * @returns {string} Response of the request
+     */
     static async addBookmark(anime) {
         return await this.editBookmark(anime, 'add');
     }
 
+    /** Unbookmark Anime
+     * @param {string|number} anime Anime URL or ID
+     * @returns {string} Response of the request
+     */
     static async removeBookmark(anime) {
         return await this.editBookmark(anime, 'remove');
     }
 
+    /** Bookmark / Unbookmark Anime
+     * @param {string|number} anime Anime URL or ID
+     * @param {'add'|'remove'} action Wether to add or remove from bookmarks
+     * @returns {string} Response of the request
+     */
     static async editBookmark(anime, action) {
         let animeID = await this.getAnimeID(anime);
         if (!animeID) return 'You should be logged in to do this';
@@ -161,6 +179,14 @@ class Bookmark {
 
 
     // marking watched
+    /** Mark Anime watched / unwatched opposed to its current status
+     * @param {string|number} anime Anime URL or ID
+     * @returns {{
+            success: boolean,
+            watched?: boolean,
+            response: string
+        }}
+     */
     static async toggleWatched(anime) {
         try {
             let info = await this.getAnimeBookmarkInfo(anime);
@@ -182,6 +208,12 @@ class Bookmark {
         }
     }
 
+    
+    /** Mark Anime watched / Unwatched
+     * @param {string|number} bdid Anime bdid
+     * @param {boolean} watched Mark as watched if true, unwatched otherwise
+     * @returns {string} Response of the request
+     */
     static async setWatched(bdid, watched) {
         let response = await fetch(`/MarkBookmarkDetail`, {
             method: 'POST',
@@ -192,10 +224,18 @@ class Bookmark {
         return response;
     }
 
+    /** Mark Anime watched
+     * @param {string|number} bdid Anime bdid
+     * @returns {string} Response of the request
+     */
     static async markWatched(bdid) {
         return await this.setWatched(bdid, 1);
     }
 
+    /** Mark Anime unwatched
+     * @param {string|number} bdid Anime bdid
+     * @returns {string} Response of the request
+     */
     static async markUnwatched(bdid) {
         return await this.setWatched(bdid, 0);
     }
