@@ -1,4 +1,5 @@
 # TODO list
+ - [ ] Bug fix: Auto scroll to playing episode
  - [ ] Fix: Compatibility with browsers like Brave, Opera gx etc..
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
