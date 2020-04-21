@@ -119,6 +119,7 @@ class Bookmark {
 
 
     // bookmarking
+
     /** Bookmark / Unbookmark Anime opposed to its current status
      * @param {string|number} anime Anime URL or ID
      * @returns {{
@@ -175,6 +176,21 @@ class Bookmark {
         this.cache.bookmarks = {};
         return response;
     }
+
+    /** Change Anime category
+     * @param {string|number} anime Anime URL or ID
+     * @param {string} category Category name
+     * @returns {string} Response of the request
+     */
+    static async categorize(anime, category) {
+        const info = await Bookmark.getAnimeBookmarkInfo(anime);
+        return fetch("/ChangeBookmarkCategory", {
+            "headers": { "content-type": "application/x-www-form-urlencoded" },
+            "body": `bdid=${info.bdid}&category=${category}`,
+            "method": "POST"
+        }).then(t => t. text()).catch(e => e);
+    }
+
     // ^^^^^^^^^^^^ End bookmarking ^^^^^^^^^^
 
 
@@ -208,7 +224,7 @@ class Bookmark {
         }
     }
 
-    
+
     /** Mark Anime watched / Unwatched
      * @param {string|number} bdid Anime bdid
      * @param {boolean} watched Mark as watched if true, unwatched otherwise
