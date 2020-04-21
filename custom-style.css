@@ -98,8 +98,8 @@ input[type=checkbox]:checked::before {
     top: 0;
     bottom: 0;
     margin: auto;
-    height: fit-content;
-    width: fit-content;
+    height: 100%;
+    width: 80%;
 }
 
 .query {
@@ -248,6 +248,15 @@ textarea.decorated {
 #episodes>.listing tr>td:first-child.ready:before {
     cursor: unset;
     background-image: url(chrome-extension://__MSG_@@extension_id__/imgs/ready.gif);
+}
+
+#episodes>.listing tr>td:first-child.error:before {
+    background-image: unset;
+    color: red;
+    cursor: not-allowed;
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 900;
+    content: "";
 }
 
 #episodes>.listing tr>td:first-child.playing:before {
