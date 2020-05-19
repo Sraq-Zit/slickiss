@@ -92,7 +92,7 @@ class Episode {
             </script>
         `)
         this.markEpisode(location.href, 'ready', false);
-        this.update();
+        $('#bootstrap').on('load', _ => $('.slickExtra').remove() && this.update());
         this.srvContainer.on('click', 'span:not(.disabled)', e => {
             const server = $(e.currentTarget);
             const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
@@ -128,6 +128,7 @@ class Episode {
 
         this.listenToShortcuts();
         this.prepareEpisodes();
+        sleep(1000).then(_ => $('.slickExtra').remove());
 
     }
 
@@ -289,7 +290,14 @@ class Episode {
             if (url in this.requests) return;
             this.markEpisode(url, 'retrieving', 0);
             this.requests[id] = '';
-            this.cache[id] = await grab(url);
+            try { this.cache[id] = await grab(url); }
+            catch (e) {
+                console.error(e);
+                this.listing.find(`a[href*='id=${S.parseUrl(url).id}']`)
+                    .parent('td')
+                    .attr({ class: 'error', title: `Browsers like Brave, Opera gx, kiwi, etc.. prevent the extension from solving captcha.` });
+                return;
+            }
         }
         this.markEpisode(url, 'ready', 0);
     }
