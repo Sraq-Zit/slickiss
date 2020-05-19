@@ -95,7 +95,7 @@ class ImgProc {
 class Img {
     constructor(img) {
         this.loaded = typeof img == 'undefined';
-        this.jImg = $('<img/>', { src: img }).on('load', e => this.loaded = 1);
+        this.jImg = $('<img/>', { src: img, crossOrigin: 'anonymous' }).on('load', e => this.loaded = 1);
         this.img = this.jImg[0];
     }
 

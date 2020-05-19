@@ -100,7 +100,28 @@ class CaptchaDisplay {
                 default:
                     break;
             }
-        }).solve().then(html => location = reurl);
+        }).solve()
+            .then(html => location = reurl)
+            .catch(e => {
+                console.error(e);
+                if (e.stack.includes('canvas has been tainted by cross-origin data'))
+                    this.log.text(`Browsers like Brave, Opera gx, kiwi, etc..
+                                    prevent the extension from solving captcha. You can 
+                                    either disable restrictions on Kissanime (i,e. Disabled Brave shield)
+                                    or `)
+                        .append(
+                            $('<a/>', { href: '#', text: 'disable captcha solving' }).on('click', async e => {
+                                e.preventDefault();
+                                this.log.text('Please wait..');
+                                await Chrome.set({ captcha: false });
+                                this.log.text('Reloading..');
+                                location.reload();
+                            })
+                        )
+                        .css('color', 'orange');
+                else
+                    this.log.text('Error occured while trying to solve captcha. Try and reload');
+            });
     }
 
 }
