@@ -67,6 +67,9 @@ class BatchManager {
                 mgr.grabDownloads({
                     [DlGrabber.progress.DONE]: () => {
                         updater.text(s.replace('#', (++i).toString().padStart(2, 0)));
+                    },
+                    [DlGrabber.progress.ERROR]: () => {
+                        updater.text(s.replace('#', (++i).toString().padStart(2, 0)));
                     }
                 }, EpisodeListing.DEFAULT_MAX_ITEMS / Object.keys(this.data).length).then(async () => {
                     cbs.add(mgr.selectAll).prop('disabled', false);

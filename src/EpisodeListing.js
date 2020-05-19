@@ -227,12 +227,19 @@ class EpisodeListing {
             },
             [DlGrabber.progress.DONE]: (el, obj) => {
                 el.text(`done!`).removeClass('text-info text-success text-danger')
-                    .removeClass('text-info text-success text-danger')
                     .addClass('text-success');
                 count += .34;
                 this.loadingBar
                     .css('width', (100 * count / this.getCheckboxes.filter(':checked').length) + '%');
                 this.downloads[obj.url] = obj.downloads;
+            },
+            [DlGrabber.progress.ERROR]: (el) => {
+                el.text(`Some browsers won't let the extension solve the captcha. Please use chrome for this to work`)
+                    .removeClass('text-info text-success text-danger')
+                    .addClass('text-danger');
+                count += .64;
+                this.loadingBar
+                    .css('width', (100 * count / this.getCheckboxes.filter(':checked').length) + '%');
             }
         };
         let i = 0;

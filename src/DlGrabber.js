@@ -20,7 +20,11 @@ class DlGrabber {
 
         if (this.downloadUrls) {
             this.onprogress(DlGrabber.progress.DOWNLOAD);
-            await this.getDownloadUrls();
+            try { await this.getDownloadUrls(); } catch (error) {
+                this.onprogress(DlGrabber.progress.ERROR);
+                return this;
+            }
+
         }
 
 
@@ -68,7 +72,7 @@ class DlGrabber {
     }
 
     getServers() {
-    this.servers = {};
+        this.servers = {};
         this.doc.find('#selectServer > option').each((i, el) => {
             const data = S.parseUrl(el.value);
             if ($(el).is(':selected')) this.default = data.server;
@@ -84,7 +88,8 @@ class DlGrabber {
             RESPONSE: 2,
             DOWNLOAD: 3,
             FINISH: 4,
-            DONE: 5
+            DONE: 5,
+            ERROR: -1
         }
     }
 
@@ -148,7 +153,7 @@ class DlGrabber {
             alpha: (url, srv = 'alpha') => new Promise(async resolve => {
                 let html = await c(url).solve();
                 html = html.replace(`$('#slcQualix').val()`, `'${$(html.noImgs).find('#slcQualix').val()}'`)
-                .replace(`ovelWrap($(this).val()`, `ovelWrap('${$(html.noImgs).find('#slcQualix').val()}'`);
+                    .replace(`ovelWrap($(this).val()`, `ovelWrap('${$(html.noImgs).find('#slcQualix').val()}'`);
                 const match = /ovelWrap\(.+'\)/g.exec(html);
                 const css = await fetch("/Scripts/css.js").then(t => t.text()),
                     vr = await fetch("/Scripts/vr.js?v=1").then(t => t.text());
