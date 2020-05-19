@@ -1,6 +1,7 @@
 # TODO list
  - [x] Bug fix: Auto scroll to playing episode
- - [ ] Fix: Compatibility with browsers like Brave, Opera gx etc..
+ - [x] Bug fix: Compatibility with chromium browsers
+ - [ ] Bug fix: Grabbing links in Mp4upload and Hydrax (uncheck Mp4upload in Settings > Player)
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
