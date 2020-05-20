@@ -2,7 +2,7 @@
  - [x] Bug fix: Auto scroll to playing episode
  - [x] Bug fix: Compatibility with chromium browsers
  - [x] Bug fix: Grabbing links in Beta6, Mp4upload and Hydrax (uncheck Mp4upload in Settings > Player)
- - [ ] Bug fix: Instantly switching back to the first server
+ - [x] Bug fix: Instantly switching back to the first server
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
