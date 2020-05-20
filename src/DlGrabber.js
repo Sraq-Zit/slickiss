@@ -100,6 +100,7 @@ class DlGrabber {
             hydrax: url => this.grabs('https://ping.idocdn.com/', 'hydrax', r => {
                 const id = /v=(.+?)(#|&|$)/g.exec(url)[1];
                 r = JSON.parse(r);
+                r.url = atob(r.url.split("").reverse().join(""))
                 r.url && fetch('https://' + r.url + '/', {
                     "method": "POST",
                     "credentials": "same-origin",
@@ -113,15 +114,16 @@ class DlGrabber {
             }, 'post', { slug: /v=(.+?)(#|&|$)/g.exec(url)[1] }),
             /** @param {string} url */
             mp4upload: url => this.grabs(url, 'mp4upload', r => {
-                const output = eval(/eval(\(.*\))/.exec(r)[1]);
-                let res, src;
-                if (res = /setup\(({.*?(\(.*?\))*.*?})\)/.exec(output)) {
-                    const setup = JSON.parse(res[1].replace(/'/g, '"').replace(/([,{]"[^"]+?":)([^[{"]+?)([,\]}])/g, '$1"$2"$3'));
-                    src = setup.file;
-                } else src = (res = /player\.src\("(.+?)"\)/.exec(output)) && res[1];
+                let output = /eval\((.*?return .+?\})(\(.+)\)/.exec(r);
+                output = eval(`(${output[1]})${output[2]}`);
+                output = eval(
+                    'output=' + /player\.source=(\{.+?\});/
+                        .exec(output)[1]
+                        .replace(/,(\]|\})/g, '$1')
+                );
                 return {
-                    src: src,
-                    option: { poster: (res = /player\.poster\("(.+?)"\)/.exec(output)) && res[1] }
+                    src: output.sources[0].src,
+                    option: { poster: output.poster }
                 };
             }),
             /** @param {string} url */
@@ -171,7 +173,7 @@ class DlGrabber {
                     response: 'Failed to find video source'
                 }); else {
                     match[0] = eval(match[0]);
-                    if (!match[0].indexOf('https://')) match[0] = $('<a/>', { href: match })[0].outerHTML;
+                    if (!match[0].indexOf('https://')) match[0] = $('<a/>', { href: match[0] })[0].outerHTML;
                     let a = $("<div>" + match[0] + "</div>").find("a");
                     resolve({
                         server: srv,
