@@ -31,7 +31,7 @@ class Notifier {
 
     static async getUpdates() {
         const url = 'https://raw.githubusercontent.com/Sraq-Zit/slickiss/master/manifest.json';
-        const manifest = JSON.parse(await fetch(url).then(t => t.text()));
+        const manifest = JSON.parse(await req(url));
         let updates = await Chrome.get('newUpdates');
         if (manifest.version == chrome.runtime.getManifest().version) return null;
         if (updates && updates.manifest.version != chrome.runtime.getManifest().version) return updates;
@@ -45,7 +45,7 @@ class Notifier {
         const url = 'https://raw.githubusercontent.com/Sraq-Zit/slickiss/master/CHANGELOG.md';
         let notes = {};
         try {
-            let raw = await fetch(url).then(t => t.text());
+            let raw = await req(url);
             raw = /## (.+)/s.exec(raw)[1];
             for (let note of raw.split('\n## ')) {
                 const ver = /\d(\.\d+)+/g.exec(note)[0];
@@ -70,7 +70,7 @@ class Notifier {
                 todo: [],
                 done: []
             }
-            let raw = await fetch(url).then(t => t.text());
+            let raw = await req(url);
             const pattern = / - \[([ x])\](.+)/g;
             let r;
             while (r = pattern.exec(raw))

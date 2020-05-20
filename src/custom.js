@@ -33,6 +33,20 @@ $.ajax = function (data) {
     }
 };
 
+/** Minified async version of ajax
+ * @param {string | JQuery.AjaxSettings} option URL or object of ajax settings
+ * @returns {Promise<string>}
+ */
+const req = async option => {
+    if (typeof option == 'string')
+        option = { url: option, dataType: "html" };
+
+    if (!option.type && !option.method) option.type = 'GET';
+
+    return new Promise((r, e) => $.ajax({ ...option, success: r, error: err => e(err) }));
+}
+
+
 /** Convert Date to ux display format
  * @param {Date} d Date to convert
  */
