@@ -1,6 +1,6 @@
 {
     "name": "Slickiss",
-    "version": "2.3.1",
+    "version": "2.3.3",
     "manifest_version": 2,
     "description": "Hides ads and Captcha in Kissanime and offers many other functionalities like notifications for Anime, quick download, and more",
     "browser_action": {

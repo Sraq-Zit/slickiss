@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.3.3
+- Bug fix: Grabbing links in Mp4upload and Hydrax
+- Bug fix: Auto scroll to playing episode
+- Bug fix: Instantly switching back to the first server
+- Bug fix: Auto scroll to playing episode
+- Updated contact in the settings
+- Inform captcha failure caused by some browsers restrictions
+
+---
+
 ## v2.3.1 (19/04/2020)
 
 - Bug fix: Disabling "solve captcha" doesn't work
@@ -39,7 +49,7 @@
 
 ## v2.0.0 (31/03/2020)
 
-- Replaced all the speghetti code with new code
+- Reorganized all the speghetti code 
 - Handled all servers available
 - Optimized captcha solving
 - Display an announcement of current tasks and/or upcoming updates
