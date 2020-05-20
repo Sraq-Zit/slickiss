@@ -167,7 +167,7 @@ textarea.decorated {
     position: fixed;
     bottom: 20%;
     left: 50%;
-    max-width: 80%;
+    max-width: 90%;
     width: fit-content;
     transform: translateX(-50%);
     color: #efefef;
