@@ -4,7 +4,6 @@
 - Bug fix: Grabbing links in Mp4upload and Hydrax
 - Bug fix: Auto scroll to playing episode
 - Bug fix: Instantly switching back to the first server
-- Bug fix: Auto scroll to playing episode
 - Updated contact in the settings
 - Inform captcha failure caused by some browsers restrictions
 
