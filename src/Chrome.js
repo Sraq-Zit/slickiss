@@ -30,6 +30,7 @@ let settings = {
     'servers.mp4upload': true,
     'servers.nova': true,
     'servers.beta': true,
+    'servers.hydrax': true,
     shortcuts: true,
     ttip: true,
     updates: ["0"]
@@ -39,7 +40,10 @@ let settings = {
 Chrome.get().then(s => {
     s = Object.keys(s).length ? s : (Chrome.set(settings) || settings);
     for (const k in settings)
-        if (!(k in s)) s[k] = settings[k];
+        if (!(k in s)) {
+            s[k] = settings[k];
+            Chrome.set({ [k]: settings[k] });
+        }
 
     settings = s;
 });

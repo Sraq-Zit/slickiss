@@ -559,7 +559,7 @@ class Player {
         settings = await Chrome.get();
         const sName = DlGrabber.getServerName(location.href);
         if (!sName.includes('beta') && !settings[`servers.${sName}`]) {
-            location.hash = 'ignore';
+            localStorage.slickiss_ignore = (localStorage.slickiss_ignore || '') + location.host + '|';
             location.reload();
             return;
         }
@@ -569,7 +569,7 @@ class Player {
         $('body').css('margin', 0).append(player.container);
         $('html').attr('overflow', 'hidden');
         if (!(sName in DlGrabber.handlers))
-            return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance') && player;
+            return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance', 5e3) && player;
         const r = data || await DlGrabber.handlers.auto(location.href);
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);

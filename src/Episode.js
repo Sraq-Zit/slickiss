@@ -1,9 +1,16 @@
 class Episode {
-    isLight = () => settings.lite &&
+    isLight = () => settings.lite && this.isSupported &&
         (!S.parseUrl(location.href).server.includes('beta') || settings['servers.beta']);
 
     constructor() {
+        this.isSupported = S.parseUrl(location.href).server in DlGrabber.handlers;
         this.requests = new Set([location.href]);
+        Chrome.get('supported').then(async v => {
+            if (v != this.isSupported) {
+                await Chrome.set({ supported: this.isSupported });
+                location.reload();
+            }
+        })
         this.backup();
 
         if ($("#btnBookmarkManager").length) $("#btnBookmarkManager")[0].click();
@@ -23,17 +30,23 @@ class Episode {
             $('.barContent .clear2').eq(0).replaceWith(
                 $('<p>')
                     .html(
-                        `In beta/alpha servers it is recommended to use Slickiss display
-                        because the API used for alpha/beta player<br>has this bug that makes another
-                        video playing in the background.<br>`
+                        this.isSupported ?
+                            `Due to some bugs that beta servers may produce, it is recommended to
+                        use Slickiss display.<br>`
+                            :
+                            `You have been switched automatically to default display because
+                        this server is not supported by Slickiss yet.`
                     )
                     .css('font-size', '18px')
                     .append(
-                        $(`<a href="#">Switch to Slickiss display</a>`).on('click', async e => {
-                            e.preventDefault();
-                            Chrome.set({ lite: 1 });
-                            location.reload();
-                        })
+                        this.isSupported ?
+                            $(`<a href="#">Switch to Slickiss display</a>`).on('click', async e => {
+                                e.preventDefault();
+                                Chrome.set({ lite: 1, 'servers.beta': true });
+                                location.reload();
+                            })
+                            :
+                            $()
                     )
             )
 
@@ -154,13 +167,14 @@ class Episode {
         const id = S.parseUrl(location.href).id;
         (id in this.cache ? new Promise(r => r(this.cache[id])) : grab(location.href)).then(dlg => {
             this.cache[id] = dlg;
-            for (const k in dlg.urls) {
-                this.srvContainer.find('.' + k)
-                    .not('.disabled')
-                    .attr('class', preloaded)
-                    .data('iframe_url', dlg.urls[k]);
-                this.srvContainer.find('.disabled.' + k).addClass('preloaded');
-            }
+            for (const k in dlg.urls)
+                if (k in DlGrabber.handlers)
+                    this.srvContainer.find('.' + k)
+                        .data('iframe_url', dlg.urls[k])
+                        .addClass('preloaded')
+                        .not('.disabled')
+                        .attr('class', preloaded);
+
         })
 
 

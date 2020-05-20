@@ -21,7 +21,7 @@ chrome.webRequest.onBeforeRequest.addListener(
                 return {
                     cancel: Boolean(
                         !details.url.includes("Scripts/video-js/video") ||
-                        Number(settings.lite && settings['servers.beta'])
+                        Number(settings.supported && settings.lite && settings['servers.beta'])
                     )
                 };
     }, {

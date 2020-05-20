@@ -206,8 +206,11 @@ if (location.protocol != 'chrome-extension:') {
     if (!S.isContext(location.href, S.cts.CAPTCHA))
         $(document.documentElement).append(Assets.waitMsg());
 
+    const ign = (localStorage.slickiss_ignore || '');
+    localStorage.slickiss_ignore = ign.replace(location.host + '|', '');
     if (
-        (location.host != 'kissanime.ru' && (location.hash != '#ignore' || (location.hash = ''))) ||
+        
+        (location.host != 'kissanime.ru' && !ign.includes(location.host + '|')) ||
         S.isContext(location.href, S.cts.EPISODE) && location.hash == '#player'
     ) {
         window.stop();
