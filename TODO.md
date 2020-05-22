@@ -1,5 +1,5 @@
 # TODO list
- - [ ] Supports new BetaX server
+ - [x] Supporting betaX: Will work once user-agent changed
  - Fix player overlfow thumbnails and/or buffer
  - Fix listing identifiers
  - Import public bookmark list
