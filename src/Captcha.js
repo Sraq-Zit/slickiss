@@ -68,11 +68,13 @@ class Captcha {
 
     async fetch(tries = 5) {
         try {
+            /** @type {Response} */
             this.response = await fetch(this.formAction || this.url, {
                 method: this.formAction ? 'POST' : 'GET',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: this.formAction && `reUrl=${encodeURIComponent(this.url)}&answerCap=${this.prob1.index},${this.prob2.index}`
             });
+            if (S.getContext(this.response.url) == null) return null;
             if (this.response.status == 503) {
                 this.update(Captcha.steps.BYPASSING);
                 await Captcha.bypassCf();

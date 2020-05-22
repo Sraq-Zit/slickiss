@@ -29,19 +29,50 @@ chrome.webRequest.onBeforeRequest.addListener(
 }, ["blocking"]
 );
 
+// const BETAX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36';
+// chrome.webRequest.onBeforeSendHeaders.addListener(
+//     function (details) {
+//         return {
+//             requestHeaders: changeHeaders(details.requestHeaders, 'user-agent', BETAX_UA)
+//         }
+//     },
+//     { urls: ['<all_urls>'] },
+//     ['blocking', 'requestHeaders']
+// );
+
 chrome.webRequest.onHeadersReceived.addListener(
     function (info) {
-        var headers = info.responseHeaders;
-        var index = headers.findIndex(x => x.name.toLowerCase() == "x-frame-options");
-        if (index != -1) {
-            headers.splice(index, 1);
-        }
         return {
-            responseHeaders: headers
+            responseHeaders: changeHeaders(info.responseHeaders, 'x-frame-options', '')
         };
-    }, {
-    urls: ['<all_urls>'],
-    types: ["sub_frame", "xmlhttprequest", "script"]
-},
+    },
+    {
+        urls: ['<all_urls>'],
+        types: ["sub_frame", "xmlhttprequest", "script"]
+    },
     ['blocking', 'responseHeaders']
 );
+
+/** Change headers indexed i based on the `names[i]` to `values[i]` if `conds[i]` is true
+ * @param {chrome.webRequest.HttpHeader[]} headers Headers to updates
+ * @param {string[] | string} names name(s) of headears to change
+ * @param {string[] | string} values value(s) to assign
+ * @returns new headers
+ */
+const changeHeaders = (headers, names, values) => {
+    if (typeof names != typeof values) throw 'wrong parameters!';
+    if (typeof names == 'string') {
+        names = [names];
+        values = [values];
+    }
+    for (const i in names) {
+        var index = headers.findIndex(x => x.name.toLowerCase() == names[i]);
+        if (index != -1) {
+            if (values[i] == '')
+                headers.splice(index, 1);
+            else
+                headers[index].value = values[i];
+        }
+    }
+    return headers;
+};
