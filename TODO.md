@@ -1,4 +1,7 @@
 # TODO list
+ - [ ] Supports new BetaX server
+ - Fix player overlfow thumbnails and/or buffer
+ - Fix listing identifiers
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
  - Gather all the utils functions in one class
