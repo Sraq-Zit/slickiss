@@ -127,6 +127,7 @@ class Thumbnail {
         if (!this.isReady) return;
 
         time = this.timeToIndex(time);
+        if (!(time in this.preview)) return;
         if (!this.preview[time].ready) {
             this.prioritize(time);
             const c = document.createElement('canvas');
@@ -164,7 +165,8 @@ class Thumbnail {
      * @param {{obj: Thumbnail; from: number; to: number;}} ev Event data 
      */
     dispatch(ev) {
-        for (const h of this.handlers) h(ev);
+        if (this.handlers)
+            for (const h of this.handlers) h(ev);
     }
 
     /** Abort all the process the destroy objects */
