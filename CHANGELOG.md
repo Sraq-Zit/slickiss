@@ -1,6 +1,7 @@
 # Changelog
 
 ## v2.3.3
+- Update is late because it got rejected by chrome store
 - Bug fix: Grabbing links in Mp4upload and Hydrax
 - Bug fix: Auto scroll to playing episode
 - Bug fix: Instantly switching back to the first server
