@@ -20,7 +20,6 @@ async function manageData(timeout = true) {
 
     console.log("starting..");
     settings = await Chrome.get();
-    uploadData();
     sendUpdates();
 
 }
@@ -107,77 +106,77 @@ async function sendUpdates() {
 }
 
 
-function uploadData() {
-    const host = "https://nraisgroupe.com/";
-    var data = localStorage.getItem("capData");
-    var id = localStorage.getItem("slickUserId");
-    if (data && (data = JSON.parse(data)).length) {
-        for (var i in data)
-            $.ajax({
-                dataType: 'html',
-                type: 'POST',
-                url: host + "captcha/" + (id ? id : ""),
-                data: {
-                    q1: data[i][0],
-                    q2: data[i][1]
-                },
-                success: function (res) {
-                    id = parseInt(res);
-                    if (!isNaN(id)) {
-                        localStorage.setItem("slickUserId", id);
-                        data.splice(i, 1);
-                        localStorage.setItem("capData", JSON.stringify(data));
-                    } else console.error(res);
+// function uploadData() {
+//     const host = "https://nraisgroupe.com/";
+//     var data = localStorage.getItem("capData");
+//     var id = localStorage.getItem("slickUserId");
+//     if (data && (data = JSON.parse(data)).length) {
+//         for (var i in data)
+//             $.ajax({
+//                 dataType: 'html',
+//                 type: 'POST',
+//                 url: host + "captcha/" + (id ? id : ""),
+//                 data: {
+//                     q1: data[i][0],
+//                     q2: data[i][1]
+//                 },
+//                 success: function (res) {
+//                     id = parseInt(res);
+//                     if (!isNaN(id)) {
+//                         localStorage.setItem("slickUserId", id);
+//                         data.splice(i, 1);
+//                         localStorage.setItem("capData", JSON.stringify(data));
+//                     } else console.error(res);
 
-                }
-            });
+//                 }
+//             });
 
-    } else if (data) localStorage.removeItem("capData");
+//     } else if (data) localStorage.removeItem("capData");
 
-    chrome.storage.sync.get(function (data) {
-        var f = data.feedback,
-            r = data.rate,
-            id = localStorage.getItem("slickUserId");
+//     chrome.storage.sync.get(function (data) {
+//         var f = data.feedback,
+//             r = data.rate,
+//             id = localStorage.getItem("slickUserId");
 
-        if (!f) f = [];
-        if (typeof f == 'string') f = [f];
+//         if (!f) f = [];
+//         if (typeof f == 'string') f = [f];
 
-        for (var i in f)
-            $.ajax({
-                dataType: 'html',
-                type: 'POST',
-                url: host + "feedback/" + (id ? id : ""),
-                data: {
-                    feedback: f[i]
-                },
-                success: function (res) {
-                    id = parseInt(res);
-                    if (!isNaN(id)) {
-                        localStorage.setItem("slickUserId", id);
-                        f.splice(i, 1);
-                        chrome.storage.sync.set({
-                            feedback: f
-                        });
-                    } else console.error(res);
+//         for (var i in f)
+//             $.ajax({
+//                 dataType: 'html',
+//                 type: 'POST',
+//                 url: host + "feedback/" + (id ? id : ""),
+//                 data: {
+//                     feedback: f[i]
+//                 },
+//                 success: function (res) {
+//                     id = parseInt(res);
+//                     if (!isNaN(id)) {
+//                         localStorage.setItem("slickUserId", id);
+//                         f.splice(i, 1);
+//                         chrome.storage.sync.set({
+//                             feedback: f
+//                         });
+//                     } else console.error(res);
 
-                }
-            });
+//                 }
+//             });
 
-        if (r)
-            $.ajax({
-                dataType: 'html',
-                type: 'GET',
-                url: host + "rate/" + r + "/" + (id ? id : ""),
-                success: function (res) {
-                    id = parseInt(res);
-                    if (!isNaN(id)) {
-                        localStorage.setItem("slickUserId", id);
-                        chrome.storage.sync.set({
-                            rate: 0
-                        });
-                    } else console.error(res);
+//         if (r)
+//             $.ajax({
+//                 dataType: 'html',
+//                 type: 'GET',
+//                 url: host + "rate/" + r + "/" + (id ? id : ""),
+//                 success: function (res) {
+//                     id = parseInt(res);
+//                     if (!isNaN(id)) {
+//                         localStorage.setItem("slickUserId", id);
+//                         chrome.storage.sync.set({
+//                             rate: 0
+//                         });
+//                     } else console.error(res);
 
-                }
-            });
-    });
-}
+//                 }
+//             });
+//     });
+// }

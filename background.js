@@ -1,32 +1,4 @@
 
-
-
-chrome.contextMenus.create({
-    title: "Add anime batch to queue (Shift + Click)",
-    contexts: ["link"],
-    onclick: function (info, tab) {
-        chrome.tabs.sendMessage(tab.id, {
-            cm: true,
-            link: info.linkUrl
-        });
-    },
-    "targetUrlPatterns": ["*://kissanime.ru/Anime/*"]
-});
-
-var cmOp = {
-    id: "bm",
-    title: "You should be logged in to bookmark",
-    contexts: ["link"],
-    enabled: false,
-    onclick: function (info, tab) {
-        chrome.tabs.sendMessage(tab.id, {
-            bm: true,
-            link: info.linkUrl
-        });
-    },
-    "targetUrlPatterns": ["*://kissanime.ru/Anime/*"]
-};
-chrome.contextMenus.create(cmOp);
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     if (message.type == 'logout') {
@@ -46,11 +18,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.type == 'updateData')
         Chrome.get().then(s => settings = s);
 
-    if (message.logged === true || message.logged === false)
-        chrome.contextMenus.update(cmOp.id, {
-            enabled: message.logged,
-            title: message.logged ? "Add to bookmark (Hover over the anime then 【Ctrl + B】)" : cmOp.title
-        });
 
     if (message.ajax) {
         delete message.ajax;
