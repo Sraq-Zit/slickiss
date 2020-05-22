@@ -100,7 +100,10 @@ class DlGrabber {
             hydrax: url => this.grabs('https://ping.idocdn.com/', 'hydrax', r => {
                 const id = /v=(.+?)(#|&|$)/g.exec(url)[1];
                 r = JSON.parse(r);
-                r.url = atob(r.url.split("").reverse().join(""))
+                // r.url = atob(r.url.split("").reverse().join(""));
+                r.url = r.url.split('');
+                r.url.unshift(r.url.pop());
+                r.url = atob(r.url.join(''));
                 r.url && fetch('https://' + r.url + '/', {
                     "method": "POST",
                     "credentials": "same-origin",
@@ -184,6 +187,8 @@ class DlGrabber {
             }),
             /** @param {string} url */
             beta: url => this.handlers.alpha(url, 'beta'),
+            /** @param {string} url */
+            betax: url => this.handlers.alpha(url, 'betax'),
             /** @param {string} url */
             beta3: url => this.handlers.alpha(url, 'beta3'),
             /** @param {string} url */
