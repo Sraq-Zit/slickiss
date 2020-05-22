@@ -140,6 +140,17 @@ class Player {
         MessageManager.attachListener(e => { if (e.data.type) $(document).trigger(e.data) });
 
         $(window).on('resize', e => this.onVidTimeupdate() || this.onVidProgress());
+        $(window).on('beforeunload', _ => {
+            if (this.v[0].currentTime > Player.SKIP_TIMESPAN && settings.notifyLastTime &&
+                this.v[0].currentTime <= this.v[0].duration - Player.TRIGGER_TIMESPAN) {
+                LocalStorage.set('lastTimeLeftAt', {
+                    [md5(location.pathname)]: {
+                        leftAt: this.v[0].currentTime - 5,
+                        time: Date.now()
+                    }
+                });
+            }
+        });
 
         $(document).on('mousemove', e => this.onmousemove(e));
         $(document).on('mouseup',
@@ -454,13 +465,6 @@ class Player {
                     setTimeout(() => notif.fadeOut(500, e => notif.remove()), 800);
                 }
             }
-        } else if (this.v[0].currentTime > Player.SKIP_TIMESPAN && settings.notifyLastTime) {
-            LocalStorage.set('lastTimeLeftAt', {
-                [md5(location.pathname)]: {
-                    leftAt: this.v[0].currentTime - 5,
-                    time: Date.now()
-                }
-            });
         }
     }
 
