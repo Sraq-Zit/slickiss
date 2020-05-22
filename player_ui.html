@@ -198,6 +198,16 @@
         .iconStyle {
             font-size: 1.6em;
         }
+
+        #servers~.fa {
+            z-index: 9;
+            cursor: pointer;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px;
+            width: 25px;
+            height: 26px;
+        }
     </style>
 
 
@@ -419,9 +429,18 @@
                 <div class="tooltip-inner text-truncate" dir="rtl"></div>
             </div>
         </div>
-        <div class="col-6 overflow-auto" style="white-space: nowrap;" id="servers">
-            <!-- <span class="rounded-pill cursor-pointer btn btn-secondary disabled">Mp4upload</span> -->
-            <span class="bg-k rounded-pill cursor-pointer btn btn-outline-secondary sample"></span>
+        <div class="col-6">
+
+            <div class="overflow-hidden" style=" scroll-behavior: smooth; white-space: nowrap;" id="servers">
+                <!-- <span class="rounded-pill cursor-pointer btn btn-secondary disabled">Mp4upload</span> -->
+                <span class="bg-k rounded-pill cursor-pointer btn btn-outline-secondary sample"></span>
+            </div>
+
+            <i class="fa fa-chevron-left position-absolute text-success bg-dark rounded-circle border-white shadow"
+                style="left:0;" onclick="$('#servers')[0].scrollLeft -= $('#servers').width()/2"></i>
+            <i class="fa fa-chevron-left position-absolute text-success bg-dark rounded-circle border-white shadow"
+                style="right:0;transform:translateY(-50%)scale(-1);"
+                onclick="$('#servers')[0].scrollLeft += $('#servers').width()/2"></i>
         </div>
         <div id='next'
             class="col-1 btn btn-success p-2 d-flex align-items-center justify-content-center cursor-pointer">
