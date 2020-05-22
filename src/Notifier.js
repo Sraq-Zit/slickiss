@@ -34,7 +34,6 @@ class Notifier {
         const manifest = JSON.parse(await req(url));
         let updates = await Chrome.get('newUpdates');
         if (manifest.version == chrome.runtime.getManifest().version) return null;
-        if (updates && updates.manifest.version != chrome.runtime.getManifest().version) return updates;
         updates = { manifest: manifest };
         updates.notes = await this.getNotes();
         Chrome.set({ newUpdates: updates });
