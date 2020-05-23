@@ -157,6 +157,11 @@ class DlGrabber {
              **/
             alpha: (url, srv = 'alpha') => new Promise(async resolve => {
                 let html = await c(url).solve();
+                if (html == null) resolve({
+                    server: srv,
+                    success: 0,
+                    response: 'Failed to find video source'
+                });
                 html = html.replace(`$('#slcQualix').val()`, `'${$(html.noImgs).find('#slcQualix').val()}'`)
                     .replace(`ovelWrap($(this).val()`, `ovelWrap('${$(html.noImgs).find('#slcQualix').val()}'`);
                 const match = /ovelWrap\(.+'\)/g.exec(html);
