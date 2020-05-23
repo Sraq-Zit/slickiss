@@ -1,5 +1,8 @@
 # TODO list
- - [x] Supporting betaX: Will work once user-agent changed
+ - [ ] Chrome store is taking too long to update the extension, please use the packed CRX file until the extension is updated (I'll use this space to inform you). You can google how to install packed extension, the packed extension can be downloaded on github: https://bit.ly/3eaQynY
+ - Supporting betaX: Will work once user-agent changed
+ - Bug fix: Disabling Slickiss player on Hydrax not working
+ - Bug fix: Hydrax link grabber (again)
  - Fix player overlfow thumbnails and/or buffer
  - Fix listing identifiers
  - Import public bookmark list
