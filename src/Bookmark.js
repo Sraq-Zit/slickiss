@@ -111,9 +111,9 @@ class Bookmark {
         }).then(t => t.text());
         return {
             animeID: Number(animeID),
-            bookmarked: animeID && data != 'null',
-            watched: animeID && data != 'null' && data.split('|')[0] == 'true',
-            bdid: data != 'null' ? data.split('|')[1] : undefined
+            bookmarked: animeID && data != undefined && data != 'null',
+            watched: animeID && data != undefined && data != 'null' && data.split('|')[0] == 'true',
+            bdid: data != undefined && data != 'null' ? data.split('|')[1] : undefined
         };
     }
 
