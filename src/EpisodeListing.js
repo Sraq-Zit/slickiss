@@ -74,7 +74,7 @@ class EpisodeListing {
         this.listing.find('th').eq(1).width('10%');
         let th = this.listing.find('th').eq(0).width('50%');
         th.after($('<th/>', { width: '25%', text: 'Status' })); // column for progress
-        th.before($('<th/>', { width: '1%', text: '#' })); // column for identifiers
+        th.before($('<th/>', { width: '3%', text: '#' })); // column for identifiers
         this.selection = this.headerContainer.find('#selection').removeAttr('id');
         this.selection.find('td').eq(0).append(this.elements.SELECTION); // episodes selection inputs / instructions
         this.selection.find('td').eq(1).append(this.getter);
