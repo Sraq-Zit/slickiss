@@ -1,12 +1,12 @@
 # TODO list
  - [x] Slickiss extension in the chrome store has been finally updated to v3.4.0
  - [ ] This latest update came with a lot of modifications especially in the video player. If you are using the crx packed files please make sure you remove/disable it and use the one in chrome store
- - Beta 6 is now supported for streaming using Slickiss player
- - Supporting betaX: Will work once user-agent changed
- - Bug fix: Disabling Slickiss player on Hydrax not working
- - Bug fix: Hydrax link grabber (again)
- - Fix player overlfow thumbnails and/or buffer
- - Fix listing identifiers
+ - [ ] There is a bug with download links to be fixed soon
+ - Fix downloads
+ - Exploited all qualities when available
+ - Supported Beta 6: Just like hydrax, it is not for download
+ - Pin controls
+ - Rearrange files tree
  - Mp4upload download from download section
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
