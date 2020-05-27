@@ -34,6 +34,7 @@ class Slickiss {
                 });
                 $("body").css("font-size", "1em");
                 $("head").prepend("<link href='/Content/css/tpl_style.css?v=7' rel='stylesheet' type='text/css'>")
+                $('.slickExtra').remove();
                 throw new Error("Cloudflare");
             }
             switch (this.getContext()) {
@@ -83,6 +84,11 @@ class Slickiss {
                         an.find('.barContent > div:not(.arrow-general)')
                             .empty().append(updates.children());
                     });
+
+                    $('#navcontainer>ul').append(
+                        `<li><a href="/#batch" target="slickiss_batch_manager">Downloads</a></li>`
+                    );
+
                     $(document).on('ready', Bookmark.getBookmarks(true).then(
                         json => $("a[href*='Anime/']").each((i, a) => {
                             const info = S.parseUrl(a.href);
@@ -209,7 +215,6 @@ if (location.protocol != 'chrome-extension:') {
     const ign = (localStorage.slickiss_ignore || '');
     localStorage.slickiss_ignore = ign.replace(location.host + '|', '');
     if (
-        
         (location.host != 'kissanime.ru' && !ign.includes(location.host + '|')) ||
         S.isContext(location.href, S.cts.EPISODE) && location.hash == '#player'
     ) {
