@@ -1,7 +1,7 @@
 # TODO list
- - [ ] Slickiss extension in the chrome store has been updated to v3.4.0
+ - [x] Slickiss extension in the chrome store has been updated to v3.4.0
  - [ ] This latest update came with a lot of modifications especially in the video player. If you are using the crx packed files please make sure you remove/disable it and use the one in chrome store (v3.4.0)
- - [ ] Beta 6 is now supported for streaming using Slickiss player
+ - Beta 6 is now supported for streaming using Slickiss player
  - Supporting betaX: Will work once user-agent changed
  - Bug fix: Disabling Slickiss player on Hydrax not working
  - Bug fix: Hydrax link grabber (again)
