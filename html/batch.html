@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Downloads </title>
-    <link rel="stylesheet" href="////bootstrap.min.css">
+    <link rel="stylesheet" href="////css/bootstrap.min.css">
     <style>
         body {
             background-color: #161616;
@@ -174,7 +174,7 @@
             <div class="container px-0">
                 <div class="navbar-nav align-items-center p-3" style="font-size: 1.5rem;">
                     <div class="row w-100">
-                        <div class="col p-0">
+                        <div class="col-4 p-0">
                             <i class="cursor-pointer fa fa-plus mx-2 text-success add" title="D - Add new Anime"></i>
                             <i class="cursor-pointer fa fa-minus mx-2 text-danger remove-selected"
                                 title="Remove selected items"></i>
@@ -186,7 +186,22 @@
                                 title="X - Finish and clear list"></i>
                             <i class="far fa-info-circle mx-2 text-info" style="cursor: help; display: none;"></i>
                         </div>
-                        <div class="col p-0 text-right align-items-center justify-content-end d-flex">
+
+                        <!-- Navigation -->
+                        <div class="col-4 h3 m-0 p-0 text-right align-items-center justify-content-center d-flex">
+                            <a href="/" class="text-light mx-2" title="Home">
+                                <i class="fa fa-home"></i>
+                            </a>
+                            <a href="/BookmarkList" class="text-light mx-2" title="Bookmark List">
+                                <i class="fa fa-bookmark"></i>
+                            </a>
+                            <a href="/Profile" class="text-light mx-2" title="Profile settings">
+                                <i class="fa fa-user"></i>
+                            </a>
+                        </div>
+                        <!-- End navigation -->
+
+                        <div class="col-4 p-0 text-right align-items-center justify-content-end d-flex">
                             <i class="cursor-pointer far fa-circle fa-check-circle mx-2 check-all"
                                 title="A - Check all"></i>
                             <i class="cursor-pointer far fa-check-double mx-2 check-visible"

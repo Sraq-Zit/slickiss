@@ -69,7 +69,7 @@ class Episode {
         $('body').empty().append(Assets.waitMsg().slice(1));
         Episode.createDummies();
         this.animeData = await Anime.getAnimeData(location.href);
-        document.documentElement.innerHTML = await Assets.loadAssetFromFile('player_ui.html');
+        document.documentElement.innerHTML = await Assets.loadAssetFromFile('html/player_ui.html');
         document.title = title;
         this.loadUnwatchedAnimeList();
         $('#episodes').append(this.listing = this.animeData.listing);

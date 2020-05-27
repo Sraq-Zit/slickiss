@@ -48,7 +48,7 @@ class Assets {
      * @returns {Promise<JQuery<HTMLDivElement>>}
      */
     static async player() {
-        const html = await this.loadAssetFromFile('/player.html');
+        const html = await this.loadAssetFromFile('html/player.html');
         return $(html);
     }
 

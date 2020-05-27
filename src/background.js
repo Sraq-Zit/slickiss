@@ -10,11 +10,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         return true;
     }
 
-    if (message.type === 'open_url')
-        chrome.tabs.create({
-            url: chrome.extension.getURL(message.data)
-        });
-
     if (message.type == 'updateData')
         Chrome.get().then(s => settings = s);
 
@@ -44,10 +39,7 @@ $("body").append(frame.attr("src", "https://kissanime.ru/#sendUpdates"));
 const step = 30000;
 var timeout = 6 * step;
 
-var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent",
-    eventer = window[eventMethod],
-    messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-eventer(messageEvent, function (e) {
+window.onmessage = e => {
     var key = e.message ? "message" : "data";
     var data = e[key];
     if (data.isAlive) timeout = 2 * step;
@@ -58,13 +50,12 @@ eventer(messageEvent, function (e) {
         url = data.animeUrl;
         delete data.animeUrl;
     }
-
     console.log("showing notification..");
     chrome.notifications.create(
         url, data,
         function () { }
     );
-});
+};
 chrome.notifications.onButtonClicked.addListener(function (notificationId, btnIndex) {
     var url = notificationId.includes("kissanime") && btnIndex ? notificationId : 'https://kissanime.ru/';
     chrome.tabs.create({

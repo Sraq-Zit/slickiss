@@ -165,6 +165,7 @@ class BatchManager {
             );
             d.listingMgr = new EpisodeListing(data.listing).addControls();
             data.listing.find('th').text('');
+            data.listing.find('tr>td:nth-child(1)').css({ 'max-width': 'unset', padding: '5px' });
             d.listingMgr.getter.remove();
             $('a.batch-info, .listings > div').remove();
             d.list = items ? data.listing.add(data.listing.prev()) : data.finalList;
@@ -271,7 +272,7 @@ class BatchManager {
 window.stop();
 
 (async () => {
-    document.documentElement.innerHTML = await Assets.loadAssetFromFile('/batch.html');
+    document.documentElement.innerHTML = await Assets.loadAssetFromFile('html/batch.html');
     BatchManager.init();
 })();
 

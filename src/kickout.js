@@ -1,4 +1,3 @@
-let b;
 Chrome.get().then(s => settings = s);
 chrome.storage.sync.onChanged.addListener(async v => {
     for (const k in v)
@@ -7,25 +6,17 @@ chrome.storage.sync.onChanged.addListener(async v => {
     // settings = await Chrome.get();
 });
 
-
-const blocked = chrome.runtime.getManifest().permissions
-    .filter(e => Boolean(b === true || (b = (e[0] == '*' && (b === false || null)))));
 chrome.webRequest.onBeforeRequest.addListener(
     function (details) {
-        b = true;
-        const initiators = chrome.runtime.getManifest().permissions
-            .filter(v => b && (b = (v[0] == '*')))
-            .map(v => v.replace(/[*:/]/g, ''));
-        for (const init of initiators)
-            if (details.initiator && details.initiator.includes(init))
-                return {
-                    cancel: Boolean(
-                        !details.url.includes("Scripts/video-js/video") ||
-                        Number(settings.supported && settings.lite && settings['servers.beta'])
-                    )
-                };
+        if (details.initiator && details.initiator.includes('kissanime.ru'))
+            return {
+                cancel: Boolean(
+                    !details.url.includes("Scripts/video-js/video") ||
+                    Number(settings.supported && settings.lite && settings['servers.beta'])
+                )
+            };
     }, {
-    urls: blocked
+    urls: chrome.runtime.getManifest().permissions.filter(e => e.includes('https://'))
 }, ["blocking"]
 );
 

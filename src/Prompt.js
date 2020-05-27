@@ -23,7 +23,7 @@ class Prompt {
      * @returns {Promise<this>}
      */
     async load() {
-        let html = await Assets.loadAssetFromFile('/prompt.html');
+        let html = await Assets.loadAssetFromFile('html/prompt.html');
         html = html.replace(/msgArea/gs, 'msgArea_' + Prompt.counter++);
         this.container = $(html).hide();
         this.context.prepend(this.container);

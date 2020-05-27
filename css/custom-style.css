@@ -93,6 +93,9 @@ input[type=checkbox]:checked::before {
 
 .centered {
     position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     left: 0;
     right: 0;
     top: 0;
@@ -134,23 +137,20 @@ a.bookmarked_seen {
 
 .q a {
     border-radius: 2px;
-    width: 60px;
+    width: calc(25% - 2px);
     float: left;
-    margin-top: 1px;
-    color: #999;
+    margin: 0 1px;
+    color: #343a40;
     font-size: 13px;
-    border: 1px solid #222;
-    background-color: #111;
+    background-color: #9a9da0;
+    padding: 3px 0;
+    border-radius: 20px;
     text-align: center;
-    margin-left: 4px;
     text-decoration: none;
-    font-family: sans-serif;
 }
 
 .q a.active {
-    color: #fff;
-    border: 1px solid #666;
-    background-color: #444;
+    background-color: white;
 }
 
 textarea.decorated {
@@ -356,9 +356,7 @@ img#pageLoading+h1 {
 
 .controlBar {
     background: linear-gradient(#d5f40600, #161616);
-    height: 25%;
-    max-height: 55px;
-    min-height: 52px;
+    height: 50px;
     width: 100%;
     position: absolute;
     bottom: 0px;
@@ -420,10 +418,10 @@ img#pageLoading+h1 {
 }
 
 .slickBtn {
-    height: 20%;
+    display: inline !important;
     cursor: pointer;
     margin: 0 10px 0 10px;
-    background: white;
+    color: #ffffffe7;
     -webkit-user-drag: none;
     transition: all .3s ease-out;
 }
@@ -446,35 +444,56 @@ img#pageLoading+h1 {
     opacity: .9;
 }
 
-
-.slickBtn:not(.disabled):hover {
-    background: #d6ff7e;
+.pin {
+    position: absolute;
+    right: 100%;
 }
 
-.slickBtn:not(.disabled):active {
-    background: #5d8800;
-    transform: scale(.9);
+.pin.pinned {
+    transform: rotate(60deg);
+}
+
+
+.slickBtn:not(.disabled):hover {
+    color: #fff;
 }
 
 .settings {
     z-index: 3;
-    font-family: sans-serif;
+    font-family: 'Open Sans', sans-serif;
     display: none;
     position: absolute;
     top: 0;
     right: 0;
+    padding: 5px;
     min-width: 220px;
-    padding: 10px;
     transform: translateY(-100%);
-    background: white;
+    color: white;
+    background: #343a40;
     box-shadow: rgba(51, 51, 51, 0.31) 0px 0px 4px 2px;
 }
 
 .settings td {
+    color: #9a9da0;
     text-align: center;
-    padding-bottom: 5px;
-    padding-top: 3px;
-    border-bottom: solid 1px black;
+    padding: 7px 10px;
+}
+
+.settings tr+tr>td {
+    padding-top: 0;
+}
+
+.settings td:hover {
+    color: white;
+}
+
+.settings i {
+    width: 20px;
+    text-align: center;
+}
+
+.settings td>strong {
+    font-size: small;
 }
 
 .settings #status:not(.preloading) #abort {
@@ -512,6 +531,7 @@ img#pageLoading+h1 {
 
 table.toolbarContainer {
     border-spacing: 5px;
+    user-select: none;
     height: 60%;
     width: 100%;
     position: absolute;
@@ -527,7 +547,8 @@ table.toolbarContainer td {
     display: inline-block;
     width: 0%;
     opacity: 0;
-    height: 10px;
+    height: 50%;
+    vertical-align: -webkit-baseline-middle;
     transform: translateY(-50%);
     background: white;
     border: solid 1px white;
@@ -579,9 +600,15 @@ table.toolbarContainer td {
     cursor: unset;
 }
 
+.player.controls,
+.player.controls .controlBar {
+    opacity: 1 !important;
+    cursor: unset !important;
+}
+
 .disabled {
     cursor: default;
-    background: lightgray;
+    color: gray;
 }
 
 .iconStyle {

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="////bootstrap.min.css" id="bootstrap">
+    <link rel="stylesheet" href="////css/bootstrap.min.css" id="bootstrap">
     <style>
         body {
             background-color: #161616;
@@ -200,7 +200,6 @@
         }
 
         #servers~.fa {
-            z-index: 9;
             cursor: pointer;
             top: 50%;
             transform: translateY(-50%);
@@ -227,15 +226,16 @@
 
     <!-- Header -->
     <header class="header header-transparent">
-        <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm text-light" style="height: 13vh;">
+        <div id="navbar-top-main" class="navbar-top  navbar-dark bg-k shadow-sm text-light" style="height: 80px;">
             <div class="mx-3 px-0 h-100" style="border-left: solid 20px #28a745;">
                 <div class="navbar-nav align-items-center h-100" style="font-size: 1.5rem;">
                     <div class="row w-100 h-100">
                         <!-- Anime name -->
-                        <div class="col-8 h-100 d-flex align-items-center">
+                        <div class="col-7 h-100 d-flex align-items-center">
                             <a class="h4 text-light bigChar m-0" href="#"></a>
                         </div>
                         <!-- End anime name -->
+
                         <!-- Tools -->
                         <div class="col h3 m-0 p-0 text-right align-items-center justify-content-end d-flex">
                             <a href="/" class="text-light mx-2" title="Home">
@@ -251,7 +251,7 @@
                                 <i class="fa fa-cog"></i>
                                 <div class="position-absolute bg-k border-dark shadow" id="settings"
                                     style="right: 0; top: 150%; width: 302px; height: 437px; z-index: 5; display: none;">
-                                    <iframe src="////popup.html" class="w-100 h-100" frameborder="0"></iframe>
+                                    <iframe src="////html/popup.html" class="w-100 h-100" frameborder="0"></iframe>
                                 </div>
                             </a>
                         </div>
@@ -266,8 +266,8 @@
     <!-- Absolutely positioned blocs -->
     <div class="position-relative">
         <!-- Help -->
-        <div class="position-absolute text-center text-secondary bg-light shadow-sm p-1 mx-3 overflow-auto help"
-            style="top:0;left:0; z-index: 2; font-weight: bold; height: 86vh;">
+        <div class="position-absolute text-center text-secondary bg-light shadow-sm p-1 mx-3 overflow-auto help w-100"
+            style="top:0;left:0; z-index: 2; font-weight: bold; height: calc(98vh - 80px);">
             <div class="row w-100">
                 <div class="col-8 p-4 text-left">
                     <!-- Slickiss player guide -->
@@ -379,7 +379,7 @@
 
         <!-- Comment section -->
         <div class="d-flex align-items-end justify-content-center position-absolute w-100 animate pb-3" id="__disqus"
-            style="background-color: #000000ec; z-index: 6; height: 88vh; margin-top: 120vh; display: none !important;">
+            style="background-color: #000000ec; z-index: 6; height: calc(100vh - 80px); margin-top: 120vh; display: none !important;">
             <div class="position-absolute cursor-pointer closure" style="top: 0; transform: translateY(-50%);"
                 onclick="$('#__disqus').css('margin-top', '120vh')">
                 <i class="fas fa-comment-dots text-light d-flex justify-content-center" style="font-size: 3.5rem;"></i>
@@ -395,7 +395,7 @@
 
         <!-- Watchlist -->
         <div class="d-flex align-items-center justify-content-center position-absolute w-100 animate p-5" id="bList"
-            style="background-color: #000000ec; z-index: 6; height: 88vh; margin-top: 120vh; display: none !important;">
+            style="background-color: #000000ec; z-index: 6; height: calc(100vh - 80px); margin-top: 120vh; display: none !important;">
             <div class="position-absolute cursor-pointer closure" style="top: 0; transform: translateY(-50%);"
                 onclick="$('#bList').css('margin-top', '120vh')">
                 <i class="fas fa-list-alt text-light d-flex justify-content-center" style="font-size: 3.5rem;"></i>
@@ -409,7 +409,7 @@
 
 
 
-    <div class="row mx-3 border-left border-right border-bottom" style="height: 77vh;">
+    <div class="row mx-3 border-left border-right border-bottom" style="height: calc(90vh - 80px);">
         <div class="col-8 border-right p-0 h-100 position-relative">
             <div id='status' class="position-absolute display-4 w-100 text-center text-muted"
                 style="left: 50%;top: 50%;transform: translate(-50%, -50%);opacity: .1;z-index: -1;"></div>

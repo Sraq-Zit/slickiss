@@ -86,7 +86,12 @@ async function sendUpdates() {
                 message: toDisplay
             };
             if (!r.includes("challenge-form"))
-                json.iconUrl = $(r).find(".rightBox img").eq(0).attr("src");
+                try {
+                    const url = $(r).find(".rightBox img").eq(0).attr("src");
+                    await fetch(url);
+                    json.iconUrl = url;
+                } catch (e) { console.error(e) }
+
             if (pic && c == 1) {
                 json.buttons.push({
                     title: "Open Anime page"
