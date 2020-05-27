@@ -15,7 +15,7 @@ class Captcha {
         let form = $(this.html).find("*[id^=formVerify]");
         this.formAction = form.attr('action');
         // this.url = S.absolute(form.find("input[name='reUrl']").val());
-        this.imgs = form.find('img');
+        this.imgs = form.find('img').each((_, el) => el.src = 'https://kissanime.ru/' + $(el).attr('src'));
         this.q1 = form.find('span').eq(0).text().trim();
         this.q2 = form.find('span').eq(1).text().trim();
         this.q1 = this.splitQuery(this.q1);
