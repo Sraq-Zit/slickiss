@@ -217,6 +217,7 @@ if (location.protocol != 'chrome-extension:') {
         Player.deploy();
     }
 
-}
+} else if (location.hash.includes('GetM3U8'))
+    Player.deploy();
 
 

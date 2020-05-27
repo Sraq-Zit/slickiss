@@ -35,6 +35,7 @@ class SettingManager {
         'servers.mp4upload': 'checkbox',
         'servers.nova': 'checkbox',
         'servers.beta': 'checkbox',
+        'servers.hydrax': 'checkbox',
         shortcuts: 'checkbox',
         ttip: 'checkbox',
         updates: 'multiple'

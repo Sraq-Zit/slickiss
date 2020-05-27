@@ -19,6 +19,49 @@ Number.prototype.pad = function (pad, length) {
     return str;
 }
 
+Array.prototype.rand = function () { if (this && this.length) return this[rand(0, this.length - 1)]; }
+
+/** Manage video qualities order and preferences */
+class QualityManager {
+
+    /**
+     * @param {{file:string; label?: string; type?: string;}[]} data Data of each quality
+     * @param {'1080p'|'720p'|'480p'|'360p'} preference Quality to play in preference
+     */
+    constructor(data, preference) {
+        /** Source of each quality */
+        this.data = data;
+        /** Quality to play in preference */
+        this.pref = preference;
+
+        this.qualities = [1080, 720, 480, 360].filter(q => q + 'p' in this.data);
+
+    }
+
+    /** Get data of the preferred quality or less if not available
+     * @returns {{file:string; label?: string; type?: string;}}
+     */
+    get preferredQ() {
+        let qual;
+        this.qualities.forEach(q => {
+            if (!qual && q <= parseInt(this.pref))
+                qual = this.data[q + 'p'];
+        });
+        if (!qual)
+            this.qualities.slice().reverse().forEach(
+                q => !qual && (qual = this.data[q + 'p'])
+            );
+
+        return qual;
+    }
+
+    /** Iterate over qualities in decreasing order
+     * @param {(data: {file:string; label?: string; type?: string;}) => void} callback 
+     */
+    forEach(callback) { this.qualities.forEach(q => callback(this.data[q + 'p'])); }
+}
+
+
 const sleep = async (timeout) => new Promise(r => setTimeout(r, timeout));
 
 const ajax = $.ajax;

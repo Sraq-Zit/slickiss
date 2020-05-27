@@ -3,27 +3,24 @@
 class Player {
 
     /** Setter for qualities
-     * @param {{
-        '1080p'?: string;
-        '720p'?:string;
-        '480p'?:string;
-        '320p'?:string;
-    }} [qs] Sources for other qualities 
+     * @param {QualityManager} qs Sources for other qualities 
      */
     setQualities(qs) {
-        if (typeof qs == 'object')
-            for (const q in qs)
-                this.qContainer.append(
-                    this.qualities[q] = $('<a/>', {
-                        class: qs[q].file == this.v[0].src ? 'active' : '',
-                        href: '#', 'data-file': qs[q].file,
-                        text: q
-                    }).on('click', e => {
-                        e.preventDefault();
-                        this.qContainer.find('.active').removeClass('active');
-                        this.v[0].src = $(e.currentTarget).addClass('active').data('file');
-                    })
-                );
+        qs.forEach(
+            q => this.qContainer.append(
+                this.qualities[q.label] = $('<a/>', {
+                    class: q.file == qs.preferredQ.file ? 'active' : '',
+                    href: '#', data: q, text: q.label
+                }).on('click', e => {
+                    e.preventDefault();
+                    this.qContainer.find('.active').removeClass('active');
+                    const data = $(e.currentTarget).addClass('active').data();
+                    $('#currentQ').show().text(data.label);
+                    if (this.v[0].src != data.file) this.v[0].src = data.file;
+                })[q.file == qs.preferredQ.file ? 'click' : 'show']()
+            ).show()
+        )
+
     }
 
     /** Whether current server can allow previewing while seeking (Technically it's whether the server
@@ -40,6 +37,16 @@ class Player {
         return total;
     }
 
+    /** Whether the controls are permanently pinned
+     * @returns {boolean}
+     */
+    get pinned() {
+        return this.container.hasClass('controls');
+    }
+    set pinned(v) {
+        this.container[v ? 'addClass' : 'removeClass']('controls');
+        this.buttons.pin[v ? 'addClass' : 'removeClass']('pinned');
+    }
 
     /** Whether the player is ready
      * @returns {boolean}
@@ -50,20 +57,20 @@ class Player {
     set enabled(b) {
         if (!this.enabled && b) {
             if (this.thumbnail) this.thumbnail.destroy();
-            this.thumbnail = new Thumbnail(this.seekPreviewAvailable && this.v[0].src);
-            this.thumbnail.onTLoad(ev => {
-                const s = ev.from;
-                const e = ev.to;
-                const buf = this.buffer.sample.clone().css({
-                    'background-color': 'lightgreen',
-                    opacity: .4
-                });
-                this.bar.append(buf);
-                const mLeft = (s / this.v[0].duration) * this.bar.width();
-                const length = ((e - s) / this.v[0].duration) * this.bar.width();
-                buf.css("margin-left", mLeft.toFixed(2) + "px");
-                buf.css("width", length.toFixed(2) + "px");
-            });
+            // this.thumbnail = new Thumbnail(this.seekPreviewAvailable && this.v[0].src);
+            // this.thumbnail.onTLoad(ev => {
+            //     const s = ev.from;
+            //     const e = ev.to;
+            //     const buf = this.buffer.sample.clone().css({
+            //         'background-color': 'lightgreen',
+            //         opacity: .4
+            //     });
+            //     this.bar.append(buf);
+            //     const mLeft = (s / this.v[0].duration) * 95;
+            //     const length = ((e - s) / this.v[0].duration) * 95;
+            //     buf.css("margin-left", mLeft.toFixed(2) + "%");
+            //     buf.css("width", length.toFixed(2) + "%");
+            // });
         }
         this.container[b ? 'addClass' : 'removeClass']('canplay');
         this.container[!b ? 'addClass' : 'removeClass']('loading');
@@ -117,7 +124,7 @@ class Player {
         this.time = this.container.find("#time");
         this.settings = this.container.find('.settings');
         this.qContainer = this.container.find('.q');
-        this.remover = this.container.find('#remove');
+        this.remover = this.container.find('#remove, #disable');
         this.buttons = {
             mediaControl: this.container.find(".slickBtn.media-control"),
             volumeLvl: this.container.find(".slickBtn.volumeLvl"),
@@ -125,7 +132,8 @@ class Player {
             reload: this.container.find(".slickBtn.reload"),
             setting: this.container.find(".slickBtn.setting"),
             download: this.container.find(".slickBtn.download"),
-            screen: this.container.find(".slickBtn.screen")
+            screen: this.container.find(".slickBtn.screen"),
+            pin: this.container.find(".slickBtn.pin")
         };
         this.icons = {
             loadingImg: this.container.find(".controlIcon.loadingImg"),
@@ -171,6 +179,7 @@ class Player {
         this.buttons.screen.on('click', e => this.toggleFullScreen());
         this.buttons.download.on('click', e => this.downloadVideo());
         this.buttons.volumeLvl.on('click', e => this.v[0].muted = !this.v[0].muted);
+        this.buttons.pin.on('click', _ => this.pinned = !this.pinned);
         this.buttons.reload.on('click', async e => {
             const onyes = (e) => {
                 p.destroyable = false;
@@ -192,24 +201,36 @@ class Player {
             p.show();
 
             if (e.ctrlKey || noconfirm) p.yes.click();
-        })
+        });
 
-        this.v.on('click', e => this.toggleVideo());
+        this.v.on('click', _ => this.toggleVideo());
         this.v.on('play pause', e => this.toggleVideo(e.type == 'play'));
-        this.v.on('dblclick', e => this.toggleFullScreen());
+        this.v.on('dblclick', _ => this.toggleFullScreen());
         this.v.on('canplay', e => this.onVidCanPlay(e));
         this.v.on('timeupdate', e => this.onVidTimeupdate(e));
-        this.v.on('progress', e => this.onVidProgress());
-        this.v.on('volumechange', e => this.onVolumeChange());
-        this.v.on('error', e => this.onVidError());
+        this.v.on('progress', _ => this.onVidProgress());
+        this.v.on('volumechange', _ => this.onVolumeChange());
+        this.v.on('error', _ => this.onVidError());
         this.v.on('waiting',
-            e => this.container.addClass('loading') &&
+            _ => this.container.addClass('loading') &&
                 this.icons.loadingImg.css('filter', 'grayscale(1)') &&
                 (this.totalBuffered = this.buffered));
+        this.v.on('loadstart',
+            async _ => {
+                if (this.m3u8) {
+                    const src = await Player.prepareM3u8(this.v[0].src);
+                    if (src) {
+                        this.v.attr('src', src);
+                        this.hls = this.hls || new Hls();
+                        this.hls.loadSource(this.v[0].src);
+                        this.hls.attachMedia(this.v[0]);
+                    }
+                }
+            });
 
 
         if (this.qContainer) this.qContainer.children('a').on('click', e => this.changeServer(e));
-        if (this.remover) this.remover.on('click', e => this.removePlayer());
+        if (this.remover) this.remover.on('click', e => this.removePlayer(1, e.currentTarget.id));
 
         if (settings.shortcuts) $(document).on('keydown', e => this.setShortcuts(e));
         if (settings.autoplay) this.toggleVideo(1);
@@ -227,9 +248,7 @@ class Player {
     /** Put player on or off idle mode (a mode where control bar is hidden)
      * @param {boolean} [toggler] Enable / Disable idle status
      */
-    idle = (toggler = 1) => this.container[toggler ? 'addClass' : 'removeClass']('idle');
-
-
+    idle(toggler = 1) { this.container[toggler ? 'addClass' : 'removeClass']('idle') };
 
     /** Handle mouse moving over the document
      * @param {JQuery.MouseEventBase} e Mouse move event
@@ -264,16 +283,23 @@ class Player {
     onMouseOverBar(e) {
         if (!this.enabled) return;
         let pos = e.clientX - this.bar.offset().left;
-        const time = this.v[0].duration * pos / this.bar.width();
-        if (time < 0 || time > this.v[0].duration) return;
+        let time = this.v[0].duration * pos / this.bar.width();
+        time = Math.max(0, Math.min(time, this.v[0].duration));
         this.timgTime.time.html(Assets.formatSecs(time));
-        pos = Math.max(pos, this.timgTime.outerWidth() / 2);
-        pos = Math.min(pos, this.bar.width() - this.timgTime.outerWidth() / 2);
-        this.timgTime.css({ opacity: 1, 'margin-left': pos + 'px' });
-        const newCanvas = this.thumbnail.retrieve(time) || this.timgTime.thumbnail[0];
-        this.timgTime.thumbnail.replaceWith(newCanvas);
-        this.timgTime.thumbnail = $(newCanvas);
-        this.container.addClass('pinned');
+        pos *= 95 / this.bar.width();
+        const halfW = this.timgTime.outerWidth() / 2;
+        pos = Math.min(Math.max(pos, 0), 95);
+        const calc = extrm => extrm ? `${halfW}px` : `calc(95% - ${halfW}px)`;
+        this.timgTime.css({
+            opacity: 1,
+            'margin-left': `max(min(${calc(false)}, ${pos}%), ${calc(true)})`
+        });
+        if (this.thumbnail) {
+            const newCanvas = this.thumbnail.retrieve(time) || this.timgTime.thumbnail[0];
+            this.timgTime.thumbnail.replaceWith(newCanvas);
+            this.timgTime.thumbnail = $(newCanvas);
+            this.container.addClass('pinned');
+        }
     }
 
     /** Event handler for mouse entering the player
@@ -354,18 +380,18 @@ class Player {
         if (action) {
             await this.v[0].play();
             this.displayIcon(this.icons.play);
-            this.buttons.mediaControl.addClass('pause');
+            this.buttons.mediaControl.removeClass('fa-play');
         } else {
             this.v[0].pause();
             this.displayIcon(this.icons.pause);
-            this.buttons.mediaControl.removeClass('pause');
+            this.buttons.mediaControl.addClass('fa-play');
         }
         this.v[0].toggling = 0;
     }
 
     /** Display time formatted as XX:XX(current time) / XX:XX(duration)
      * @param {number} time Time to display
-     * @param {boolean} changeCurrentTime Whether to change the video currentTime to the given one
+     * @param {boolean} change Whether to change the video currentTime to the given one
      */
     navigateTo(time, change = false) {
         if (typeof time == 'undefined') time = this.v[0].currentTime;
@@ -373,9 +399,10 @@ class Player {
 
         time = Math.min(time, this.v[0].duration);
         time = Math.max(time, 0);
-        const l = this.bar.width() * time / this.v[0].duration;
+        let l = this.bar.width() * time / this.v[0].duration;
         this.filler.width(l);
-        this.pointer.css('margin-left', l + 'px');
+        l *= 95 / this.bar.width();
+        this.pointer.css('margin-left', l + '%');
         const text = `${Assets.formatSecs(time)} / ${Assets.formatSecs(this.v[0].duration)}`;
         if (this.time.text() != text)
             this.time.text(text);
@@ -385,6 +412,7 @@ class Player {
     downloadVideo() {
         if (!this.enabled) return;
         if (!this.v[0].currentSrc) return alert('No video found!');
+        if (this.m3u8) return Assets.toast('Download not yet available for this type of files');
         $('<a/>', { href: this.v[0].currentSrc, download: document.title, target: '_blank' })[0].click();
     }
 
@@ -398,7 +426,7 @@ class Player {
 
         if (!this.enabled) return;
 
-        this.buttons.screen[!d ? 'addClass' : 'removeClass']('exitFullscreen');
+        this.buttons.screen[d ? 'addClass' : 'removeClass']('fa-expand');
         if (d) document.exitFullscreen();
         else this.container[0].requestFullscreen();
 
@@ -447,7 +475,7 @@ class Player {
         if (!this.isDraggingPointer) this.navigateTo();
         if (this.v[0].currentTime > this.v[0].duration - Player.TRIGGER_TIMESPAN) {
             if (settings.notifyLastTime) {
-                const data = LocalStorage.get('lastTimeLeftAt');
+                const data = LocalStorage.get('lastTimeLeftAt') || {};
                 delete data[md5(location.pathname)];
                 LocalStorage.set('notifyLastTime', data, false);
             }
@@ -474,9 +502,10 @@ class Player {
         if (perc > 0) this.v[0].muted = false;
         if (this.v[0].muted) perc = 0;
         this.volumeBar.css("background", `linear-gradient(90deg, white ${perc}%, #fffefe52 ${1 - perc}%)`);
-        let cls = "volumeMute";
-        if (!this.v[0].muted) cls = 'volume' + (this.v[0].volume ? (this.v[0].volume > .5 ? 2 : 1) : 0);
-        this.buttons.volumeLvl.removeClass("volume2 volume1 volume0 volumeMute").addClass(cls);
+        let cls = "fa-volume-mute";
+        if (!this.v[0].muted)
+            cls = 'fa-volume' + (this.v[0].volume > .3 ? (this.v[0].volume > .6 ? '-up' : '') : '-down');
+        this.buttons.volumeLvl.removeClass("fa-volume-up volume fa-volume-down fa-volume-mute").addClass(cls);
     }
 
     /** Handle preloaded timestamps of the video and display their buffer */
@@ -495,10 +524,10 @@ class Player {
                 this.buffer[s] = buf;
                 this.bar.append(buf);
             }
-            const mLeft = (s / this.v[0].duration) * this.bar.width();
-            const length = ((e - s) / this.v[0].duration) * this.bar.width();
-            this.buffer[s].css("margin-left", mLeft.toFixed(2) + "px");
-            this.buffer[s].css("width", length.toFixed(2) + "px");
+            const mLeft = (s / this.v[0].duration) * 95;
+            const length = ((e - s) / this.v[0].duration) * 95;
+            this.buffer[s].css("margin-left", mLeft.toFixed(2) + "%");
+            this.buffer[s].css("width", length.toFixed(2) + "%");
 
             if (s - e < 5 && total > 5) this.playbackLoad = 4;
             total += e - s;
@@ -522,20 +551,49 @@ class Player {
             this.enabled = false;
     }
 
+    /** Correctly set chunks' by redirecting to the actually urls
+     * @param {string} url Url of the m3u8 file
+     * @returns {Promise<string>} Blob object as url
+     */
+    static async prepareM3u8(url) {
+        if (!url.includes('GetM3U8')) return;
+        let m3u8 = await req(url);
+        const domains = (await Chrome.get('m3u8_domains')) || ['http%3A%2F%2Frv22pak.xyz%2F'];
+        m3u8.split(/[\n\r]/g)
+            .forEach(
+                v => /https(.*?)/g.test(v) &&
+                    (m3u8 = m3u8.replace(
+                        v,
+                        decodeURIComponent(v)
+                            .replace('&url=', '&v=0&url=' + domains.rand())
+                            .replace('coacoaca', 'coa3coaca')
+                            .replace('raunraca', 'c'.repeat(22))
+                            .split('urlRe=')[1]
+                    ))
+            );
 
+        return URL.createObjectURL(new Blob([m3u8]));
+    }
 
 
     /** Remove / Disable Slickiss custom video
      * @param {boolean} alert Whether it is called from the user or programatically
+     * @param {'remove'|'disable'} cmd `remove` to use html5 player, `disable` to use server's player
      */
-    async removePlayer(alert = 1) {
+    async removePlayer(alert = 1, cmd = 'remove') {
+        this.settings.hide();
         const EVENTS = 'click play pause dblclick canplay timeupdate progress volumechange waiting error';
         if (alert) {
-            this.container.addClass('pinned');
+            this.pinned = true;
             const yes = async e => {
                 p.destroyable = false;
                 p.bigTitle.html('Alright!');
                 p.subTitle.add(p.yes.parent()).hide();
+                if (cmd == 'disable') {
+                    await Chrome.set({ [`servers.${DlGrabber.getServerName(location.href)}`]: false });
+                    location.reload();
+                    return;
+                }
                 const txt = p.subTitle.find("textarea");
                 if (txt.val().length > 0)
                     var f = settings.feedback;
@@ -549,10 +607,16 @@ class Player {
                     this.container.replaceWith(this.v.off(EVENTS).attr({ controls: '' }));
                 }, 1000);
             };
-            const no = e => this.container.removeClass('pinned');
+            const no = _ => this.pinned = false;
             const p = await new Prompt(yes, no, this.container).load();
+            if (cmd == 'disable') {
+                const s = DlGrabber.getServerName(location.href).toUpperCase();
+                p.bigTitle.html('Disable Slickiss player');
+                p.subTitle.html(`This action will switch to ${s}'s player.<br>
+                You can always use Slickiss player again in the settings`);
+            }
             p.show();
-        } else this.container.replaceWith(this.v.off(EVENTS).attr({ controls: '' }));
+        } else $("body").empty().append(this.v.off(EVENTS).attr({ controls: '' }));
     }
 
 
@@ -561,7 +625,23 @@ class Player {
      */
     static async deploy(data) {
         settings = await Chrome.get();
-        const sName = DlGrabber.getServerName(location.href);
+        let url = location.href;
+        if (location.protocol == "chrome-extension:") {
+            url = decodeURIComponent(location.hash.slice(1));
+            const player = new Player();
+            await player.init();
+            player.m3u8 = true;
+            $('body').css('margin', 0).append(player.container);
+            $('html').attr('overflow', 'hidden');
+            player.v[0].src = url;
+            try {
+                const quals = new QualityManager(JSON.parse(url), settings.quality || '720p');
+                player.setQualities(quals);
+                player.v[0].src = quals.preferredQ.file;
+            } catch (e) { console.error(e) }
+            return player;
+        }
+        const sName = DlGrabber.getServerName(url);
         if (!sName.includes('beta') && !settings[`servers.${sName}`]) {
             localStorage.slickiss_ignore = (localStorage.slickiss_ignore || '') + location.host + '|';
             location.reload();
@@ -569,24 +649,37 @@ class Player {
         }
         const player = new Player();
         await player.init();
-        document.documentElement.innerHTML = '<body></body>';
+        if (!$('body').length)
+            document.documentElement.innerHTML = '<body></body>';
+
         $('body').css('margin', 0).append(player.container);
         $('html').attr('overflow', 'hidden');
         if (!(sName in DlGrabber.handlers))
             return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance', 5e3) && player;
-        const r = data || await DlGrabber.handlers.auto(location.href);
+        const r = data || await DlGrabber.handlers.auto(url);
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);
         if (!player.seekPreviewAvailable) Assets.toast('Seeking preview not available on this server');
-        player.v[0].src = r.response;
-        if (r.additional) {
-            player.v[0].poster = r.additional.poster;
-            // document.title = r.additional.title;
-            player.setQualities(r.additional.qualities);
+        if (r.response.includes('GetM3U8')) {
+            Assets.toast('Reloading once more..');
+            const urls = r.additional && r.additional.qualities ?
+                JSON.stringify(r.additional.qualities) : r.response;
+            return location.href = chrome.extension.getURL('/html/m3u8.html') + '#' + urls;
         }
+        player.v[0].src = r.response;
+        try {
+            if (r.additional) {
+                player.v[0].poster = r.additional.poster || '';
+                if (r.additional.qualities) {
+                    const quals = new QualityManager(r.additional.qualities, settings.quality || '720p');
+                    player.setQualities(quals);
+                    player.v[0].src = quals.preferredQ.file;
+                }
+            }
+        } catch (e) { console.error(e) }
+
         if (!settings.player)
             Assets.toast('Slickiss player disabled') && player.removePlayer(0);
-
 
         return player;
     }
@@ -763,13 +856,14 @@ class Player {
 
     /** Player control buttons
     * @type {{
-       mediaControl: JQuery<HTMLImageElement>;
-       volumeLvl: JQuery<HTMLImageElement>;
-       star: JQuery<HTMLImageElement>;
-       reload: JQuery<HTMLImageElement>;
-       setting: JQuery<HTMLImageElement>;
-       download: JQuery<HTMLImageElement>;
-       screen: JQuery<HTMLImageElement>;
+       mediaControl: JQuery<HTMLElement>;
+       volumeLvl: JQuery<HTMLElement>;
+       star: JQuery<HTMLElement>;
+       reload: JQuery<HTMLElement>;
+       setting: JQuery<HTMLElement>;
+       download: JQuery<HTMLElement>;
+       screen: JQuery<HTMLElement>;
+       pin: JQuery<HTMLElement>;
    }}
     **/
     buttons;
@@ -796,4 +890,11 @@ class Player {
    }}
     **/
     icons;
+
+
+    /** Whether the server requires manual chunks loader
+    * @type {boolean}
+    **/
+    m3u8;
+
 }

@@ -111,9 +111,22 @@ class DlGrabber {
                     "body": "slug=" + id
                 }).then(t => t.text());
                 $('<img/>', { src: `https://ping.${r.url}/ping.gif` });
-                return {
-                    src: r.url && 'https://' + r.url + '/?track=' + id
-                };
+                let qualities;
+                if (r.sources && r.sources.length && (qualities = {})) {
+                    const d = {
+                        'sd': { quality: '360p', prefix: '' },
+                        'hd': { quality: '720p', prefix: 'www.' },
+                        'fullHd': { quality: '1080p', prefix: 'whw.' }
+                    }
+                    r.sources.forEach(
+                        q => qualities[d[q].quality] = {
+                            file: `https://${d[q].prefix + r.url}/?track=${id}`,
+                            label: d[q].quality,
+                            type: 'mp4'
+                        }
+                    );
+                }
+                return { src: 1, option: { qualities: { ...qualities } } };
             }, 'post', { slug: /v=(.+?)(#|&|$)/g.exec(url)[1] }),
             /** @param {string} url */
             mp4upload: url => this.grabs(url, 'mp4upload', r => {
@@ -131,20 +144,12 @@ class DlGrabber {
             }),
             /** @param {string} url */
             nova: url => this.grabs(url.replace(/\/v\//g, "/api/source/"), 'nova', r => {
-                let q = settings.quality,
-                    data = JSON.parse(r).data, src;
+                let data = JSON.parse(r).data;
                 for (let k in data) {
                     data[data[k].label] = data[k];
                     delete data[k];
                 }
-                while (!(src = data[q]) && q)
-                    q = { "1080p": "720p", "720p": "480p", "480p": "360p" }[q];
-
-                q = settings.quality;
-                while (!(src = data[q]) && q)
-                    q = { "720p": "1080p", "480p": "720p", "360p": "480p" }[q];
-
-                return { src: src && src.file, option: { qualities: { ...data } } };
+                return { src: 1, option: { qualities: { ...data } } };
             }, 'post'),
             /** 
              * @param {string} url
@@ -157,7 +162,7 @@ class DlGrabber {
              **/
             alpha: (url, srv = 'alpha') => new Promise(async resolve => {
                 let html = await c(url).solve();
-                if (html == null) resolve({
+                if (html == null) return resolve({
                     server: srv,
                     success: 0,
                     response: 'Failed to find video source'
@@ -180,14 +185,60 @@ class DlGrabber {
                     success: 0,
                     response: 'Failed to find video source'
                 }); else {
+                    let qualities;
                     match[0] = eval(match[0]);
                     if (!match[0].indexOf('https://')) match[0] = $('<a/>', { href: match[0] })[0].outerHTML;
-                    let a = $("<div>" + match[0] + "</div>").find("a");
+                    const a = $("<div>" + match[0] + "</div>").find("a");
+                    if (a.length > 0)
+                        a.each((i, el) => {
+                            const r = /(1080|720|480|360)\.(.+?)$/.exec($(el).text());
+                            if (r && r[1]) {
+                                qualities = qualities || {};
+                                qualities[r[1] + 'p'] = {
+                                    file: el.href, label: r[1] + 'p', type: r[2]
+                                }
+                            }
+                        });
                     resolve({
                         server: srv,
                         success: a.length,
-                        response: a.length ? a.eq(0).attr("href") : 'Failed to find video source'
+                        response: a.length ? a.eq(0).attr("href") : 'Failed to find video source',
+                        additional: { qualities: qualities }
                     });
+                }
+            }),
+            beta6: (url, srv = 'beta6') => new Promise(async resolve => {
+                const data = await this.handlers.alpha(url);
+                if (!data.success) resolve({
+                    server: srv,
+                    success: false,
+                    response: 'Failed to find video source'
+                }); else {
+                    let html = await c(url).solve();
+                    const qualities = {};
+                    try {
+                        c(url).solve().then(html => {
+                            let domains = JSON.parse(/domainArray = (\[.+?\])/s.exec(html)[1]);
+                            domains = domains.map(v => encodeURIComponent(`http://${v}/`));
+                            Chrome.set({ m3u8_domains: domains });
+                        });
+
+                    } catch (error) { }
+
+                    for (const el of $(html).find('select#slcQualix>option').toArray()) {
+                        qualities[el.textContent.trim()] = {
+                            label: el.textContent.trim(),
+                            file: ovelWrap(el.value)
+                        };
+                    }
+
+                    resolve({
+                        server: srv,
+                        success: true,
+                        response: data.response,
+                        additional: { qualities: qualities }
+                    });
+
                 }
             }),
             /** @param {string} url */
