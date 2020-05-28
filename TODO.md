@@ -1,10 +1,12 @@
 # TODO list
- - [x] Slickiss extension in the chrome store has been finally updated to v3.4.0
+ - [x] Slickiss extension in the chrome store has been finally updated to v3.4.1
  - [ ] This latest update came with a lot of modifications especially in the video player. If you are using the crx packed files please make sure you remove/disable it and use the one in chrome store
- - [ ] There is a bug with download links to be fixed soon
+ - [ ] Supported Beta 6: Just like hydrax, it is not for download
+ - Refresh disqus when instantly switching servers
+ - Idman cmd fix handling of absence of idman
+ - Scroll to active server
  - Fix downloads
  - Exploited all qualities when available
- - Supported Beta 6: Just like hydrax, it is not for download
  - Pin controls
  - Rearrange files tree
  - Mp4upload download from download section
