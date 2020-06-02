@@ -1,11 +1,9 @@
 # TODO list
  - [x] Bug: Idman cmd handling of absence of idman
  - [x] Scroll active server into view
+ - [ ] Bug: Time left off on beta 6
  - [ ] Refresh disqus thread when instantly switching episodes
- - Fix downloads
- - Exploited all qualities when available
- - Pin controls
- - Rearrange files tree
+ - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
  - Sync kissanime settings with Slickiss
