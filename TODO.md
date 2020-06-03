@@ -2,6 +2,7 @@
  - [x] Bug: Idman cmd handling of absence of idman
  - [x] Scroll active server into view
  - [x] Use one time reference for all servers when video is left
+ - [ ] Bug: Episodes naming when an Anime has dash in it
  - [ ] Refresh disqus thread when instantly switching episodes
  - Custom style of the website
  - Mp4upload download from download section
