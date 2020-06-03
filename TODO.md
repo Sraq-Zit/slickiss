@@ -1,7 +1,7 @@
 # TODO list
  - [x] Bug: Idman cmd handling of absence of idman
  - [x] Scroll active server into view
- - [ ] Bug: Time left at (hydrax & beta 6)
+ - [x] Use one time reference for all servers when video is left
  - [ ] Refresh disqus thread when instantly switching episodes
  - Custom style of the website
  - Mp4upload download from download section
