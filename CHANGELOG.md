@@ -1,7 +1,26 @@
 # Changelog
 
-## v2.3.3
-- Update is late because it got rejected by chrome store twice
+## v2.4.1 (28/05/2020)
+- Bug fix: Downloads link not showing
+- Exploited all video qualities when available
+- Added pin player controls
+- Rearranged file tree
+
+---
+
+## v2.4.0 (27/05/2020)
+- Bug fix: Disabling Slickiss player on Hydrax not working
+- Bug fix: Hydrax link grabbing
+- Bug fix: Player thumbnails and/or buffer overflowing
+- Bug fix: listing identifiers
+- Bug fix: Grabbing links in Mp4upload and Hydrax
+- Bug fix: Auto scroll to playing episode
+- Bug fix: Instantly switching back to the first server
+- Bug fix: Notifications icon disabled when its url is cross-origin
+- Supported BetaX, although changing user-agent is still required for now
+- Made changes on Slickiss player interface
+- Updated contact in the settings
+- Inform captcha failure caused by some browsers restrictions
 
 ---
 
