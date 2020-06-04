@@ -6,6 +6,7 @@
  - [x] Refresh disqus thread when instantly switching episodes
  - [x] Bug: Instant server switching when default not available
  - [x] Add theater mode and light dimming
+ - [x] Block new ad
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
