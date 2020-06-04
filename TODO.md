@@ -1,10 +1,11 @@
 # TODO list
- - [x] Bug: Idman cmd handling of absence of idman
+ - Bug: Idman cmd handling of absence of idman
+ - [x] Bug fixes
  - [x] Scroll active server into view
  - [x] Use one time reference for all servers when video is left
- - [x] Bug: Episodes naming when an Anime has dash in it
+ - Bug: Episodes naming when an Anime has dash in it
  - [x] Refresh disqus thread when instantly switching episodes
- - [x] Bug: Instant server switching when default not available
+ - Bug: Instant server switching when default not available
  - [x] Add theater mode and light dimming
  - [x] Block new ad
  - Custom style of the website
