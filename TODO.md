@@ -8,7 +8,7 @@
  - Bug: Instant server switching when default not available
  - [x] Add theater mode and light dimming
  - [x] Block new ad
- - [ ] Automatic user-agent switching for betaX
+ - [x] Automatic user-agent switching for betaX
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
