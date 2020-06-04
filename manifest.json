@@ -1,59 +1,57 @@
 {
     "name": "Slickiss",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "manifest_version": 2,
     "description": "Hides ads and Captcha in Kissanime and offers many other functionalities like notifications for Anime, quick download, and more",
     "browser_action": {
         "default_name": "Slickiss",
-        "default_popup": "popup.html",
+        "default_popup": "html/popup.html",
         "default_icon": "icons/128.png"
     },
     "icons": {
         "128": "icons/128.png"
     },
     "permissions": [
-        "*://kissanime.ru/*",
-        "*://playhydrax.com/*",
-        "*://hydrax.net/*",
-        "*://ping.idocdn.com/",
-        "*://www.mp4upload.com/*",
-        "*://www.novelplanet.me/*",
+        "*://coa3coaca-opensocial.googleusercontent.com/*",
+        "*://*.googlevideo.com/*",
         "cookies",
         "storage",
-        "activeTab",
         "notifications",
         "webRequest",
         "webRequestBlocking",
-        "*://ads.2mdnsys.com/*",
-        "*://koindut.com/*",
-        "*://arejoysew.com/*",
-        "*://kissanime.ru/ads/*",
-        "*://kissanime.ru/AGBXSKCSYWBSDAPOLA",
-        "*://kissanime.ru/Scripts/video-js/video.js",
-        "*://kissanime.ru/Scripts/video-js/video5.min.js"
+        "https://native.propellerclick.com/*",
+        "https://ads.2mdnsys.com/*",
+        "https://koindut.com/*",
+        "https://arejoysew.com/*",
+        "https://kissanime.ru/ads/*",
+        "https://kissanime.ru/AGBXSKCSYWBSDAPOLA",
+        "https://kissanime.ru/Scripts/video-js/video.js",
+        "https://kissanime.ru/Scripts/video-js/video5.min.js"
     ],
     "background": {
         "scripts": [
-            "jquery-2.1.4.min.js",
-            "md5.js",
+            "src/libs/jquery-2.1.4.min.js",
+            "src/libs/md5.js",
+            "src/libs/hls.js",
             "src/Chrome.js",
-            "kickout.js",
-            "background.js"
+            "src/kickout.js",
+            "src/background.js"
         ],
         "persistent": true
     },
     "web_accessible_resources": [
         "imgs/*",
         "webfonts/*",
-        "*.html",
-        "*.css"
+        "html/*.html",
+        "css/*.css"
     ],
     "content_scripts": [
         {
             "js": [
-                "jquery-2.1.4.min.js",
-                "ocrad.min.js",
-                "md5.js",
+                "src/libs/jquery-2.1.4.min.js",
+                "src/libs/ocrad.min.js",
+                "src/libs/md5.js",
+                "src/libs/hls.js",
                 "src/custom.js",
                 "src/Tooltip.js",
                 "src/LocalStorage.js",
@@ -74,8 +72,8 @@
                 "src/MessageManager.js"
             ],
             "css": [
-                "custom-style.css",
-                "fontawesome.min.css"
+                "css/custom-style.css",
+                "css/fontawesome.min.css"
             ],
             "matches": [
                 "*://kissanime.ru/*",
@@ -97,7 +95,7 @@
         },
         {
             "js": [
-                "sendUpdates.js"
+                "src/sendUpdates.js"
             ],
             "matches": [
                 "*://kissanime.ru/"
