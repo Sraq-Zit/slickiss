@@ -4,7 +4,8 @@
  - [x] Use one time reference for all servers when video is left
  - [x] Bug: Episodes naming when an Anime has dash in it
  - [x] Refresh disqus thread when instantly switching episodes
- - [ ] Add theater mode and light dimming
+ - [x] Bug: Instant server switching when default not available
+ - [x] Add theater mode and light dimming
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
