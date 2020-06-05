@@ -1,14 +1,4 @@
 # TODO list
- - Bug: Idman cmd handling of absence of idman
- - [x] Bug fixes
- - [x] Scroll active server into view
- - [x] Use one time reference for all servers when video is left
- - Bug: Episodes naming when an Anime has dash in it
- - [x] Refresh disqus thread when instantly switching episodes
- - Bug: Instant server switching when default not available
- - [x] Add theater mode and light dimming
- - [x] Block new ad
- - [x] Automatic user-agent switching for betaX
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
