@@ -1,16 +1,9 @@
 # Changelog
 
 ## v2.5.0
-- Bug fix: Handled absence of idman in command
-- Bug fix: Fixed Anime names with dash
-- Bug fix: Reload disqus during one page navigation
-- Bug fix: Handled unavailability of default server
-- Video player: Theahter mode, lights
-- Video player: Added buttons for only-shortcuts features
-- Blocked new ad
-- Automatic user-agent switching for betaX
-- Scroll active server into view
 - Store left time of video wrt the episode instead of server
+- Video player: Added buttons for only-shortcuts features
+- Video player: Theahter mode, lights, and more..
 
 ---
 
