@@ -3,7 +3,7 @@
 ## v2.5.0
 - Store left time of video wrt the episode instead of server
 - Video player: Added buttons for only-shortcuts features
-- Video player: Theahter mode, lights, and more..
+- Video player: Theater mode, lights, and more..
 
 ---
 
