@@ -1,4 +1,5 @@
 # TODO list
+ - [ ] Fix compatibility with Essentials for KissAnime
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
@@ -7,5 +8,5 @@
  - Feature: Automatique report for new ads and popups
  - Firefox
  - Userscript
- - Compatibility with MALSyc, KissanimeEssentials, etc..
+ - Compatibility with MALSyc, etc..
  - Create guide
