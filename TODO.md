@@ -1,6 +1,6 @@
 # TODO list
+ - [x] Grabbing downloads stops at Hydrax cause by BetaX
  - [ ] Fix compatibility with Essentials for KissAnime
- - [ ] Grabbing downloads stops at Hydrax
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
