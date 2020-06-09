@@ -1,5 +1,6 @@
 # TODO list
  - [ ] Fix compatibility with Essentials for KissAnime
+ - [ ] Grabbing downloads stops at Hydrax
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
