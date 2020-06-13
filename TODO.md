@@ -2,6 +2,7 @@
  - [x] Grabbing downloads stops at Hydrax caused by BetaX
  - [x] Fix compatibility with Essentials for KissAnime
  - [x] Add hide announcements button
+ - [ ] Supports new server Moe
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
