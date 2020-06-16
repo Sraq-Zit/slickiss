@@ -3,7 +3,7 @@
  - [x] Fix compatibility with Essentials for KissAnime
  - [x] Add hide announcements button
  - [x] Supports new server Moe
- - [ ] Feature: Take screenshot from player
+ - [x] Feature: Take screenshot/Record clip from video
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
