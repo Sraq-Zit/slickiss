@@ -39,6 +39,16 @@ input[type=checkbox]:checked::before {
     color: black;
 }
 
+.animate {
+    transition: all .5s ease-out;
+}
+
+.closed {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
 .table-truncate td,
 .listing td,
 .listing td>div {
@@ -134,24 +144,6 @@ a.bookmarked_seen {
     margin-bottom: 20px !important;
 }
 
-
-.q a {
-    border-radius: 2px;
-    width: calc(25% - 2px);
-    float: left;
-    margin: 0 1px;
-    color: #343a40;
-    font-size: 13px;
-    background-color: #9a9da0;
-    padding: 3px 0;
-    border-radius: 20px;
-    text-align: center;
-    text-decoration: none;
-}
-
-.q a.active {
-    background-color: white;
-}
 
 textarea.decorated {
     width: 100%;
@@ -403,7 +395,7 @@ img#pageLoading+h1 {
 
 .controlIcon {
     pointer-events: none;
-    width: 10%;
+    width: 70px;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -473,17 +465,15 @@ img#pageLoading+h1 {
     box-shadow: rgba(51, 51, 51, 0.31) 0px 0px 4px 2px;
 }
 
-.settings td {
+.settings .col-12 {
     color: #9a9da0;
-    text-align: center;
-    padding: 7px 10px;
 }
 
 .settings tr+tr>td {
     padding-top: 0;
 }
 
-.settings td:hover {
+.settings .col-12:hover {
     color: white;
 }
 
@@ -492,7 +482,7 @@ img#pageLoading+h1 {
     text-align: center;
 }
 
-.settings td>strong {
+.settings .col-12>strong {
     font-size: small;
 }
 

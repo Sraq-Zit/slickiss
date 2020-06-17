@@ -294,7 +294,7 @@ textarea.fullboxtext {
 .barTitle {
     height: 25px;
     padding-left: 10px;
-    background: url("imgs/tpl_box_bar.gif") repeat-x;
+    background: url("/imgs/tpl_box_bar.gif") repeat-x;
     font: normal 17px/23px "Tahoma", Arial, Helvetica, sans-serif;
     letter-spacing: -1px;
     color: #fff;

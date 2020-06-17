@@ -114,7 +114,9 @@
             border-radius: 50%;
         }
 
-
+        .listing {
+            min-width: 220px;
+        }
 
         .listing th,
         .listing a {
@@ -220,9 +222,12 @@
             display: none !important;
         }
     </style>
-    <img id="pageLoading" src="chrome-extension://glplcnkocfhhcpbaafebblaadpkjnold/imgs/mobchara_3.png"
-        class="slickExtra slickFloating">
+    <img id="pageLoading" src="////imgs/mobchara_3.png" class="slickExtra slickFloating">
     <!-- End loading -->
+
+    <div id="overlay" class="position-fixed w-100 h-100"
+        style="background-color: black;pointer-events: none;z-index: 2;opacity: 0; transition: opacity .5s ease-out;">
+    </div>
 
     <!-- Header -->
     <header class="header header-transparent">
@@ -267,81 +272,50 @@
     <div class="position-relative">
         <!-- Help -->
         <div class="position-absolute text-center text-secondary bg-light shadow-sm p-1 mx-3 overflow-auto help w-100"
-            style="top:0;left:0; z-index: 2; font-weight: bold; height: calc(98vh - 80px);">
+            style="top:0;left:0; z-index: 3; font-weight: bold; height: calc(98vh - 80px);">
             <div class="row w-100">
                 <div class="col-8 p-4 text-left">
                     <!-- Slickiss player guide -->
                     <div class="h3 m-0">Slickiss player</div>
                     <hr>
                     This is a custom player it has the essentials and keep everything simple. <br>
-                    Hotkeys are available but can't be changed for now. They are defined as the following.
+                    Hotkeys are available but can't be changed for now. They are defined as the following:
                     <br class="mb-2">
-                    <div>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-2">
-                                <code class="text-light bg-secondary border p-1">Space</code>
-                            </div>
-                            <div class="col"> Play/Pause </div>
-                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
-                                <code class="text-light bg-secondary border p-1">N</code></div>
-                            <div class="col"> Go to next episode</div>
-                        </div>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-2">
-                                <code class="text-light bg-secondary border p-1">Left/Right</code>
-                            </div>
-                            <div class="col"> Navigate 3 seconds backward/forward</div>
-                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
-                                <code class="text-light bg-secondary border p-1">P</code></div>
-                            <div class="col"> Go to previous episode</div>
-                        </div>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-2">
-                                <code class="text-light bg-secondary border p-1">Up/Down</code>
-                            </div>
-                            <div class="col"> Change volume</div>
-                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
-                                <code class="text-light bg-secondary border p-1">S</code>
-                            </div>
-                            <div class="col"> Skip opening/ending (forwards by 1min25sec)</div>
-                        </div>
-                        <div class="row d-flex align-items-center">
-                            <div class="col-2">
-                                <code class="text-light bg-secondary border p-1">F</code>
-                            </div>
-                            <div class="col"> Toggle fullscreen</div>
-                            <div class="col-1 px-0 py-1" style="max-width: 4%;">
-                                <code class="text-light bg-secondary border p-1">D</code></div>
-                            <div class="col"> Download video</div>
-                        </div>
-                    </div>
-                    <br class="mt-2">
-
-                    Basic controls:
                     <br class="mb-2">
-
                     <div class="ml-3">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-2 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i></i>
+                                LEFT / RIGHT
+                            </div>
+                            <div class="col-4"> Forward / Backward</div>
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-compress"></i>
+                                <i class="fa fa-expand"></i>
+                            </div>
+                            <div class="col"> Toggle fullscreen (F) </div>
+                        </div>
                         <div class="row d-flex align-items-center">
                             <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
                                 <i class=" fa fa-play"></i>
                                 <i class="fa fa-pause"></i>
                             </div>
-                            <div class="col"> Play / Pause</div>
+                            <div class="col"> Play / Pause (SPACE)</div>
                             <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
-                                <i class=" fa fa-compress"></i>
-                                <i class="fa fa-expand"></i>
+                                <i class=" fa fa-step-backward mr-2"></i>
+                                <i class=" fa fa-step-forward"></i>
                             </div>
-                            <div class="col"> Toggle fullscreen </div>
+                            <div class="col"> Previous / next episode (P / N) </div>
                         </div>
                         <div class="row d-flex align-items-center">
                             <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
                                 <i class=" fa fa-volume"></i>
                             </div>
-                            <div class="col"> Volume</div>
+                            <div class="col"> Volume (UP / DOWN)</div>
                             <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
                                 <i class=" fa fa-download"></i>
                             </div>
-                            <div class="col"> Download</div>
+                            <div class="col"> Download (D)</div>
                         </div>
                         <div class="row d-flex align-items-center">
                             <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
@@ -353,12 +327,36 @@
                             </div>
                             <div class="col"> Settings </div>
                         </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-tv"></i>
+                            </div>
+                            <div class="col"> Theater mode (T) </div>
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-lightbulb"></i>
+                            </div>
+                            <div class="col"> Toggle lights (L) </div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-thumbtack"></i>
+                            </div>
+                            <div class="col"> Pin controls by making them permanently visible</div>
+                        </div>
+                        <div class="row d-flex align-items-center">
+                            <div class="col-1 px-0 py-1 text-light bg-secondary border p-1 text-center">
+                                <i class=" fa fa-backward mr-2"></i>
+                                <i class=" fa fa-forward"></i>
+                            </div>
+                            <div class="col">
+                                Skip 1m25s backward/forward used for openings and/or ending ((SHIFT + ) S)
+                            </div>
+                        </div>
                     </div>
                     <!-- End Slickiss player guide -->
                     <hr>
                     <!-- Servers Guide -->
-                    Slickiss now make servers' links ready to switch instantly! <br>
-                    You can do that when the servers appear like this
+                    You can switch instantly between servers when they appear like this
                     <span class="bg-k rounded-pill cursor-pointer btn btn-outline-info">Server Name</span>
                     <!-- End servers guide -->
                 </div>
@@ -410,7 +408,7 @@
 
 
     <div class="row mx-3 border-left border-right border-bottom" style="height: calc(90vh - 80px);">
-        <div class="col-8 border-right p-0 h-100 position-relative">
+        <div class="col-8 border-right p-0 h-100 position-relative animate" style="z-index: 2">
             <div id='status' class="position-absolute display-4 w-100 text-center text-muted"
                 style="left: 50%;top: 50%;transform: translate(-50%, -50%);opacity: .1;z-index: -1;"></div>
 
@@ -452,12 +450,22 @@
                 <div class="tooltip-inner text-truncate" dir="rtl"></div>
             </div>
         </div>
-        <h4 class="col d-flex align-items-center justify-content-center m-0">
+        <h5 class="col d-flex align-items-center justify-content-center m-0 p-0" id="tools">
             <i class="fa fa-comment-dots text-light mx-2 cursor-pointer" title="Show/Hide Comments"
                 onclick="$('#__disqus').show().css('margin-top', 0)"> </i>
             <i class="fa fa-list-ul text-warning cursor-pointer mx-2" title="Show list of updated Anime"
                 onclick="$('#bList').show().css('margin-top', 0)"></i>
+            <i class="fa fa-exchange-alt text-success cursor-pointer mx-2" title="Inverse layout" onclick="
+                    const eps = $('#episodes');
+                    (eps.next().length && eps.next().after(eps) && $('#tools').parent().append($('#tools'))) ||
+                    (eps.prev().length && eps.prev().before(eps) && $('#tools').parent().prepend($('#tools')));
+                    localStorage.inverseLayout = eps.prev().length ? '' : '1';
+                " id="inverseLayout"></i>
             <i class="fa fa-info-circle text-info mx-2" style="cursor: help; z-index: 3;"></i>
+            <i class="fas fa-lightbulb text-light mx-2" style="cursor: pointer; z-index: 2;"
+                title="Toggle ligths (You can configure the degree of dimming in the player settings)"></i>
+            <i class="fa fa-tv text-primary mx-2" style="cursor: pointer; z-index: 2;" title="Theater mode"></i>
+        </h5>
     </div>
     </div>
 

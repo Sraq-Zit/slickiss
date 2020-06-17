@@ -1,7 +1,43 @@
-<div class="player pinned" style="width: 100vw; height: 100vh;">
+<div class="d-block player pinned" style="width: 100vw; height: 100vh;display: none;">
     <link rel="stylesheet" href="////css/fontawesome.min.css">
+    <link rel="stylesheet" href="////css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-    <video src="" id="mainVid" preload="auto" style="width: 100%; height: 100%;"></video>
+    <video src="" id="mainVid" preload="auto" style="width: 100%; height: 100%;" crossorigin="anonymous">
+        <audio></audio>
+    </video>
+
+    <!-- Screenshot overlay -->
+
+    <div class="screenshot-effect position-fixed w-100 h-100 bg-light"
+        style="top: 0;opacity: 0;pointer-events: none;z-index: 5;">
+    </div>
+    <div class="screenshot overlay position-fixed d-flex align-items-center justify-content-center w-100 h-100 animate"
+        style="top: 0;opacity: 0;background: #00000099;pointer-events: none;">
+
+        <div class="border border-dark bg-dark shadow h-75" style="opacity: .95;">
+
+            <div class="d-flex align-items-center justify-content-center px-0 w-100" style="height: 85%;">
+                <img style="max-height: 100%;max-width: 100%;" src="">
+                <video style="max-height: 100%;max-width: 100%;display: none;" src="" controls>
+            </div>
+            <div class="d-flex align-items-center justify-content-center w-100" style="height: 15%;">
+                <a class="btn btn-dark mx-2" href="#">
+                    <i class="fa fa-download"></i>
+                    Download
+                </a>
+                <a class="btn btn-dark mx-2" href="#">
+                    <i class="fa fa-times-circle"></i>
+                    Close
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- End screenshot overlay -->
+
+    <strong class="position-fixed text-danger size-logger h4 bg-light p-2 rounded-pill"
+        style="top: 20px;left: 20px;display: none;"> </strong>
+
     <div class="controlBar">
         <div class="bufferBar">
             <div class="timeDisplay" style="text-align: center; opacity: 0; margin-left: 0;">
@@ -16,148 +52,71 @@
             <div class="buffer" style="margin-left: 0%; width: 1.98%;">
             </div>
         </div>
-        <table class="toolbarContainer">
-            <noscript>
-                .star {
-                mask: url(////imgs/star.svg) no-repeat center;
-                -webkit-mask: url(////imgs/star.svg) no-repeat center;
-                }
+        <div class="toolbarContainer row px-3 pt-2 m-0 mt-1">
+            <div class="col d-flex align-items-center p-0 overflow-hidden">
+                <i class="prev slickBtn fa fa-step-backward alwaysEnabled" title="Previous"></i>
 
-                .play {
-                mask: url(////imgs/play-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/play-button.svg) no-repeat center;
-                }
+                <i class="play media-control slickBtn fa fa-pause fa-play" title="Play/Pause"></i>
 
-                .pause {
-                mask: url(////imgs/pause-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/pause-button.svg) no-repeat center;
-                }
+                <i class="next slickBtn fa fa-step-forward alwaysEnabled" title="Episode 002"></i>
 
-                .download {
-                mask: url(////imgs/download-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/download-button.svg) no-repeat center;
-                }
+                <div style="color:white;font-size:0.9rem;white-space: nowrap;" id="time">00:00 / 22:52</div>
 
-                .fscreen {
-                mask: url(////imgs/fullscreen-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/fullscreen-button.svg) no-repeat center;
-                }
+                <i class="skipBackward slickBtn fa fa-backward d-none d-sm-inline"
+                    title="Skip backward opening/ending"></i>
 
-                .exitFullscreen {
-                mask: url(////imgs/exit-full-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/exit-full-button.svg) no-repeat center;
-                }
+                <i class="skipForward slickBtn fa fa-forward d-none d-sm-inline" title="Skip opening/ending"></i>
 
-                .reload {
-                mask: url(////imgs/reload-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/reload-button.svg) no-repeat center;
-                }
-
-                .setting {
-                mask: url(////imgs/settings-button.svg) no-repeat center;
-                -webkit-mask: url(////imgs/settings-button.svg) no-repeat center;
-                }
-
-                .volume2 {
-                mask: url(////imgs/volume2.svg) no-repeat center;
-                -webkit-mask: url(////imgs/volume2.svg) no-repeat center;
-                }
-
-                .volume1 {
-                mask: url(////imgs/volume1.svg) no-repeat center;
-                -webkit-mask: url(////imgs/volume1.svg) no-repeat center;
-                }
-
-                .volume0 {
-                mask: url(////imgs/volume0.svg) no-repeat center;
-                -webkit-mask: url(////imgs/volume0.svg) no-repeat center;
-                }
-
-                .volumeMute {
-                mask: url(////imgs/mute.svg) no-repeat center;
-                -webkit-mask: url(////imgs/mute.svg) no-repeat center;
-                }
-            </noscript>
-            <tr>
-                <td>
-                    <i class="play media-control slickBtn fa fa-pause fa-play disabled" title="Play/Pause"></i>
-                    <!-- <img src="////imgs/transparent.png" class="play media-control slickBtn disabled"> -->
-                </td>
-                <td>
-                    <span style="color:white;font-size:0.9rem;" id="time">00:00 / 00:00</span>
-                </td>
-                <td class="volume" style="width: 20%;">
-                    <div style="width: 35px;height: 100%;display: inline-block;">
-                        <i class="slickBtn volumeLvl alwaysEnabled slickBtn fa fa-volume"
-                            style="position: absolute;top: 50%;transform: translateY(-75%);" title="volume"></i>
+                <div style="width: 95px;" class="d-none d-sm-flex">
+                    <i class="slickBtn volumeLvl alwaysEnabled slickBtn fa fa-volume" title="volume"></i>
+                    <div class="volumeBar d-none d-sm-inline">
                     </div>
-                    <!-- <img src="////imgs/transparent.png" class="slickBtn volumeLvl alwaysEnabled volume2"> -->
-                    <div class="volumeBar">
-                    </div>
-                </td>
-                <td style="width: 20%;">
-                </td>
-                <td class="rating" style="width: 20%;">
-                    <i class="reload alwaysEnabled slickBtn fa fa-sync-alt" title="Reload only server page"></i>
-                    <!-- <img src="////imgs/transparent.png" class="reload alwaysEnabled slickBtn"
-                        title="Press and hold ctrl key before clicking to reload without confirmation"> -->
+                </div>
+            </div>
 
-                    <!-- <img src="////imgs/transparent.png" class="slickBtn star selected disabled" title="Crappy">
-                    <img src="////imgs/transparent.png" class="slickBtn star selected disabled" title="Bad">
-                    <img src="////imgs/transparent.png" class="slickBtn star selected disabled" title="Meh">
-                    <img src="////imgs/transparent.png" class="slickBtn star disabled" title="Good">
-                    <img src="////imgs/transparent.png" class="slickBtn star disabled" title="Great"> -->
-                </td>
-                <td style="text-align:right;position:relative;">
-                    <span>
-                        <i class="pin slickBtn fa fa-thumbtack" title="Pin/Lock controls"></i>
-                    </span>
-                    <!-- <img src="////imgs/transparent.png" class="setting alwaysEnabled slickBtn"> -->
-                    <!-- <img src="////imgs/transparent.png" class="download slickBtn disabled"> -->
-                    <!-- <img src="////imgs/transparent.png" class="fscreen screen slickBtn disabled"> -->
-                    <i class="setting alwaysEnabled slickBtn fa fa-cog" style="position: relative;">
-                        <span style="position: absolute;right: 50%;bottom: 50%;background: #161616;color: white;
-                            padding: 4px;font-size: 0.6rem;pointer-events: none;font-weight: bold;font-family: sans-serif;
-                            opacity: 0.8;box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; display: none;"
-                            id="currentQ"></span>
-                    </i>
-                    <i class="download slickBtn fa fa-download" title="Download"></i>
-                    <i class="fscreen screen slickBtn fa fa-expand fa-compress" title="Fullscreen"></i>
-                    <div class="settings" style="display: none;">
-                        <table style="user-select: none; width: 100%; margin: 0px auto;">
-                            <tr>
-                                <td class="q" style="display: none;">
 
-                                </td>
-                            </tr>
-                            <!-- <tr>
-                                <td id="status">
-                                    <div id="preload" style="cursor:pointer; text-align:center; color:#5d8800;">
-                                        Preload whole video
-                                    </div>
-                                    <div id="abort" style="color:red;width:100%;">
-                                    </div>
-                                </td>
-                            </tr> -->
-                            <tr>
-                                <td style="cursor: pointer; text-align: start;" id="remove"
-                                    title="Play media with Chrome's built-in plain html video player">
-                                    <i class="fab fa-html5"></i>
-                                    <strong>Use html5 video player</strong>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="cursor: pointer; text-align: start;" id="disable"
-                                    title="Disabled Slickiss player from this server. You can re-enable it in the settings">
-                                    <i class="fa fa-times-circle"></i>
-                                    <strong>Disable Slickiss player</strong>
-                                </td>
-                            </tr>
-                        </table>
+
+
+            <div class="d-flex align-items-center justify-content-end">
+                <i class="reload alwaysEnabled slickBtn fa fa-sync-alt" title="Reload only server page"></i>
+                <i class="record slickBtn fa fa-video" title="Record a clip"></i>
+                <i class="screenshot slickBtn fa fa-camera" title="Take a screenshot"></i>
+
+                <i class="pin slickBtn fa fa-thumbtack d-flex align-items-center" title="Pin/Lock controls"
+                    style="position: unset;float: left;"></i>
+                <i class="setting alwaysEnabled slickBtn fa fa-cog" style="position: relative;">
+                    <span
+                        style="display:none; position: absolute; right: 5%; bottom: 50%; background: rgb(22, 22, 22); color: white; padding: 4px; font-size: 0.6rem; pointer-events: none; font-weight: bold; font-family: sans-serif; opacity: 0.7; box-shadow: rgba(0, 0, 0, 0.15) 0px 0.5rem 1rem !important;"
+                        id="currentQ"></span>
+                </i>
+                <i class="download slickBtn fa fa-download" title="Download"></i>
+                <i class="fscreen screen slickBtn fa fa-expand fa-compress alwaysEnabled" title="Fullscreen"></i>
+                <div class="settings mr-3">
+                    <div style="user-select: none;" class="m-0">
+                        <div class="q col-12 py-2"> </div>
+                        <div class="col-12 pt-2">
+                            <div style="cursor: pointer; text-align: start;" id="dimlight"
+                                title="Darkness level when lights are turned off">
+                                <i class="fa fa-lightbulb"></i>
+                                <input type="range" class="w-75"
+                                    oninput="top.postMessage({request:'light', opacity:this.value/100},'*')">
+                            </div>
+                        </div>
+                        <div style="cursor: pointer;" id="remove"
+                            title="Play media with Chrome's built-in plain html video player" class="col-12 pt-2">
+                            <i class="fab fa-html5"></i>
+                            <strong>Use html5 video player</strong>
+                        </div>
+                        <div style="cursor: pointer;" id="disable"
+                            title="Disabled Slickiss player from this server. You can re-enable it in the settings"
+                            class="col-12 py-2">
+                            <i class="fa fa-times-circle"></i>
+                            <strong>Disable Slickiss player</strong>
+                        </div>
                     </div>
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
+        </div>
     </div>
     <img class="controlIcon loadingImg slickFloating" src="////imgs/mobchara_3.png">
     <img class="controlIcon svg playIcon" src="////imgs/play.svg">
