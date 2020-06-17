@@ -6,7 +6,7 @@ class Anime {
         this.ignoreListing = ignoreListing;
 
         this.title = this.doc.find('a.bigChar[href*=\Anime\]');
-        this.doc.find('span[id^=spanBookmark]').remove();
+        this.doc.find('span[id^=spanBookmark]').hide();
         this.doc.find('#imgLoader').replaceWith(this.bkManager = $('<span/>', {
             class: 'iconStyle bookmarkIcon disabled',
             id: 'bkManager',

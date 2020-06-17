@@ -10,7 +10,7 @@ class CaptchaDisplay {
             <link href="/Content/css/tpl_style.css?v=7" rel="stylesheet" type="text/css">
             <body></body>
         `;
-        document.title = 'I\'m not a human I\'m a robot :D'
+        document.title = 'Beep boop 🤖';
         const size = 200;
         const css = { height: size, width: size };
         this.log = $('<div/>', {
