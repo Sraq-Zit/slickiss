@@ -1,6 +1,9 @@
 class MessageManager{
     static callbacks = {};
     static i = 0;
+    /** Attach new event listener
+     * @param {(e: MessageEvent) => any} callback 
+     */
     static attachListener(callback){
         window.addEventListener('message', callback)
         this.callbacks[++this.i] = callback;

@@ -1,4 +1,7 @@
 
+// chrome.runtime.onInstalled
+//     .addListener(_ => chrome.tabs.create({ url: chrome.extension.getURL('/html/updates.html') }));
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     if (message.type == 'logout') {

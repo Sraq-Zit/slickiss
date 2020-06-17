@@ -1,6 +1,23 @@
 class EpisodeListing {
-    constructor(listing) {
+    constructor(listing, process = true) {
         this.listing = listing;
+        Chrome.get('lastVisit', 'local').then(lastVisit => {
+            if (!this.listing.find('a').length || !lastVisit) return;
+            const visits = lastVisit[S.parseUrl(this.listing.find('a')[0].href).name];
+            if (visits)
+                this.listing.find('a').each(
+                    (_, el) => {
+                        const info = S.parseUrl(el.href);
+                        if (info.id in visits) {
+                            const INVISIBLE = '⁣';
+                            const time = (new Date(visits[info.id])).toTimeString().slice(0, 5);
+                            $(el).css('text-decoration', 'underline');
+                            el.title = `Watched ${getDisplayDate(new Date())} at ${time}`;
+                        }
+                    }
+                );
+        });
+        if (!process) return;
         this.episodes = []
         this.selectAll = $('<input/>', { type: 'checkbox' });
         this.aborter = $('<a/>', { href: '#', text: 'Stop' });
@@ -83,7 +100,7 @@ class EpisodeListing {
             this.loadingBar, [this.halfwayGetter, '<br>', this.aborter]
         ][i]));
         let checkbox = $('<input/>', { type: 'checkbox' });
-        let anchors = this.listing.find('td > a');
+        let anchors = this.listing.find('td > a[href*="/Anime/"]');
         anchors.each((i, el) => {
             let progress;
             $(el).wrap($('<div/>', { css: { overflow: 'hidden', 'max-width': 'unset' } }));
@@ -122,7 +139,7 @@ class EpisodeListing {
             this.urlsArea.val('');
             this.command.val('');
             if (!this.serverOrder.val()) return;
-            let command = "if exist \"c:\\progra~1\\internet download manager\" (cd \"c:\\progra~1\\internet download manager\") else if exist \"c:\\progra~2\\internet download manager\" (cd \"c:\\progra~2\\internet download manager\") else mshta \"javascript:var sh=new ActiveXObject( \"WScript.Shell\" ); sh.Popup( \"you sure you have idman ? (Alternatively use the links provided from kissanime by the extension\", 10, \"IDMan not found!\", 64 );close()\" \n";
+            let command = "if exist \"c:\\progra~1\\internet download manager\" (cd \"c:\\progra~1\\internet download manager\") else if exist \"c:\\progra~2\\internet download manager\" (cd \"c:\\progra~2\\internet download manager\") else set /p id=Idman not found in the defaults paths. Press Enter to exit&exit \n";
             let text = '';
             let failed = '';
             const order = this.serverOrder.val().split(',');

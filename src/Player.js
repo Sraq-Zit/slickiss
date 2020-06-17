@@ -9,15 +9,21 @@ class Player {
         qs.forEach(
             q => this.qContainer.append(
                 this.qualities[q.label] = $('<a/>', {
-                    class: q.file == qs.preferredQ.file ? 'active' : '',
+                    class: q.file == qs.preferredQ.file ? 'disabled btn-light' : 'btn-outline-light',
                     href: '#', data: q, text: q.label
                 }).on('click', e => {
                     e.preventDefault();
-                    this.qContainer.find('.active').removeClass('active');
-                    const data = $(e.currentTarget).addClass('active').data();
+                    this.qContainer.find('.disabled')
+                        .removeClass('disabled btn-light').addClass('btn-outline-light');
+                    const data = $(e.currentTarget).addClass('disabled btn-light')
+                        .removeClass('btn-outline-light')
+                        .data();
+
                     $('#currentQ').show().text(data.label);
+                    this.notified = false;
+                    this.v.trigger('beforeunload');
                     if (this.v[0].src != data.file) this.v[0].src = data.file;
-                })[q.file == qs.preferredQ.file ? 'click' : 'show']()
+                })[q.file == qs.preferredQ.file ? 'click' : 'show']().addClass('btn btn-sm rounded-pill')
             ).show()
         )
 
@@ -52,7 +58,7 @@ class Player {
      * @returns {boolean}
      */
     get enabled() {
-        return !this.container.find('.disabled').length;
+        return !this.container.find('.slickBtn.disabled').length;
     }
     set enabled(b) {
         if (!this.enabled && b) {
@@ -109,7 +115,12 @@ class Player {
     async init() {
         this.container = await Assets.player();
         this.firstTime = true;
-        this.v = this.container.find('video').attr('src', this.src);
+        this.v = this.container.find('video#mainVid').attr('src', this.src);
+
+        /** Audio element for videos that that have audio separated
+         * @type {JQuery<HTMLAudioElement>}
+         */
+        this.au = this.v.find('audio');
         this.loader = this.container.find(".loadingImg");
         this.toolbarContainer = this.container.find(".toolbarContainer");
         this.timgTime = this.container.find(".timeDisplay");
@@ -125,15 +136,56 @@ class Player {
         this.settings = this.container.find('.settings');
         this.qContainer = this.container.find('.q');
         this.remover = this.container.find('#remove, #disable');
+        /** MediaRecorder management for recording clips
+         * @type {VideoRecorder}
+         */
+        this.recorder = new VideoRecorder(this.v[0]);
+        /** Overlay for screenshots */
+        this.shooting = {
+            container: this.container.find('.overlay.screenshot'),
+            clickEffect: this.container.find('.screenshot-effect'),
+            sizeLogger: this.container.find('.size-logger'),
+            image: this.container.find('.overlay.screenshot img'),
+            video: this.container.find('.overlay.screenshot video'),
+            download: this.container.find('.overlay.screenshot .fa-download').parent(),
+            upload: this.container.find('.overlay.screenshot .fa-upload').parent(),
+            exit: this.container.find('.overlay.screenshot .fa-times-circle').parent(),
+        };
+        this.shooting.showResults = (blob, isVideo = false) => {
+            this.pinned = true;
+            this.shooting.container.css({ opacity: 1, 'pointer-events': '' });
+            this.shooting.image[isVideo ? 'hide' : 'show']();
+            this.shooting.video[!isVideo ? 'hide' : 'show']();
+            const oldSrc = this.shooting.download[0].href;
+            if (oldSrc) URL.revokeObjectURL(oldSrc);
+            const src = URL.createObjectURL(blob);
+            this.shooting[isVideo ? 'video' : 'image'][0].src = src;
+            this.shooting.download[0].href = src;
+            this.shooting.download.attr('title', convertSize(blob.size + 'B', undefined, 2));
+        };
+        this.shooting.close = () => {
+            this.pinned = false;
+            this.shooting.container.css({ opacity: 0, 'pointer-events': 'none' });
+            this.shooting.image.removeAttr('src');
+            this.shooting.video.removeAttr('src');
+        };
+
+        /** Player control buttons */
         this.buttons = {
             mediaControl: this.container.find(".slickBtn.media-control"),
+            next: this.container.find(".slickBtn.next"),
+            prev: this.container.find(".slickBtn.prev"),
+            skipForward: this.container.find(".slickBtn.skipForward"),
+            skipBackward: this.container.find(".slickBtn.skipBackward"),
             volumeLvl: this.container.find(".slickBtn.volumeLvl"),
             star: this.container.find(".slickBtn.star"),
             reload: this.container.find(".slickBtn.reload"),
             setting: this.container.find(".slickBtn.setting"),
             download: this.container.find(".slickBtn.download"),
             screen: this.container.find(".slickBtn.screen"),
-            pin: this.container.find(".slickBtn.pin")
+            pin: this.container.find(".slickBtn.pin"),
+            screenshot: this.container.find(".slickBtn.screenshot"),
+            record: this.container.find(".slickBtn.record")
         };
         this.icons = {
             loadingImg: this.container.find(".controlIcon.loadingImg"),
@@ -145,18 +197,29 @@ class Player {
             downloadAborted: this.container.find(".controlIcon.svg.downloadAbortedIcon")
         };
 
+        if (!Player.HAS_NEXT) this.buttons.next.attr('style', 'display:none !important');
+        else this.buttons.next.attr('title', Player.HAS_NEXT);
+        if (!Player.HAS_PREV) this.buttons.prev.attr('style', 'display:none !important');
+        else this.buttons.prev.attr('title', Player.HAS_PREV);
+
+
         MessageManager.attachListener(e => { if (e.data.type) $(document).trigger(e.data) });
 
         $(window).on('resize', e => this.onVidTimeupdate() || this.onVidProgress());
-        $(window).on('beforeunload', _ => {
+        $(window).add(this.v).on('beforeunload pause', _ => {
             if (this.v[0].currentTime > Player.SKIP_TIMESPAN && settings.notifyLastTime &&
                 this.v[0].currentTime <= this.v[0].duration - Player.TRIGGER_TIMESPAN) {
-                LocalStorage.set('lastTimeLeftAt', {
+                const leftAt = this.v[0].currentTime - 5;
+                if (top == self) LocalStorage.set('lastTimeLeftAt', {
                     [md5(location.pathname)]: {
-                        leftAt: this.v[0].currentTime - 5,
+                        leftAt: leftAt,
                         time: Date.now()
                     }
                 });
+                else {
+                    if (Player.TIMES) Player.TIMES[Player.KEY] = { time: Date.now(), leftAt: leftAt };
+                    top.postMessage({ request: 'saveTime', leftAt: leftAt }, '*');
+                }
             }
         });
 
@@ -169,17 +232,51 @@ class Player {
 
         this.bar.on('mousemove', e => this.onMouseOverBar(e));
         this.bar.on('mouseleave', e => this.timgTime.css('opacity', 0) && this.container.removeClass('pinned'));
-        this.toolbarContainer.add(this.v).on('mouseenter mousemove', e => this.playerHover(e));
+        this.toolbarContainer.add(this.v).add(this.bar).on('mouseenter mousemove', e => this.playerHover(e));
         this.volumeBar.on('mousedown',
             e => e.preventDefault() || (this.isChangingVolume = 1) && this.onmousemove(e));
         this.pointer.add(this.bar).on('mousedown',
             e => e.preventDefault() || (this.isDraggingPointer = 1) && this.onmousemove(e));
 
-        this.buttons.mediaControl.on('click', e => this.toggleVideo());
-        this.buttons.screen.on('click', e => this.toggleFullScreen());
-        this.buttons.download.on('click', e => this.downloadVideo());
-        this.buttons.volumeLvl.on('click', e => this.v[0].muted = !this.v[0].muted);
+
+        this.shooting.exit.on('click', this.shooting.close);
+
+
+        this.buttons.mediaControl.on('click', e => !$(e.currentTarget).is('.disabled') && this.toggleVideo());
+        this.buttons.screen.on('click', _ => this.toggleFullScreen());
+        this.buttons.download.on('click', _ => this.downloadVideo());
+        this.buttons.volumeLvl.on('click', _ => this.v[0].muted = !this.v[0].muted);
         this.buttons.pin.on('click', _ => this.pinned = !this.pinned);
+        this.buttons.prev.on('click', _ => parent.postMessage({ request: "prevEp" }, '*'));
+        this.buttons.next.on('click', _ => parent.postMessage({ request: "nextEp" }, '*'));
+        this.buttons.record.on('click', _ => this.toggleClipRecording());
+        this.buttons.screenshot.on('click', async _ => {
+            if (!this.enabled) return;
+            this.pinned = true;
+            const im = new Img();
+            im.img = this.v[0];
+            im.img.width = im.img.videoWidth;
+            im.img.height = im.img.videoHeight;
+
+            this.v[0].pause();
+            this.shooting.clickEffect.removeClass('animate').css('opacity', .9);
+            await im.load();
+            this.shooting.showResults(await im.canvas.convertToBlob());
+            this.shooting.clickEffect.addClass('animate').css('opacity', 0);
+            this.screenshooting.download[0].download = Player.SHOW_DATA.title.trim();
+            this.screenshooting.download[0].download += Assets.formatSecs(im.img.currentTime).replace(':', '_');
+            this.screenshooting.download[0].download += '_' + Math.round(im.img.currentTime % 1) * 1e3;
+        });
+        this.buttons.skipForward.on('click', e => {
+            if ($(e.currentTarget).is('.disabled')) return;
+            this.v[0].currentTime += Player.SKIP_TIMESPAN;
+            this.displayIcon(this.icons.forward);
+        });
+        this.buttons.skipBackward.on('click', e => {
+            if ($(e.currentTarget).is('.disabled')) return;
+            this.v[0].currentTime -= Player.SKIP_TIMESPAN;
+            this.displayIcon(this.icons.backward);
+        });
         this.buttons.reload.on('click', async e => {
             const onyes = (e) => {
                 p.destroyable = false;
@@ -188,10 +285,10 @@ class Player {
                 Chrome.set({ confirmPlayerReload: dontShow[0].checked });
                 location.reload();
             };
-            const onno = e => this.container.removeClass('pinned');
+            const onno = e => this.pinned = false;
             const noconfirm = settings.confirmPlayerReload;
             const p = await new Prompt(onyes, onno, this.container).load();
-            this.container.addClass('pinned');
+            this.pinned = true;
             p.bigTitle.html('Are you sure you want to reload ?');
             const dontShow = $('<input/>', { type: 'checkbox', checked: noconfirm });
             p.subTitle.html('This will only reload the player<br>')
@@ -212,9 +309,11 @@ class Player {
         this.v.on('volumechange', _ => this.onVolumeChange());
         this.v.on('error', _ => this.onVidError());
         this.v.on('waiting',
-            _ => this.container.addClass('loading') &&
+            e => this.container.addClass('loading') &&
                 this.icons.loadingImg.css('filter', 'grayscale(1)') &&
-                (this.totalBuffered = this.buffered));
+                (this.totalBuffered = this.buffered) &&
+                this.au[0].pause()
+        );
         this.v.on('loadstart',
             async _ => {
                 if (this.m3u8) {
@@ -226,6 +325,7 @@ class Player {
                         this.hls.attachMedia(this.v[0]);
                     }
                 }
+                this.buttons.download.removeClass('disabled');
             });
 
 
@@ -233,7 +333,7 @@ class Player {
         if (this.remover) this.remover.on('click', e => this.removePlayer(1, e.currentTarget.id));
 
         if (settings.shortcuts) $(document).on('keydown', e => this.setShortcuts(e));
-        if (settings.autoplay) this.toggleVideo(1);
+        if (settings.autoplay) this.v.attr('autoplay', '');
     }
 
     /** Animation plays when control button with a defined function is activated (show then fadeout)
@@ -298,7 +398,7 @@ class Player {
             const newCanvas = this.thumbnail.retrieve(time) || this.timgTime.thumbnail[0];
             this.timgTime.thumbnail.replaceWith(newCanvas);
             this.timgTime.thumbnail = $(newCanvas);
-            this.container.addClass('pinned');
+            this.pinned = true;
         }
     }
 
@@ -311,7 +411,8 @@ class Player {
         this.idle(0);
         this.timeout = setTimeout(
             () => this.idle(1),
-            this.toolbarContainer.is(e.currentTarget) ? Player.LONG_TIMEOUT : Player.SHORT_TIMEOUT
+            this.toolbarContainer.is(e.currentTarget) || this.bar.is(e.currentTarget) ?
+                Player.LONG_TIMEOUT : Player.SHORT_TIMEOUT
         );
     }
 
@@ -330,36 +431,33 @@ class Player {
     setShortcuts(e) {
         if (document.activeElement instanceof HTMLTextAreaElement || document.activeElement instanceof HTMLInputElement)
             return;
-        switch (e.originalEvent.code) {
-            case Player.SHORTCUTS.playAndPause: this.toggleVideo(); break;
-            case Player.SHORTCUTS.fullScreen: this.toggleFullScreen(); break;
-            case Player.SHORTCUTS.nextEp: parent.postMessage("nextEp", '*'); break;
-            case Player.SHORTCUTS.prevEp: parent.postMessage("prevEp", '*'); break;
-            case Player.SHORTCUTS.skipTheme:
-                this.v[0].currentTime += Player.SKIP_TIMESPAN;
-                this.displayIcon(this.icons.forward);
-                break;
-            case Player.SHORTCUTS.forward:
+        switch (e.code || e.originalEvent.code) {
+            case Player.SHORTCUTS.PLAY_PAUSE: this.buttons.mediaControl.click(); break;
+            case Player.SHORTCUTS.FULLSCREEN: this.buttons.screen.click(); break;
+            case Player.SHORTCUTS.NEXT_EP: this.buttons.next.click(); break;
+            case Player.SHORTCUTS.PREV_EP: this.buttons.prev.click(); break;
+            case Player.SHORTCUTS.DOWNLOAD: this.buttons.download.click(); break;
+            case Player.SHORTCUTS.THEATER: top.postMessage({ request: 'theater' }, '*'); break;
+            case Player.SHORTCUTS.LIGHT: top.postMessage({ request: 'light' }, '*'); break;
+            case Player.SHORTCUTS.SKIP:
+                this.buttons[e.shiftKey ? 'skipBackward' : 'skipForward'].click(); break;
+            case Player.SHORTCUTS.FORWARD:
                 this.v[0].currentTime += Player.FORWARD_BACKWARD_TIMESPAN;
                 this.displayIcon(this.icons.forward);
                 break;
-            case Player.SHORTCUTS.backward:
+            case Player.SHORTCUTS.BACKWARD:
                 this.v[0].currentTime -= Player.FORWARD_BACKWARD_TIMESPAN;
                 this.displayIcon(this.icons.backward);
                 break;
-            case Player.SHORTCUTS.volumeUp:
+            case Player.SHORTCUTS.VOLUME_UP:
                 try { this.v[0].volume += Player.VOLUME_SPAN; } catch (e) { }
                 // this.displayIcon(this.icons.forward);
                 break;
-            case Player.SHORTCUTS.volumeDown:
+            case Player.SHORTCUTS.VOLUME_DOWN:
                 try { this.v[0].volume -= Player.VOLUME_SPAN; } catch (e) { }
                 // this.displayIcon(this.icons.forward);
                 break;
             case Player.SHORTCUTS.abortPreload: /* To implement (deprecated ??) */ break;
-            case Player.SHORTCUTS.download:
-                this.displayIcon(this.icons.download);
-                setTimeout(() => this.downloadVideo(), 400);
-                break;
         }
     }
 
@@ -372,17 +470,19 @@ class Player {
     async toggleVideo(action) {
         if (!this.enabled || this.v[0].toggling) return;
         if (this.firstTime) {
-            this.container.removeClass('pinned');
+            this.pinned = false;
             this.firstTime = false;
         }
         action = typeof action == 'undefined' ? this.v[0].paused : action;
         this.v[0].toggling = 1;
         if (action) {
             await this.v[0].play();
+            if (this.au[0].currentSrc) await this.au[0].play();
             this.displayIcon(this.icons.play);
             this.buttons.mediaControl.removeClass('fa-play');
         } else {
             this.v[0].pause();
+            if (this.au[0].currentSrc) this.au[0].pause();
             this.displayIcon(this.icons.pause);
             this.buttons.mediaControl.addClass('fa-play');
         }
@@ -395,7 +495,7 @@ class Player {
      */
     navigateTo(time, change = false) {
         if (typeof time == 'undefined') time = this.v[0].currentTime;
-        if (change) return this.v[0].currentTime = time;
+        if (change) return this.au[0].currentTime = this.v[0].currentTime = time;
 
         time = Math.min(time, this.v[0].duration);
         time = Math.max(time, 0);
@@ -410,9 +510,8 @@ class Player {
 
     /** Download video using its source if available */
     downloadVideo() {
-        if (!this.enabled) return;
         if (!this.v[0].currentSrc) return alert('No video found!');
-        if (this.m3u8) return Assets.toast('Download not yet available for this type of files');
+        if (this.m3u8) return Assets.toast('Downloading is not available yet for this type of files');
         $('<a/>', { href: this.v[0].currentSrc, download: document.title, target: '_blank' })[0].click();
     }
 
@@ -424,12 +523,31 @@ class Player {
             if (d) document.exitFullscreen();
             else this.v[0].requestFullscreen();
 
-        if (!this.enabled) return;
-
         this.buttons.screen[d ? 'addClass' : 'removeClass']('fa-expand');
         if (d) document.exitFullscreen();
         else this.container[0].requestFullscreen();
 
+    }
+
+    /** Start/Stop recording a clip from the current video stream */
+    async toggleClipRecording() {
+        if (this.enabled)
+            if (!this.recorder.recording) {
+                this.recorder.record();
+                this.shooting.sizeLogger.show().text('0B');
+                this.recorder.onsizeupdate =
+                    size => this.shooting.sizeLogger.text(convertSize(size + 'B', undefined, 2));
+
+                this.container.addClass('border border-danger');
+                this.buttons.record.addClass('text-danger');
+            } else {
+                this.container.removeClass('border border-danger');
+                this.buttons.record.removeClass('text-danger');
+                this.shooting.sizeLogger.hide();
+                this.shooting.download[0].download = Player.SHOW_DATA.title.trim();
+                this.shooting.showResults(await this.recorder.stop(), true);
+
+            }
     }
 
     /** Handle canplay event on video: Enables player controls and get it ready to control */
@@ -439,33 +557,38 @@ class Player {
         while (len--) total += this.v[0].buffered.end(len) - this.v[0].buffered.start(len);
         this.enabled = true;
 
+        if (!this.v[0].paused && this.au[0].currentSrc) this.au[0].play();
         if (!this.v[0].currentTime)
             this.navigateTo();
-        const data = LocalStorage.get('lastTimeLeftAt');
-        if (settings.notifyLastTime && data && !this.notified)
-            for (const k in data)
-                if (typeof data[k].leftAt == 'undefined') delete data[k];
-                else if (k == md5(location.pathname)) {
+        if (settings.notifyLastTime && Player.TIMES && !this.notified)
+            for (const k in Player.TIMES)
+                if (typeof Player.TIMES[k].leftAt == 'undefined') delete Player.TIMES[k];
+                else if (k == Player.KEY) {
                     const onyes = e => {
-                        this.container.removeClass('pinned');
-                        this.v[0].currentTime = data[k].leftAt;
-                        delete data[k];
-                        LocalStorage.set('lastTimeLeftAt', data, false);
+                        this.pinned = false;
+                        this.v[0].currentTime = Player.TIMES[k].leftAt;
+                        delete Player.TIMES[k];
+                        if (top == self)
+                            LocalStorage.set('lastTimeLeftAt', Player.TIMES, false);
+                        else
+                            top.postMessage({ request: 'removeTime', time: k }, '*');
                     };
                     const onno = e => {
-                        this.container.removeClass('pinned');
-                        delete data[k];
-                        LocalStorage.set('lastTimeLeftAt', data, false);
+                        this.pinned = false;
+                        delete Player.TIMES[k];
+                        if (top == self)
+                            LocalStorage.set('lastTimeLeftAt', Player.TIMES, false);
+                        else
+                            top.postMessage({ request: 'removeTime', time: k }, '*');
                     };
                     const p = await new Prompt(onyes, onno, this.container).load();
-                    this.container.addClass('pinned');
+                    this.pinned = true;
                     p.bigTitle.html(`Do you want to continue from where you left of ?`);
-                    p.subTitle.html(`You previously left this video at ${Assets.formatSecs(data[k].leftAt)}`);
+                    p.subTitle.html(`You previously left this video at ${Assets.formatSecs(Player.TIMES[k].leftAt)}`);
                     p.show();
                     break;
                 }
 
-        LocalStorage.set('lastTimeLeftAt', data, false);
         this.notified = true;
     }
 
@@ -473,14 +596,11 @@ class Player {
     async onVidTimeupdate() {
         if (!this.v[0].duration) this.enabled = false;
         if (!this.isDraggingPointer) this.navigateTo();
+        if (Math.abs(this.au[0].currentTime - this.v[0].currentTime) > .3 && this.au[0].duration)
+            this.au[0].play() && (this.au[0].currentTime = this.v[0].currentTime);
         if (this.v[0].currentTime > this.v[0].duration - Player.TRIGGER_TIMESPAN) {
-            if (settings.notifyLastTime) {
-                const data = LocalStorage.get('lastTimeLeftAt') || {};
-                delete data[md5(location.pathname)];
-                LocalStorage.set('notifyLastTime', data, false);
-            }
             if (settings.markAsSeen) {
-                parent.postMessage("finished", '*');
+                parent.postMessage({ request: "finished" }, '*');
                 if (!this.container.seen) {
                     this.container.seen = 1;
                     const notif = $('<span/>', {
@@ -547,8 +667,11 @@ class Player {
 
     /** Handle player on errors */
     onVidError() {
-        if (![this.v[0].NETWORK_IDLE, this.v[0].NETWORK_LOADING].includes(this.v[0].networkState))
+        if (![this.v[0].NETWORK_IDLE, this.v[0].NETWORK_LOADING].includes(this.v[0].networkState)) {
             this.enabled = false;
+            if (this.au[0].currentSrc)
+                this.au[0].pause();
+        }
     }
 
     /** Correctly set chunks' by redirecting to the actually urls
@@ -565,7 +688,7 @@ class Player {
                     (m3u8 = m3u8.replace(
                         v,
                         decodeURIComponent(v)
-                            .replace('&url=', '&v=0&url=' + domains.rand())
+                            .replace('&url=', '&v=0&url=' + rand(domains))
                             .replace('coacoaca', 'coa3coaca')
                             .replace('raunraca', 'c'.repeat(22))
                             .split('urlRe=')[1]
@@ -625,6 +748,26 @@ class Player {
      */
     static async deploy(data) {
         settings = await Chrome.get();
+        if (top != self)
+            await new Promise(r => {
+                setTimeout(r, 3e3);
+                const token = md5(Math.random().toString());
+                top.postMessage({ request: 'data', token: token }, '*');
+                const list = MessageManager.attachListener(
+                    e => {
+                        if (e.data.token == token) {
+                            this.SHOW_DATA = e.data.showData;
+                            this.KEY = e.data.key;
+                            this.OPACITY = e.data.light;
+                            this.TIMES = e.data.times;
+                            this.HAS_NEXT = e.data.hasNext;
+                            this.HAS_PREV = e.data.hasPrev;
+                            MessageManager.removeListener(list)
+                            r();
+                        }
+                    }
+                );
+            });
         let url = location.href;
         if (location.protocol == "chrome-extension:") {
             url = decodeURIComponent(location.hash.slice(1));
@@ -638,7 +781,9 @@ class Player {
                 const quals = new QualityManager(JSON.parse(url), settings.quality || '720p');
                 player.setQualities(quals);
                 player.v[0].src = quals.preferredQ.file;
+                quals.data.audio && (player.au[0].src = quals.data.audio);
             } catch (e) { console.error(e) }
+            $('input').val(Number(Player.OPACITY) * 100);
             return player;
         }
         const sName = DlGrabber.getServerName(url);
@@ -653,6 +798,7 @@ class Player {
             document.documentElement.innerHTML = '<body></body>';
 
         $('body').css('margin', 0).append(player.container);
+        $('input').val(Number(Player.OPACITY) * 100);
         $('html').attr('overflow', 'hidden');
         if (!(sName in DlGrabber.handlers))
             return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance', 5e3) && player;
@@ -660,12 +806,19 @@ class Player {
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);
         if (!player.seekPreviewAvailable) Assets.toast('Seeking preview not available on this server');
-        if (r.response.includes('GetM3U8')) {
+        if (r.response && r.response.toString().includes('GetM3U8')) {
             Assets.toast('Reloading once more..');
             const urls = r.additional && r.additional.qualities ?
                 JSON.stringify(r.additional.qualities) : r.response;
             return location.href = chrome.extension.getURL('/html/m3u8.html') + '#' + urls;
         }
+        r.additional && r.additional.crossorigin ?
+            player.v[0].crossorigin = 'anonymous' : player.v.removeAttr('crossorigin');
+
+        if (!player.v[0].crossorigin)
+            player.buttons.screenshot.add(player.buttons.record).remove();
+
+
         player.v[0].src = r.response;
         try {
             if (r.additional) {
@@ -674,6 +827,7 @@ class Player {
                     const quals = new QualityManager(r.additional.qualities, settings.quality || '720p');
                     player.setQualities(quals);
                     player.v[0].src = quals.preferredQ.file;
+                    quals.data.audio && (player.au[0].src = quals.data.audio);
                 }
             }
         } catch (e) { console.error(e) }
@@ -691,6 +845,34 @@ class Player {
         this.timeout = 0;
         this.src = src;
     }
+
+    /** A key for storing time the video left off at
+     * @type {number}
+     **/
+    static KEY = md5(location.href);
+
+    /** Dim level of turned off lights
+     * @type {string|number}
+     **/
+    static OPACITY = ".9";
+
+    /** Data of the playing show */
+    static SHOW_DATA;
+
+    /** Whether the current episode has a previous episode
+     * @type {boolean}
+     **/
+    static HAS_PREV = false;
+
+    /** Whether the current episode has a next episode
+     * @type {boolean}
+     **/
+    static HAS_NEXT = false;
+
+    /** Last video times left off
+     * @type {number}
+     **/
+    static TIMES = LocalStorage.get('lastTimeLeftAt') || {};
 
     /** Time before fading controls out when cursor is idle not on the toolbar
      * @type {number}
@@ -734,35 +916,6 @@ class Player {
      * @type {string[]}
      **/
     static THUMBNAIL_PREVIEW_BLACKLIST = ['mp4upload'];
-
-    /** Shortcuts definitions to control media using keyboard
-     * @type {{
-        playAndPause: number;
-        fullScreen: number;
-        nextEp: number;
-        prevEp: number;
-        skipTheme: number;
-        abortPreload: number;
-        download: number;
-        volumeUp: number,
-        volumeDown: number,
-        backward: number,
-        forward: number,
-    }}
-     **/
-    static SHORTCUTS = {
-        playAndPause: "Space",
-        fullScreen: "KeyF",
-        nextEp: "KeyN",
-        prevEp: "KeyP",
-        skipTheme: "KeyS",
-        abortPreload: "KeyA",
-        download: "KeyD",
-        volumeUp: "ArrowUp",
-        volumeDown: "ArrowDown",
-        backward: "ArrowLeft",
-        forward: "ArrowRight",
-    };
 
     /** Element containing the whole UI
      * @type {JQuery<HTMLVideoElement>}
@@ -850,23 +1003,9 @@ class Player {
     settings;
 
     /** Remove / Disable Slickiss video player
-    
+     
     **/
     remover;
-
-    /** Player control buttons
-    * @type {{
-       mediaControl: JQuery<HTMLElement>;
-       volumeLvl: JQuery<HTMLElement>;
-       star: JQuery<HTMLElement>;
-       reload: JQuery<HTMLElement>;
-       setting: JQuery<HTMLElement>;
-       download: JQuery<HTMLElement>;
-       screen: JQuery<HTMLElement>;
-       pin: JQuery<HTMLElement>;
-   }}
-    **/
-    buttons;
 
     /** Alternative video qualities anchor elements
     * @type {{
@@ -874,7 +1013,7 @@ class Player {
        '720p': JQuery<HTMLAnchorElement>;
        '480p': JQuery<HTMLAnchorElement>;
        '320p': JQuery<HTMLAnchorElement>;
-   }}
+    }}
     **/
     qualities = {};
 
@@ -887,7 +1026,7 @@ class Player {
        forward: JQuery<HTMLImageElement>;
        download: JQuery<HTMLImageElement>;
        downloadAborted: JQuery<HTMLImageElement>;
-   }}
+    }}
     **/
     icons;
 
@@ -898,3 +1037,19 @@ class Player {
     m3u8;
 
 }
+
+/** Shortcuts definitions to control media using keyboard **/
+Player.SHORTCUTS = {
+    PLAY_PAUSE: "Space",
+    FULLSCREEN: "KeyF",
+    NEXT_EP: "KeyN",
+    PREV_EP: "KeyP",
+    SKIP: "KeyS",
+    DOWNLOAD: "KeyD",
+    VOLUME_UP: "ArrowUp",
+    VOLUME_DOWN: "ArrowDown",
+    BACKWARD: "ArrowLeft",
+    FORWARD: "ArrowRight",
+    THEATER: 'KeyT',
+    LIGHT: 'KeyL'
+};

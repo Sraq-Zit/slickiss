@@ -5,11 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="fontawesome.min.css">
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <style>
         body {
             background-color: #161616;
+        }
+
+        img {
+            display: block;
+            height: 450px;
         }
 
         .container .h1,
@@ -205,7 +210,7 @@
 
 </head>
 
-<body class="overflow-hidden" style='font-family: "Nunito", sans-serif;'>
+<body class="overflow-auto pb-4" style='font-family: "Nunito", sans-serif;'>
 
     <!-- Header -->
     <header class="header header-transparent">
@@ -224,25 +229,75 @@
     <!-- End header -->
 
     <div class="container text-light pt-4">
-        <div class="h3">New player interface</div>
+        <hr class="border border-dark">
+        <div class="h3">User-agent for BetaX</div>
         <hr class="border border-dark">
         <ul>
-            <li>Better design</li>
-            <li>Better user experience</li>
-            <li>Comments are now available to see</li>
-            <li>Hotkeys outside Slickiss are not interfered</li>
-            <li>Server links made ready to use without reloading the page</li>
-            <li>Hover over <i class="fa fa-info-circle text-info"></i> for help</li>
+            <li>
+                <h5>What is User-Agent ?</h5>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent"
+                    target="_blank">User-agent</a>
+                is a piece of information that serves as an identification for your browser. <br>
+                Changing the user-agent might create some kind of compatibility, say, for example you
+                want to download an application for windows and you user-agent was changed to MacOS, the website might
+                link you to the MacOS version by default. However, changing the user-agent is very safe. <br>
+                User-agent are usually spoofed to test various environments.
+            </li>
+            <li class="mt-3">
+                <h5>Why tho ?</h5>
+                No idea. <br>
+                BetaX uses googlevideo domain to get the videos.
+                Apparently googlevideo returns a 403 (Forbidden) status code when the user-agent is not set,
+                but I don't know why is this restriction.
+            </li>
+            <li class="mt-3">
+                <h5>So what now ?</h5>
+                Either you follow kissanime instructions to change user-agent, or you can let Slickiss handle it. <br>
+                Slickiss will change user-agent for Kissanime and googlevideo URLs. <br>
+                Enable it from settings:
+                <img src="https://imgur.com/download/n9ck8ok/upload" class="my-4 border border-light">
+                Or you will find some additional instruction in BetaX instructions
+                <img src="https://imgur.com/download/NsLfNJy/upload" class="my-4 border border-light">
+            </li>
         </ul>
-        <div class="h3 mt-5">Multiple batch</div>
+
         <hr class="border border-dark">
-        This gives you the ability to pile up a set of Anime and grab all or selected download links. <br>
-        It can be useful when trying to download all new episodes of the week too ! <br>
-        Put mouse over a link to an Anime (or episode of it) hold <code class="p-1 bg-light text-dark">Shift</code> and
-        click, that would be added to your list<br><br>
-        <a href="https://kissanime.ru/#batch" target="slickiss_batch_manager" class="h3 text-success">
-            Check it out !
-        </a>
+        <div class="h3">Completing from where you left off</div>
+        <hr class="border border-dark">
+        <div class="pl-3">
+            This feature has been already implemented in the previous versions of Slickiss, but if you
+            were watching in a server, the timing you left the video off was only saved locally in that server
+            so if you switched to another server you don't have access to that timing.
+            With this update this problem is solved and now timing are being stored wrt to episode instea of
+            the server:
+            <img src="https://imgur.com/download/k3f1gdb/upload" class="my-4 border border-light">
+        </div>
+
+        <hr class="border border-dark">
+        <div class="h3">New touches in the player</div>
+        <hr class="border border-dark">
+        <ul>
+            <li>
+                <h5>Lights: </h5>
+                <img src="https://imgur.com/download/OnRsusW/upload" class="my-4 border border-light">
+                You can also toggle using shortcuts
+                <img src="https://imgur.com/download/B3rv29R/upload" class="my-4 border border-light">
+            </li>
+            <li>
+                <h5>Theater mode: </h5>
+                <img src="https://imgur.com/download/UCTstP7/upload" class="my-4 border border-light">
+            </li>
+            <li>
+                <h5>Skip theme song forward / backward, Jump to next / previous episode: </h5>
+                Except for skipping themes backward, these were also implemented using only shortcuts, so I added
+                buttons on the video player too to make these optional features visible for those who prefer them
+                such as me. <br>
+                Skipping theme:
+                <img src="https://imgur.com/download/bOx2doM/upload" class="my-4 border border-light">
+                Navigating episodes:
+                <img src="https://imgur.com/download/qz7HUN1/upload" class="my-4 border border-light">
+            </li>
+        </ul>
     </div>
 
 </body>

@@ -10,8 +10,77 @@ class Episode {
                 await Chrome.set({ supported: this.isSupported });
                 location.reload();
             }
-        })
+        });
         this.backup();
+
+
+        MessageManager.attachListener(e => {
+            switch (e.data.request) {
+                case 'data':
+                    /** @type {boolean} */
+                    this.lastSaved = false;
+                    const d = { ...this.animeData, title: document.title, };
+                    delete d.listing;
+                    e.source.postMessage({
+                        showData: d,
+                        key: S.parseUrl(location.href).id,
+                        times: LocalStorage.get('lastTimeLeftAt') || {},
+                        light: localStorage.def_opct || '.9',
+                        hasNext: !this.nextBtn.is('.disabled') && this.nextBtn.find('.tooltip-inner').text(),
+                        hasPrev: !this.prevBtn.is('.disabled') && this.prevBtn.find('.tooltip-inner').text(),
+                        token: e.data.token
+                    }, '*');
+                    break;
+
+                case 'finished':
+                    if (!this.lastSaved) {
+                        const info = S.parseUrl(location.href);
+                        Chrome.get('lastVisit', 'local').then(async lastVisit => {
+                            if (!lastVisit) lastVisit = {};
+                            if (!(info.name in lastVisit)) lastVisit[info.name] = {};
+                            lastVisit[info.name][info.id] = Date.now();
+                            await Chrome.set({ lastVisit: lastVisit }, 'local');
+                            new EpisodeListing(this.listing, false);
+                        });
+                        this.lastSaved = true;
+                    }
+                    if (this.nextBtn.is('.disabled'))
+                        $('.seenIcon:not(.seen)').click();
+                    break;
+                case 'prevEp':
+                    this.prevBtn.not('.disabled').click();
+                    break;
+                case 'nextEp':
+                    this.nextBtn.not('.disabled').click();
+                    break;
+
+                case 'saveTime':
+                    LocalStorage.set('lastTimeLeftAt', {
+                        [S.parseUrl(location.href).id]: {
+                            leftAt: e.data.leftAt,
+                            time: Date.now()
+                        }
+                    });
+                    break;
+
+                case 'removeTime':
+                    const data = LocalStorage.get('lastTimeLeftAt') || {};
+                    delete data[e.data.time];
+                    LocalStorage.set('lastTimeLeftAt', data, false);
+                    break;
+
+                case 'theater':
+                    $('.fa-tv')[0].click();
+                    break;
+
+                case 'light':
+                    this.toggleLights(e.data.opacity);
+                    break;
+
+                default:
+                    break;
+            }
+        });
 
         if ($("#btnBookmarkManager").length) $("#btnBookmarkManager")[0].click();
 
@@ -61,7 +130,7 @@ class Episode {
         const iframe = $('#divContentVideo iframe, #centerDivVideo iframe');
         const next = $('#btnNext').parent().attr('href');
         const prev = $('#btnPrevious').parent().attr('href');
-        const title = document.title.split(' - ')[0];
+        const title = document.title.split(' - Watch')[0];
         this.src = iframe.length ? iframe[0].src : `${location.href}#player`;
         $('#selectServer>option')
             .toArray()
@@ -75,6 +144,7 @@ class Episode {
         $('#episodes').append(this.listing = this.animeData.listing);
         $('.bigChar').attr('href', this.animeData.url).text(this.animeData.name);
         new Anime;
+        new EpisodeListing(this.listing, false);
         this.listing.find('tr > td:first-child').attr('title', 'Click to prepare this episode while you are watching the current one');
         this.listing.find('a').parent().on('click', e => {
             if ($(e.target).is('a')) return;
@@ -103,9 +173,13 @@ class Episode {
                 dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
                 (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
             </script>
-        `)
+        `);
         this.markEpisode(location.href, 'ready', false);
         $('#bootstrap').on('load', _ => $('.slickExtra').remove() && this.update());
+        $('.fa-lightbulb').on('click', _ => this.toggleLights());
+        $('.fa-tv').on('click', _ => localStorage.theaterMode = this.iframe.parent().toggleClass('col-12').hasClass('col-12'));
+        if (localStorage.theaterMode == 'true') $('.fa-tv')[0].click();
+        if (localStorage.inverseLayout) $('#inverseLayout')[0].click();
         this.srvContainer.on('click', 'span:not(.disabled)', e => {
             const server = $(e.currentTarget);
             const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
@@ -148,6 +222,14 @@ class Episode {
 
     /** Update components and attributes */
     update() {
+        const iframe = $(`iframe[src*="/embed/comments"]`)[0];
+        if (iframe) {
+            const url = S.parseUrl(location.href).stripped.replace('.ru', '.to');
+            iframe.src = iframe.src.replace(/t_u=.+?&/g, `t_u=${url}&`);
+        }
+        $('#__disqus').css('margin-top') != '0px' &&
+            $('#__disqus').attr('style', (i, s) => (s || '') + 'display:none !important');
+
         this.srvContainer.children(':not(.sample)').remove();
         const sample = this.srvContainer.find('.sample').clone().removeClass('sample');
         const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
@@ -163,6 +245,7 @@ class Episode {
 
             this.srvContainer.append(server.addClass(k));
         }
+
 
         const id = S.parseUrl(location.href).id;
         (id in this.cache ? new Promise(r => r(this.cache[id])) : grab(location.href)).then(dlg => {
@@ -187,6 +270,10 @@ class Episode {
             } else btn.addClass('disabled');
 
 
+        sleep(300).then(
+            _ => (this.srvContainer.find('.' + activated.replace(/ /g, '.'))[0] || document.body).scrollIntoView()
+        );
+
         this.markEpisode();
     }
 
@@ -210,7 +297,7 @@ class Episode {
             list.find('td').on(
                 'mouseenter',
                 e => list.find('.info_').html(
-                    $(e.currentTarget).data('title')
+                    ($(e.currentTarget).data('title') || '')
                         .replace(/<a .+?>/g, '<div class="h3 text-info">')
                         .replace(/<\/a>/g, '</div>')
                 )
@@ -226,8 +313,10 @@ class Episode {
     listenToShortcuts() {
         $(document).on("keypress keyup keydown", e => {
             if (e.originalEvent.code == "Escape") $('.closure').click();
+            if (e.ctrlKey && e.charCode == 2) $('.iconStyle.bookmarkIcon').click();
+            if (e.ctrlKey && e.charCode == 10) $('.iconStyle.seenIcon').click();
             // this.iframe[0].contentWindow.focus();
-            this.iframe[0].contentWindow.postMessage({
+            this.iframe[0].contentWindow && this.iframe[0].contentWindow.postMessage({
                 originalEvent: { code: e.originalEvent.code },
                 type: e.type,
                 which: e.which,
@@ -236,24 +325,6 @@ class Episode {
                 altKey: e.altKey,
             }, "*");
         });
-
-        MessageManager.attachListener(e => {
-            switch (e.data) {
-                case 'finished':
-                    if (this.nextBtn.is('.disabled'))
-                        $('.seenIcon:not(.seen)').click();
-                    break;
-                case 'prevEp':
-                    this.prevBtn.not('.disabled').click();
-                    break;
-                case 'nextEp':
-                    this.nextBtn.not('.disabled').click();
-                    break;
-
-                default:
-                    break;
-            }
-        })
 
     }
 
@@ -273,19 +344,28 @@ class Episode {
         });
     }
 
+    /** Toggle dim lights
+     * @param {string} [opac] Opacity value
+     */
+    toggleLights(opac) {
+        const overlay = $('#overlay');
+        const opacity = overlay.css('opacity') == '0' ? localStorage.def_opct || '.9' : '0';
+        overlay.css('opacity', opac ? (localStorage.def_opct = opac) : opacity);
+    }
 
     /** Apply quick navigation to the clicked item
      * @param {DlGrabber} dlg Object containing data of the episode navigated
      */
     quickAccess(dlg) {
-        const server = S.parseUrl(location.href).server;
+        let server = S.parseUrl(location.href).server;
+        if (!(server in dlg.urls)) server = Object.keys(dlg.urls)[0];
         const next = dlg.doc.find('#btnNext').parent().attr('href');
         const prev = dlg.doc.find('#btnPrevious').parent().attr('href');
 
         this.nextBtn = $('#next').data('url', next || '').addClass(next ? '' : 'disabled');
         this.prevBtn = $('#prev').data('url', prev || '').addClass(prev ? '' : 'disabled');
 
-        document.title = dlg.doc.filter('title').text().split('-')[0];
+        document.title = dlg.doc.filter('title').text().split('- Watch')[0];
 
         this.epStatus.text(document.title.replace(this.animeData.name, ''));
 

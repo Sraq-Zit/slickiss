@@ -19,7 +19,12 @@ Number.prototype.pad = function (pad, length) {
     return str;
 }
 
-Array.prototype.rand = function () { if (this && this.length) return this[rand(0, this.length - 1)]; }
+const rand = (min, max) => {
+    if ((min instanceof Array) && min && min.length) return min[rand(0, min.length - 1)];
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 /** Manage video qualities order and preferences */
 class QualityManager {
@@ -113,10 +118,35 @@ const getDisplayDate = (d = new Date) => {
     }
 }
 
+/** Convert size to given unit
+ * @param {string} value Value to convert. The value must contain a unit at the end
+ * @param {'B'|'KB'|'MB'|'GB'|'TB'|'PB'|'EB'|'ZB'} [unit] Target unit to convert the value to
+ * @param {number} [fractionDigits] Number of digits after decimal point
+ * @returns {string}
+ */
+const convertSize = (value, unit, fractionDigits) => {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB'];
+    if (typeof unit != 'undefined' && !units.includes(unit.toUpperCase()))
+        throw 'Unsupported or wrong unit: ' + unit;
 
-const rand = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    value = value.toUpperCase();
+    let u = new RegExp(units.join('|')).exec(value);
+    u = u && u[0];
+    value = parseFloat(value.replace(/[^0-9.e-]/gi, ''));
+
+    if (typeof unit == 'undefined') {
+        if (value >= 1024 && u != units.slice().pop())
+            return convertSize(convertSize(value + u, units[units.indexOf(u) + 1]), unit, fractionDigits);
+        else if (value < 1 && u != units.slice().shift())
+            return convertSize(convertSize(value + u, units[units.indexOf(u) - 1]), unit, fractionDigits);
+        return (fractionDigits == undefined ? value : value.toFixed(fractionDigits)) + u;
+    }
+
+    value = value * 1024 ** (units.indexOf(u) - units.indexOf(unit));
+    if (fractionDigits && typeof fractionDigits == 'number')
+        value = value.toFixed(fractionDigits);
+
+    return value += unit;
 }
+
 

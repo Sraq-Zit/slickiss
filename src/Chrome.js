@@ -1,13 +1,21 @@
-class Chrome {
 
-    static async get(k) {
-        const data = await new Promise(resolve => chrome.storage.sync.get(d => resolve(d)));
+class Chrome {
+    /** Get data from the chrome storage API
+     * @param {string} [k] Data's key 
+     * @param {'local'|'sync'} [stgType] Storage type 
+     */
+    static async get(k, stgType = 'sync') {
+        const data = await new Promise(resolve => chrome.storage[stgType].get(d => resolve(d)));
         return typeof k == 'undefined' ? data : data[k];
     }
 
-    static async set(d) {
+    /** Set data to the chrome storage API
+     * @param {*} [s] Data to store 
+     * @param {'local'|'sync'} [stgType] Storage type 
+     */
+    static async set(d, stgType = 'sync') {
         return new Promise(r => {
-            chrome.storage.sync.set(d, r);
+            chrome.storage[stgType].set(d, r);
             chrome.runtime.sendMessage(undefined, { type: 'updateData' });
         });
 
@@ -17,6 +25,7 @@ class Chrome {
 
 
 let settings = {
+    useragent: false,
     autoplay: false,
     batch: [0, 1, 2, 3, 4, 5],
     captcha: true,
@@ -27,13 +36,15 @@ let settings = {
     player: "1",
     prepareNextPrev: false,
     quality: "720p",
+    'servers.moe': true,
     'servers.mp4upload': true,
     'servers.nova': true,
     'servers.beta': true,
     'servers.hydrax': true,
     shortcuts: true,
     ttip: true,
-    updates: ["0"]
+    updates: ["0"],
+    lastVisit: {}
 };
 
 
