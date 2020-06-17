@@ -78,14 +78,14 @@
 
         .notice {
             color: #b1ca05;
-
+            line-height: 1.4rem;
         }
 
         .options,
         .details {
             position: absolute;
             width: 280px;
-            height: 355px;
+            height: 330px;
             left: 0;
             transition: all .5s ease;
         }
@@ -100,7 +100,7 @@
 
         .details+div {
             position: absolute;
-            bottom: 5px;
+            bottom: 17px;
             width: 300px;
         }
 
@@ -120,7 +120,7 @@
 
 <body style="overflow: hidden;">
     <div class="options">
-        <table height="355px" style="width: 100vw;">
+        <table height="100%" style="width: 100vw;">
             <tr>
                 <td class="op" data-body="general">General</td>
             </tr>
@@ -166,12 +166,17 @@
                 <option value="1" selected>Slickiss player</option>
             </select>
             <br>
+            <input type="checkbox" name="servers.moe" checked> Moe <br>
             <input type="checkbox" name="servers.mp4upload" checked> Mp4Upload <br>
             <input type="checkbox" name="servers.nova" checked> Nova <br>
             <input type="checkbox" name="servers.hydrax" checked> Hydrax <br>
             <input type="checkbox" name="servers.beta" checked> Beta / Alpha servers <br><br>
             <div class="notice">* Disabling alpha/beta server will disable Slickiss display when
                 that server is used </div>
+
+            <hr>
+            <input type="checkbox" name="notifyLastTime" checked> Continue from where you left off notification <br>
+            <input type="checkbox" name="autoplay" checked> Autoplay video <br>
 
         </div>
         <!--<hr>-->
@@ -186,14 +191,17 @@
         </div>
         <!--<hr>-->
         <div class="body general">
+            <input type="checkbox" name="useragent"> Change user-agent value to make BetaX work <br>
+            <span class="notice">
+                * This will only change user-agent for kissanime and googlevideo,
+                which is all you need.
+            </span> <br>
             <input type="checkbox" name="captcha" checked> Solve Captcha <br>
             <input type="checkbox" name="ttip" checked> Show Anime info tooltip <br>
-            <input type="checkbox" name="notifyLastTime" checked> Continue from where you left off notification <br>
-            <input type="checkbox" name="autoplay" checked> Autoplay video <br>
             <input type="checkbox" name="prepareNextPrev"> Prepare previous and next episode <br>
-            <input type="checkbox" name="shortcuts" checked> Use Shortcuts ( <a href="#" id="shortcutSetting">Click to
+            <!-- <input type="checkbox" name="shortcuts" checked> Use Shortcuts ( <a href="#" id="shortcutSetting">Click to
                 set shortcuts</a>)
-            <br>
+            <br> -->
             <input type="checkbox" name="markAsSeen"> Auto mark as seen once latest episode is watched <br>
             <span class="notice">* You should be logged in.</span> <br>
             Default Server :
@@ -206,14 +214,12 @@
                 <option value="betax">BetaX</option>
                 <option value="beta3">Beta 3</option>
                 <option value="beta4">Beta 4</option>
-                <option value="beta6">Beta 4</option>
+                <option value="beta6">Beta 6</option>
             </select>
             <br>
 
             <span class="notice">
-                * This list may not contain all available servers due to the frequent
-                change of Kissanime supported servers, the list will update whenever I notice the change
-                in the next update.
+                * This list will be updated whenever I notice servers changing.
             </span>
 
             <br>
@@ -235,11 +241,11 @@
 
 
     <div>
-        <div style="margin-top: 2px; text-align: center; width: 100%;">
+        <div style="margin-top: 5px; text-align: center; width: 100%;">
             <span style="cursor: pointer;padding-right: 10px;" class="save barTitle">Save</span>
             <span style="cursor: pointer;padding-right: 10px;" class="save reload barTitle">Save and reload</span>
         </div>
-        <footer style="text-align: center; margin-top: 4px;">
+        <footer style="text-align: center; margin-top: 13px;">
             <a href="https://github.com/Sraq-Zit/slickiss" title="Source code" target="_blank">
                 <i class="fab fa-github" style="color: white;"></i>
             </a>

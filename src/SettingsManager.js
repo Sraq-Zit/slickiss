@@ -23,6 +23,7 @@ class SettingManager {
 
     /** Dom presentation of each settings */
     static config = {
+        useragent: 'checkbox',
         autoplay: 'checkbox',
         captcha: 'checkbox',
         defaultserver: 'select',
@@ -32,6 +33,7 @@ class SettingManager {
         player: 'select',
         prepareNextPrev: 'checkbox',
         quality: 'select',
+        'servers.moe': 'checkbox',
         'servers.mp4upload': 'checkbox',
         'servers.nova': 'checkbox',
         'servers.beta': 'checkbox',

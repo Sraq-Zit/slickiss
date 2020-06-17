@@ -62,6 +62,8 @@ class DlGrabber {
                                 server: src.server,
                                 response: src
                             });
+                            if (src.success && src.additional.qualities)
+                                src.response = (new QualityManager(src.additional.qualities, settings.quality)).preferredQ.file
                             this.downloads[src.server] = src;
                             if (Object.keys(this.downloads).length == count)
                                 resolve();
@@ -125,9 +127,65 @@ class DlGrabber {
                             type: 'mp4'
                         }
                     );
-                }
-                return { src: 1, option: { qualities: { ...qualities } } };
+                } else qualities = {
+                    '360p': {
+                        file: `https://${r.url}/?track=${id}`,
+                        label: '360p',
+                        type: 'mp4'
+                    }
+                };
+                return {
+                    src: 1,
+                    option: { qualities: { ...qualities }, poster: `https://img.iamcdn.net/${id}.jpg` }
+                };
             }, 'post', { slug: /v=(.+?)(#|&|$)/g.exec(url)[1] }),
+            /** @param {string} url */
+            moe: url => new Promise(async r => {
+                var require;
+                window.eval((await req("https://play.p2ps.io/js/app.min.js")).replace(/document\.add.+?}\),/g, ''))
+                const ref = url.split('/').pop(),
+                    info_url = "https://play.p2ps.io/get-info",
+                    hash = makeid(15),
+                    key = CryptoJS.AES.encrypt(ref, hash).toString(),
+                    qualities = {};
+
+                let info;
+                try { info = await req({ url: info_url, headers: { key: key, hash: hash } }) } catch {
+                    try {
+                        info = await req({
+                            dataType: 'json', url: info_url + '?ios=true', headers: { key: key, hash: hash }
+                        });
+                        if (info.success && info.data && info.data.url)
+                            return r({ server: 'moe', success: true, response: info.data.url, });
+                    } catch{ }
+
+                }
+
+                if (!info.success || !info.data || !info.data.url) return r({
+                    server: 'moe', success: false, response: 'Failed to find video source'
+                });
+
+                const xmlDoc = $(await req({
+                    url: "https://play.p2ps.io" + info.data.url, dataType: 'text',
+                    headers: { "x-proxy-pass": "king" },
+                }));
+
+                xmlDoc.find('AdaptationSet[contentType="video"] Representation').each((_, el) => {
+                    const q = el.id.split(' ').shift().toLowerCase()
+                    qualities[q] = {
+                        file: $(el).find('BaseURL').text().trim(),
+                        type: $(el).attr('mimeType').split('/').pop(),
+                        label: q
+                    }
+                });
+                qualities.audio = xmlDoc.find('AdaptationSet[contentType="audio"] BaseURL').text().trim();
+
+
+                r({
+                    success: true, response: 1, server: 'moe',
+                    additional: { qualities: { ...qualities }, crossorigin: true }
+                });
+            }),
             /** @param {string} url */
             mp4upload: url => this.grabs(url, 'mp4upload', r => {
                 let output = /eval\((.*?return .+?\})(\(.+)\)/.exec(r);
@@ -149,7 +207,7 @@ class DlGrabber {
                     data[data[k].label] = data[k];
                     delete data[k];
                 }
-                return { src: 1, option: { qualities: { ...data } } };
+                return { src: 1, option: { qualities: { ...data }, crossorigin: true } };
             }, 'post'),
             /** 
              * @param {string} url
@@ -203,7 +261,7 @@ class DlGrabber {
                         server: srv,
                         success: a.length,
                         response: a.length ? a.eq(0).attr("href") : 'Failed to find video source',
-                        additional: { qualities: qualities }
+                        additional: { qualities: qualities, crossorigin: srv in ['beta6'] }
                     });
                 }
             }),
@@ -225,7 +283,7 @@ class DlGrabber {
 
                     } catch (error) { }
 
-                    for (const el of $(html).find('select#slcQualix>option').toArray()) {
+                    for (const el of $(html.noImgs).find('select#slcQualix>option').toArray()) {
                         qualities[el.textContent.trim()] = {
                             label: el.textContent.trim(),
                             file: ovelWrap(el.value)
@@ -265,6 +323,7 @@ class DlGrabber {
      */
     static getServerName(url) {
         if (url.includes('hydrax')) return 'hydrax';
+        if (url.includes('play.p2ps')) return 'moe';
         if (url.includes('mp4upload')) return 'mp4upload';
         if (url.includes('novelplanet')) return 'nova';
         if (url.includes('s=alpha')) return 'alpha';

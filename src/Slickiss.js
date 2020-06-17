@@ -10,6 +10,7 @@ class Slickiss {
             BOOKMARKS: 5,
             LISTING: 6,
             BANNED: 7,
+            BETAXGUIDE: 8
         };
     };
     static get hrefPatterns() {
@@ -21,13 +22,14 @@ class Slickiss {
             [S.cts.LISTING]: /(https?:\/\/)?kissanime\.ru\/(AnimeList.*|.+LatestUpdate)(#.*)?/g,
             [S.cts.BOOKMARKS]: /.+?BookmarkList\/?(#.*)?$/g,
             [S.cts.BANNED]: /(https?:\/\/)?kissanime\.ru\/ToYou\/Banned\/?$/g,
+            [S.cts.BETAXGUIDE]: /(https?:\/\/)?kissanime\.ru\/Message\/BetaXGuide.+$/g,
         };
     };
     constructor(href) {
         this.href = S.absolute(typeof href == 'string' ? href : location.href);
         this.base = typeof href == 'undefined';
         if (this.isBase()) {
-            if ($("body").html().includes("One more step")) {
+            if (!$('.logo[href="/"]').length) {
                 $("html, body").css({
                     "background-color": "white",
                     "overflow": "hidden"
@@ -38,8 +40,27 @@ class Slickiss {
                 throw new Error("Cloudflare");
             }
             switch (this.getContext()) {
+                case S.cts.BETAXGUIDE:
+                    var bar;
+                    $('.bigBarContainer').before(bar = $('.bigBarContainer').clone());
+                    bar.find('.barTitle').html('Slickiss can handle this');
+                    bar.find('.barContent')
+                        .html(`Slickiss change user-agent only for domains that need to have user-agent changed.<br>
+                            It's actually not that big of deal either way, but overall it'll save you time of doing
+                            this manually.<br>`)
+                        .append($('<a/>', { href: '#', text: 'Enable new user-agent' }).on('click', async e => {
+                            e.preventDefault();
+                            $(e.currentTarget).text('Alright, gimme a sec..')
+                                .css('cursor', 'wait').off('click');
+                            await Chrome.set({ useragent: true });
+                            $(e.currentTarget).text('Done! Reloading..');
+                            e.currentTarget.href += '&s=betax';
+                            $('#container a[href*="/Anime/"]').each((_, el) => el.click()).length ||
+                                (location.href = '/')
+                        }));
+                    break;
                 case S.cts.BANNED:
-                    let bar;
+                    var bar;
                     $('.bigBarContainer').after(bar = $('.bigBarContainer').clone());
                     bar.find('.barTitle').html('Slickiss');
                     bar.find('.barContent')
@@ -73,16 +94,32 @@ class Slickiss {
                     const an = $('.rightBox').eq(0).clone();
                     $('.rightBox').eq(0).before([an, $('.rightBox + div').eq(0).clone()]);
                     an.find('.barTitle').text('Slickiss Announcement');
+                    an.find('.barTitle').prepend(
+                        $('<i/>', { css: { cursor: 'pointer', padding: '0 5px' }, class: 'fa fa-chevron-circle-down' }
+                        ).on('click', e => {
+                            const el = $(e.currentTarget);
+                            const body = an.find('.barContent');
+                            const isOff = body.toggleClass('closed').hasClass('closed');
+                            el.toggleClass('fa-chevron-circle-up');
+                            localStorage.SannOff = isOff ? md5(body.text().trim()) : '';
+                        })
+                    );
                     an.find('.barContent > div:not(.arrow-general)').html($('<div/>', {
                         css: { 'text-align': 'center', width: '100%' }
                     }).append([
                         $('<img/>', { height: 100, src: chrome.extension.getURL('/imgs/loader.gif') }),
                         $('<div/>', { text: 'Loading..' })
-                    ]));
+                    ])).addClass('animate');
+                    $('.rightBox').parent().on('DOMSubtreeModified', e => {
+                        if (an.prev().length)
+                            $(e.currentTarget).prepend([an, an.next()]);
+                    });
                     Notifier.updatesToHTML().then(updates => {
                         if (!updates) return an.next().remove() && an.remove();
                         an.find('.barContent > div:not(.arrow-general)')
                             .empty().append(updates.children());
+                        const hash = md5(an.find('.barContent').text().trim());
+                        if (localStorage.SannOff == hash) an.find('i.fa')[0].click();
                     });
 
                     $('#navcontainer>ul').append(
@@ -178,13 +215,15 @@ class Slickiss {
                 };
             case S.cts.EPISODE:
                 const server = /(\?|&)s=(.+?)(&|$|#)/g.exec(url);
+                const ep = /\/([^?/]+?)\?/g.exec(url);
                 const id = /(\?|&)id=(.+?)(&|$|#)/g.exec(url);
                 return {
                     ctx: ctx,
-                    anime: anime && anime[0],
                     name: name && name[1],
-                    server: server && server[2],
+                    anime: anime && anime[0],
+                    ep: ep && ep[1],
                     id: id && id[2],
+                    server: server && server[2],
                     stripped: S.stripEpUrl(url)
                 };
 

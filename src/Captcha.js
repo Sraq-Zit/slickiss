@@ -74,7 +74,7 @@ class Captcha {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: this.formAction && `reUrl=${encodeURIComponent(this.url)}&answerCap=${this.prob1.index},${this.prob2.index}`
             });
-            if (S.getContext(this.response.url) == null) return null;
+            if ([8, null].includes(S.getContext(this.response.url))) return null;
             if (this.response.status == 503) {
                 this.update(Captcha.steps.BYPASSING);
                 await Captcha.bypassCf();
