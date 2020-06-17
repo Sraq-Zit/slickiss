@@ -20,16 +20,15 @@ chrome.webRequest.onBeforeRequest.addListener(
 }, ["blocking"]
 );
 
-// const BETAX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36';
-// chrome.webRequest.onBeforeSendHeaders.addListener(
-//     function (details) {
-//         return {
-//             requestHeaders: changeHeaders(details.requestHeaders, 'user-agent', BETAX_UA)
-//         }
-//     },
-//     { urls: ['<all_urls>'] },
-//     ['blocking', 'requestHeaders']
-// );
+const BETAX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36';
+chrome.webRequest.onBeforeSendHeaders.addListener(
+    function (details) {
+        if (settings.useragent)
+            return { requestHeaders: changeHeaders(details.requestHeaders, 'user-agent', BETAX_UA) };
+    },
+    { urls: ['*://*.googlevideo.com/*', '*://kissanime.ru/*'] },
+    ['blocking', 'requestHeaders']
+);
 
 chrome.webRequest.onHeadersReceived.addListener(
     function (info) {
