@@ -1,9 +1,5 @@
 # TODO list
- - [x] Grabbing downloads stops at Hydrax caused by BetaX
- - [x] Fix compatibility with Essentials for KissAnime
- - [x] Add hide announcements button
- - [x] Supports new server Moe
- - [x] Feature: Take screenshot/Record clip from video
+ - Fix volume in player
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list

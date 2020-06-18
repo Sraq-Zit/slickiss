@@ -1,9 +1,26 @@
 # Changelog
 
-## v2.5.0
-- Store left time of video wrt the episode instead of server
+## v2.6.0
+- Bug fix: Compatibility with Essentials layout
+- Bug fix: Downloading freezing caused by BetaX
+- Added option to hide announcements
+- Supported new server moe
+- Added tools to screenshot and record clip
+- Added option to load thumbnails to preview when seeking
+
+---
+
+## v2.5.0 (07/06/2020)
+- Bug fix: Handled absence of idman in command
+- Bug fix: Fixed Anime names with dash
+- Bug fix: Reload disqus during one page navigation
+- Bug fix: Handled unavailability of default server
+- Video player: Theahter mode, lights
 - Video player: Added buttons for only-shortcuts features
-- Video player: Theater mode, lights, and more..
+- Blocked new ad
+- Automatic user-agent switching for betaX
+- Scroll active server into view
+- Store left time of video wrt the episode instead of server
 
 ---
 
