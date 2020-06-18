@@ -40,10 +40,11 @@
 
     <div class="controlBar">
         <div class="bufferBar">
-            <div class="timeDisplay" style="text-align: center; opacity: 0; margin-left: 0;">
+            <div class="timeDisplay shadow rounded overflow-hidden"
+                style="text-align: center; opacity: 0; margin-left: 0;">
                 <canvas height="0" width="0"></canvas>
-                <hr style="margin-top: 0;">
-                <span>00:00</span>
+                <hr class="m-0">
+                <strong class="p-2">00:00</strong>
             </div>
             <div class="pointer dragDot">
             </div>
@@ -78,6 +79,7 @@
 
 
             <div class="d-flex align-items-center justify-content-end">
+                <i class="thumbnails alwaysEnabled slickBtn fa fa-eye fa-eye-slash" title="Preview thumbnails"></i>
                 <i class="reload alwaysEnabled slickBtn fa fa-sync-alt" title="Reload only server page"></i>
                 <i class="record slickBtn fa fa-video" title="Record a clip"></i>
                 <i class="screenshot slickBtn fa fa-camera" title="Take a screenshot"></i>

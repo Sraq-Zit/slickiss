@@ -61,9 +61,8 @@ class Player {
         return !this.container.find('.slickBtn.disabled').length;
     }
     set enabled(b) {
-        if (!this.enabled && b) {
-            if (this.thumbnail) this.thumbnail.destroy();
-            // this.thumbnail = new Thumbnail(this.seekPreviewAvailable && this.v[0].src);
+        if (!this.enabled && b && settings.thumbnails) {
+            this.loadThumbnails();
             // this.thumbnail.onTLoad(ev => {
             //     const s = ev.from;
             //     const e = ev.to;
@@ -124,7 +123,7 @@ class Player {
         this.loader = this.container.find(".loadingImg");
         this.toolbarContainer = this.container.find(".toolbarContainer");
         this.timgTime = this.container.find(".timeDisplay");
-        this.timgTime.time = this.timgTime.children('span');
+        this.timgTime.time = this.timgTime.children('strong');
         this.timgTime.thumbnail = this.timgTime.children('canvas');
         this.buffer = { sample: this.container.find(".buffer").remove() };
         this.pointer = this.container.find(".pointer.dragDot");
@@ -185,7 +184,8 @@ class Player {
             screen: this.container.find(".slickBtn.screen"),
             pin: this.container.find(".slickBtn.pin"),
             screenshot: this.container.find(".slickBtn.screenshot"),
-            record: this.container.find(".slickBtn.record")
+            record: this.container.find(".slickBtn.record"),
+            thumbnails: this.container.find(".slickBtn.thumbnails")
         };
         this.icons = {
             loadingImg: this.container.find(".controlIcon.loadingImg"),
@@ -196,6 +196,8 @@ class Player {
             download: this.container.find(".controlIcon.svg.downloadIcon"),
             downloadAborted: this.container.find(".controlIcon.svg.downloadAbortedIcon")
         };
+
+        if (settings.thumbnails) this.buttons.thumbnails.removeClass('fa-eye-slash');
 
         if (!Player.HAS_NEXT) this.buttons.next.attr('style', 'display:none !important');
         else this.buttons.next.attr('title', Player.HAS_NEXT);
@@ -231,7 +233,8 @@ class Player {
         this.container.on('mouseleave', e => this.idle(this.enabled));
 
         this.bar.on('mousemove', e => this.onMouseOverBar(e));
-        this.bar.on('mouseleave', e => this.timgTime.css('opacity', 0) && this.container.removeClass('pinned'));
+        this.bar.on('mouseleave', e => this.timgTime.css('opacity', 0) && this.container.removeClass('pinned') &&
+            this.thumbnail && (this.pinned = false));
         this.toolbarContainer.add(this.v).add(this.bar).on('mouseenter mousemove', e => this.playerHover(e));
         this.volumeBar.on('mousedown',
             e => e.preventDefault() || (this.isChangingVolume = 1) && this.onmousemove(e));
@@ -250,6 +253,12 @@ class Player {
         this.buttons.prev.on('click', _ => parent.postMessage({ request: "prevEp" }, '*'));
         this.buttons.next.on('click', _ => parent.postMessage({ request: "nextEp" }, '*'));
         this.buttons.record.on('click', _ => this.toggleClipRecording());
+        this.buttons.thumbnails.on('click', _ => {
+            const value = !this.buttons.thumbnails.toggleClass('fa-eye-slash').hasClass('fa-eye-slash');
+            Chrome.set({ thumbnails: value });
+            if (value) this.loadThumbnails();
+            else this.thumbnail && this.timgTime.thumbnail.width(0).height(0) && this.thumbnail.destroy();
+        })
         this.buttons.screenshot.on('click', async _ => {
             if (!this.enabled) return;
             this.pinned = true;
@@ -696,6 +705,13 @@ class Player {
             );
 
         return URL.createObjectURL(new Blob([m3u8]));
+    }
+
+
+    /** Start loading snapshots of the video to preview seeked time */
+    loadThumbnails() {
+        if (this.thumbnail) this.thumbnail.destroy();
+        this.thumbnail = new Thumbnail(this.seekPreviewAvailable && this.v[0].src);
     }
 
 

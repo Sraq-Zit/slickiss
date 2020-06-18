@@ -26,6 +26,7 @@ class Chrome {
 
 let settings = {
     useragent: false,
+    thumbnails: false,
     autoplay: false,
     batch: [0, 1, 2, 3, 4, 5],
     captcha: true,

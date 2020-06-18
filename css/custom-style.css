@@ -499,8 +499,6 @@ img#pageLoading+h1 {
     position: absolute;
     bottom: 120%;
     transform: translateX(-50%);
-    box-shadow: rgba(51, 51, 51, 0.31) 0px 0px 4px 2px;
-    padding: 10px;
     background: white;
     opacity: 0;
     transition: opacity .3s ease-out;

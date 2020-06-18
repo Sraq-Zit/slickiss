@@ -25,6 +25,7 @@ class SettingManager {
     static config = {
         useragent: 'checkbox',
         autoplay: 'checkbox',
+        thumbnails: 'checkbox',
         captcha: 'checkbox',
         defaultserver: 'select',
         lite: 'radio',
