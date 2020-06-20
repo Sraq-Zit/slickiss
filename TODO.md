@@ -1,4 +1,5 @@
 # TODO list
+ - [ ] Support new server StreamHLS
  - Fix volume in player
  - Custom style of the website
  - Mp4upload download from download section
