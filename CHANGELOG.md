@@ -4,7 +4,7 @@
 - Bug fix: Volume in the player
 - Bug fix: Notification image
 - Supported new servers Beta6, 7 and streamhls
-- Changed notification type to image with large image
+- Changed notification type to image with large cover
 
 ---
 
