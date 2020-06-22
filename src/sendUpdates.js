@@ -82,14 +82,14 @@ async function sendUpdates() {
                 buttons: [{
                     title: "Open Kissanime"
                 }],
-                iconUrl: "/imgs/mobchara_3.png",
+                iconUrl: "/imgs/angry-loli.png",
                 message: toDisplay
             };
             if (!r.includes("challenge-form"))
                 try {
                     const url = $(r).find(".rightBox img").eq(0).attr("src");
                     await fetch(url);
-                    json.imageUrl = url;
+                    json.iconUrl = json.imageUrl = url;
                 } catch (e) { console.error(e) }
 
             if (pic && c == 1) {
