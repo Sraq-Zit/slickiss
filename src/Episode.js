@@ -127,14 +127,19 @@ class Episode {
     /** Load components for the player */
     async load() {
         /** Info of the curent Anime */
+        window.onscroll = _ => window.scrollY && window.scrollTo(0, 0);
         const iframe = $('#divContentVideo iframe, #centerDivVideo iframe');
         const next = $('#btnNext').parent().attr('href');
         const prev = $('#btnPrevious').parent().attr('href');
         const title = document.title.split(' - Watch')[0];
-        this.src = iframe.length ? iframe[0].src : `${location.href}#player`;
-        $('#selectServer>option')
-            .toArray()
+        const excl = !DlGrabber.EXCL.includes(S.parseUrl(location.href).server);
+        this.src = excl && iframe.length ? iframe[0].src : `${location.href}#player`;
+        $('#selectServer>option').toArray()
             .map(el => this.servers[S.parseUrl(el.value).server] = { url: el.value, name: $(el).text().trim() });
+        const seletedServer = $('#selectServer>option:selected').val();
+        if (S.parseUrl(seletedServer).server != S.parseUrl(location.href).server)
+            window.history.replaceState({}, "", seletedServer);
+
         $('body').empty().append(Assets.waitMsg().slice(1));
         Episode.createDummies();
         this.animeData = await Anime.getAnimeData(location.href);
@@ -207,7 +212,6 @@ class Episode {
             $('.help')[e.type == 'mouseenter' ? 'show' : 'hide']();
         });
 
-        document.body.scrollIntoView();
         if (!settings.guideSkip)
             sleep(2000).then(() => $('.help').fadeOut() && Chrome.set({ guideSkip: true }));
         else
@@ -270,9 +274,6 @@ class Episode {
             } else btn.addClass('disabled');
 
 
-        sleep(300).then(
-            _ => (this.srvContainer.find('.' + activated.replace(/ /g, '.'))[0] || document.body).scrollIntoView()
-        );
 
         this.markEpisode();
     }
@@ -435,6 +436,8 @@ class Episode {
         const glxTsIds = [11565, 11875, 11874, 11873, 11963, 11964, 11965, 11966];
         for (var i in glxTsIds)
             $("body > .dummy").eq(0).append("<div id='glx-" + glxTsIds[i] + "-container'></div>");
+
+        inject(`setTimeout = _=>_; setInterval = _=>_;`);
     }
 
 

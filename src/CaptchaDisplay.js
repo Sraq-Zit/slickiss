@@ -52,7 +52,8 @@ class CaptchaDisplay {
         const center = $('<center/>', { class: 'centered' }).append(
             $('<div/>', { width: '100%' }).append([this.table, this.log.text('Let\'s do the hacks.')])
         );
-        $('body').append($('<div/>', { class: 'display' }).append(center));
+        $('body').append($('<div/>', { class: 'display', css: { width: '900px', margin: '0 auto' } })
+            .append(center));
 
     }
 

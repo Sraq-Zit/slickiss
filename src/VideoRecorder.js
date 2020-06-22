@@ -47,6 +47,9 @@ class VideoRecorder {
         this.recorder.onerror = e => this.stop() && alert(e.error.name);
         this.inrId = setInterval(() => this.recorder.requestData(), 500);
         await this.v.play();
+        $(this.v).on('pause waiting', _ => this.recorder.state == "recording" && this.recorder.pause());
+        $(this.v).on('play canplay', _ => this.recorder.state == "paused" && this.recorder.resume());
+        this.v.onerror = _ => this.stop();
         this.recorder.start();
         this.recording = true;
     }

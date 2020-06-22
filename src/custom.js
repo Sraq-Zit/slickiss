@@ -81,6 +81,19 @@ $.ajax = function (data) {
     }
 };
 
+/** Get a dictionary of GET values from passed url
+ * @param {string} [url] URL to get query from (Default: `location.href`)
+ * @returns {string[]}
+ */
+const _GET = (url = location.href) => {
+    let query = /\??(.+?)(?:#|$)/.exec($('<a/>', { href: url })[0].search);
+    query = query && query[1];
+    if (!query) return {};
+    const data = {};
+    for (q of query.split('&')) data[q.split('=')[0]] = decodeURIComponent(q.split('=')[1])
+    return data;
+}
+
 /** Minified async version of ajax
  * @param {string | JQuery.AjaxSettings} option URL or object of ajax settings
  * @returns {Promise<string>}
@@ -99,6 +112,7 @@ const req = async option => {
  * @param {Date} d Date to convert
  */
 const getDisplayDate = (d = new Date) => {
+    if (typeof d == 'number') d = new Date(d);
     today = new Date();
     today.setHours(0);
     today.setMinutes(0);
@@ -149,4 +163,11 @@ const convertSize = (value, unit, fractionDigits) => {
     return value += unit;
 }
 
-
+/** Inject script to the document context
+ * @param {string} code Sript to inject
+ */
+const inject = code => {
+    const script = document.createElement('script');
+    script.innerHTML = code;
+    document.body.appendChild(script);
+}

@@ -32,6 +32,7 @@ class DlGrabber {
         return this;
     }
 
+    static EXCL = ['beta7'];
     async getServerUrls() {
         return new Promise(resolve => {
             this.urls = {};
@@ -39,7 +40,7 @@ class DlGrabber {
             for (const server in this.servers) {
                 c(this.servers[server]).solve().then(html => {
                     this.onprogress(DlGrabber.progress.RESPONSE, { server: server });
-                    this.urls[server] = DlGrabber.extractMovieIframe(html);
+                    this.urls[server] = !DlGrabber.EXCL.includes(server) && DlGrabber.extractMovieIframe(html);
                     this.urls[server] = this.urls[server] || (this.servers[server] + '#player');
                     if (Object.keys(this.urls).length == Object.keys(this.servers).length)
                         resolve();
@@ -77,7 +78,7 @@ class DlGrabber {
         this.servers = {};
         this.doc.find('#selectServer > option').each((i, el) => {
             const data = S.parseUrl(el.value);
-            if ($(el).is(':selected')) this.default = data.server;
+            if (el.selected) this.default = data.server;
             this.servers[data.server] = el.value;
         });
         return this;
@@ -261,13 +262,13 @@ class DlGrabber {
                         server: srv,
                         success: a.length,
                         response: a.length ? a.eq(0).attr("href") : 'Failed to find video source',
-                        additional: { qualities: qualities, crossorigin: srv in ['beta6'] }
+                        additional: { qualities: qualities, crossorigin: ['streamhls'].includes(srv) }
                     });
                 }
             }),
-            beta6: (url, srv = 'beta6') => new Promise(async resolve => {
+            beta6: (url, srv = 'beta6', directMode = false) => new Promise(async resolve => {
                 const data = await this.handlers.alpha(url);
-                if (!data.success) resolve({
+                if (!directMode && !data.success) resolve({
                     server: srv,
                     success: false,
                     response: 'Failed to find video source'
@@ -276,25 +277,29 @@ class DlGrabber {
                     const qualities = {};
                     try {
                         c(url).solve().then(html => {
-                            let domains = JSON.parse(/domainArray = (\[.+?\])/s.exec(html)[1]);
-                            domains = domains.map(v => encodeURIComponent(`http://${v}/`));
-                            Chrome.set({ m3u8_domains: domains });
+                            let domains = JSON.parse(/domainArray = (\[.+?\])/s.exec(html));
+                            if (domains && (domains = domains[1])) {
+                                domains = domains.map(v => encodeURIComponent(`http://${v}/`));
+                                Chrome.set({ m3u8_domains: domains });
+                            }
                         });
 
                     } catch (error) { }
 
                     for (const el of $(html.noImgs).find('select#slcQualix>option').toArray()) {
-                        qualities[el.textContent.trim()] = {
+                        const item = qualities[el.textContent.trim()] = {
                             label: el.textContent.trim(),
-                            file: ovelWrap(el.value)
+                            file: (_GET(el.value).vidUrl || ovelWrap(el.value)) + '&ext=.m3u8'
                         };
+                        if (el.selected) data.response = item.file;
+
                     }
 
                     resolve({
                         server: srv,
                         success: true,
                         response: data.response,
-                        additional: { qualities: qualities }
+                        additional: { qualities: qualities, crossorigin: true }
                     });
 
                 }
@@ -309,6 +314,10 @@ class DlGrabber {
             beta4: url => this.handlers.alpha(url, 'beta4'),
             /** @param {string} url */
             beta5: url => this.handlers.alpha(url, 'beta5'),
+            /** @param {string} url */
+            beta7: url => this.handlers.beta6(url, 'beta7', true),
+            /** @param {string} url */
+            streamhls: url => this.handlers.alpha(url, 'streamhls'),
             /** @param {string} url */
             beta360p: url => this.handlers.alpha(url, 'beta360p'),
             /** @param {string} url */
@@ -327,6 +336,7 @@ class DlGrabber {
         if (url.includes('mp4upload')) return 'mp4upload';
         if (url.includes('novelplanet')) return 'nova';
         if (url.includes('s=alpha')) return 'alpha';
+        if (url.includes('s=streamhls')) return 'streamhls';
         if (url.includes('s=beta')) return /s=(beta.*?)([#&]|$)/g.exec(url)[1];
     }
 

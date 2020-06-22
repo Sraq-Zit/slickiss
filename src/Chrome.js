@@ -42,6 +42,7 @@ let settings = {
     'servers.nova': true,
     'servers.beta': true,
     'servers.hydrax': true,
+    'servers.streamhls': true,
     shortcuts: true,
     ttip: true,
     updates: ["0"],
