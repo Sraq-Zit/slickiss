@@ -317,14 +317,18 @@ class Player {
                     if (src) {
                         this.v.attr('src', src);
                         this.hls = this.hls || new Hls({
-                            loader: new p2pml.hlsjs.Engine({ segments: { swarmId: src } }).createLoaderClass()
+                            loader: new p2pml.hlsjs.Engine({ segments: { swarmId: src } }).createLoaderClass(),
+                            liveSyncDurationCount: 7
                         });
                         this.hls.loadSource(this.v[0].src);
                         this.hls.attachMedia(this.v[0]);
+                        clearInterval(this.hlsIntvl);
+                        this.hlsIntvl = setInterval(_ => this.hls && this.hls.startLoad(), 1e4);
                     }
                 }
                 this.buttons.download.removeClass('disabled');
             });
+
 
 
         if (this.qContainer) this.qContainer.children('a').on('click', e => this.changeServer(e));

@@ -1,5 +1,4 @@
 # TODO list
- - [x] Beta 6/7, Video needs manual loading calls
  - Added sound effects to notification
  - Custom style of the website
  - Mp4upload download from download section

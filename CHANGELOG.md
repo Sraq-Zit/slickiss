@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.7.0
+## v2.7.1 (23/06/2020)
 - Bug fix: Volume in the player
 - Bug fix: Notification image
 - Supported new servers Beta6, 7 and streamhls
