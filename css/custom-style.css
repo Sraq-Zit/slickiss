@@ -11,6 +11,11 @@ a[href*='4702fb341ddf276d'],
     display: none !important;
 }
 
+iframe#my_video_1,
+iframe#player {
+    display: unset !important;
+}
+
 input[type=checkbox] {
     -webkit-appearance: initial;
     position: relative;
@@ -94,10 +99,6 @@ input[type=checkbox]:checked::before {
 
 .display td {
     width: 25vw;
-    text-align: center;
-}
-
-.display td {
     padding: 20px;
 }
 
@@ -531,27 +532,19 @@ table.toolbarContainer td {
     white-space: nowrap;
 }
 
-.volumeBar {
-    display: inline-block;
-    width: 0%;
+.volume {
     opacity: 0;
-    height: 50%;
-    vertical-align: -webkit-baseline-middle;
-    transform: translateY(-50%);
-    background: white;
-    border: solid 1px white;
-    transition: all .5s ease-out;
-}
-
-.volume:hover .volumeBar,
-.volumeBar.volumeChange {
-    opacity: 1;
-    width: 50%;
-    cursor: pointer;
-}
-
-.volumeChange+#time {
+    z-index: 2;
     pointer-events: none;
+    transform: rotate(-90deg) translate(60%, -180%);
+    height: 30px;
+    width: inherit;
+}
+
+.volume:hover,
+.d-sm-flex:hover .volume {
+    pointer-events: unset;
+    opacity: 1;
 }
 
 .loading .controlIcon {

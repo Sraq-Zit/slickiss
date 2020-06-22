@@ -97,18 +97,6 @@ class Player {
         return this.pointer.isDragging = b;
     }
 
-    /** Whether the volume is being changed
-     * @returns {boolean}
-     */
-    get isChangingVolume() {
-        return this.volumeBar.isDragging;
-    }
-    set isChangingVolume(b) {
-        if (this.isChangingVolume == b) return b;
-        this.container[b ? 'addClass' : 'removeClass']('pinned');
-        this.volumeBar[b ? 'addClass' : 'removeClass']('volumeChange');
-        return this.volumeBar.isDragging = b;
-    }
 
     /** Load and refer to initialize components */
     async init() {
@@ -227,17 +215,16 @@ class Player {
 
         $(document).on('mousemove', e => this.onmousemove(e));
         $(document).on('mouseup',
-            e => e.preventDefault() || (this.isChangingVolume = this.isDraggingPointer = 0));
+            e => e.preventDefault() || (this.isDraggingPointer = 0));
 
         this.container.on('click', e => this.onContainerClick(e));
-        this.container.on('mouseleave', e => this.idle(this.enabled));
+        this.container.on('mouseleave', _ => this.idle(this.enabled));
+
+        this.volumeBar.on('input', _ => this.v[0].volume = this.volumeBar.val() / 100);
 
         this.bar.on('mousemove', e => this.onMouseOverBar(e));
-        this.bar.on('mouseleave', e => this.timgTime.css('opacity', 0) && this.container.removeClass('pinned') &&
-            this.thumbnail && (this.pinned = false));
+        this.bar.on('mouseleave', e => this.timgTime.css('opacity', 0) && this.container.removeClass('pinned'));
         this.toolbarContainer.add(this.v).add(this.bar).on('mouseenter mousemove', e => this.playerHover(e));
-        this.volumeBar.on('mousedown',
-            e => e.preventDefault() || (this.isChangingVolume = 1) && this.onmousemove(e));
         this.pointer.add(this.bar).on('mousedown',
             e => e.preventDefault() || (this.isDraggingPointer = 1) && this.onmousemove(e));
 
@@ -272,9 +259,9 @@ class Player {
             await im.load();
             this.shooting.showResults(await im.canvas.convertToBlob());
             this.shooting.clickEffect.addClass('animate').css('opacity', 0);
-            this.screenshooting.download[0].download = Player.SHOW_DATA.title.trim();
-            this.screenshooting.download[0].download += Assets.formatSecs(im.img.currentTime).replace(':', '_');
-            this.screenshooting.download[0].download += '_' + Math.round(im.img.currentTime % 1) * 1e3;
+            this.shooting.download[0].download = Player.SHOW_DATA.title.trim();
+            this.shooting.download[0].download += ' ' + Assets.formatSecs(im.img.currentTime).replace(':', '_');
+            this.shooting.download[0].download += '_' + Math.round(im.img.currentTime % 1) * 1e3;
         });
         this.buttons.skipForward.on('click', e => {
             if ($(e.currentTarget).is('.disabled')) return;
@@ -329,7 +316,9 @@ class Player {
                     const src = await Player.prepareM3u8(this.v[0].src);
                     if (src) {
                         this.v.attr('src', src);
-                        this.hls = this.hls || new Hls();
+                        this.hls = this.hls || new Hls({
+                            loader: new p2pml.hlsjs.Engine({ segments: { swarmId: src } }).createLoaderClass()
+                        });
                         this.hls.loadSource(this.v[0].src);
                         this.hls.attachMedia(this.v[0]);
                     }
@@ -368,13 +357,6 @@ class Player {
             const x = (e.clientX - this.bar.offset().left) / this.bar.width();
             this.navigateTo(x * this.v[0].duration);
         }
-        if (this.isChangingVolume) {
-            let volume = (e.clientX - this.volumeBar.offset().left) / this.volumeBar.width();
-            volume = Math.max(0, volume);
-            volume = Math.min(1, volume);
-            this.v[0].muted = false;
-            this.v[0].volume = volume;
-        }
     }
 
     /** Handle click on the player (toggling settings..)
@@ -407,7 +389,6 @@ class Player {
             const newCanvas = this.thumbnail.retrieve(time) || this.timgTime.thumbnail[0];
             this.timgTime.thumbnail.replaceWith(newCanvas);
             this.timgTime.thumbnail = $(newCanvas);
-            this.pinned = true;
         }
     }
 
@@ -565,7 +546,7 @@ class Player {
         let total = 0;
         while (len--) total += this.v[0].buffered.end(len) - this.v[0].buffered.start(len);
         this.enabled = true;
-
+        this.volumeBar.prop('disabled', false).val(this.v[0].volume * 100);
         if (!this.v[0].paused && this.au[0].currentSrc) this.au[0].play();
         if (!this.v[0].currentTime)
             this.navigateTo();
@@ -627,10 +608,10 @@ class Player {
 
     /** Handle volume being changed */
     onVolumeChange() {
-        var perc = this.v[0].muted ? 0 : this.v[0].volume * 100;
-        if (perc > 0) this.v[0].muted = false;
-        if (this.v[0].muted) perc = 0;
-        this.volumeBar.css("background", `linear-gradient(90deg, white ${perc}%, #fffefe52 ${1 - perc}%)`);
+        const value = this.v[0].muted ? 0 : this.v[0].volume * 100;
+        if (value > 0) this.v[0].muted = false;
+        if (this.v[0].muted) value = 0;
+        this.volumeBar.val(value);
         let cls = "fa-volume-mute";
         if (!this.v[0].muted)
             cls = 'fa-volume' + (this.v[0].volume > .3 ? (this.v[0].volume > .6 ? '-up' : '') : '-down');
@@ -688,21 +669,19 @@ class Player {
      * @returns {Promise<string>} Blob object as url
      */
     static async prepareM3u8(url) {
+        if (url.includes('master.m3u8')) return url;
         if (!url.includes('GetM3U8')) return;
         let m3u8 = await req(url);
         const domains = (await Chrome.get('m3u8_domains')) || ['http%3A%2F%2Frv22pak.xyz%2F'];
-        m3u8.split(/[\n\r]/g)
-            .forEach(
-                v => /https(.*?)/g.test(v) &&
-                    (m3u8 = m3u8.replace(
-                        v,
-                        decodeURIComponent(v)
-                            .replace('&url=', '&v=0&url=' + rand(domains))
-                            .replace('coacoaca', 'coa3coaca')
-                            .replace('raunraca', 'c'.repeat(22))
-                            .split('urlRe=')[1]
-                    ))
-            );
+        // if (!m3u8.includes('urlRe='))
+        //     m3u8.split(/[\n\r]/g)
+        //         .forEach(
+        //             v => /https(.*?)/g.test(v) &&
+        //                 (m3u8 = m3u8.replace(
+        //                     v,
+        //                     'https://api.replay.watch/Child/Redir2?identity=default&urlRe=' + encodeURIComponent(v)
+        //                 ))
+        //         );
 
         return URL.createObjectURL(new Blob([m3u8]));
     }
@@ -822,11 +801,12 @@ class Player {
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);
         if (!player.seekPreviewAvailable) Assets.toast('Seeking preview not available on this server');
-        if (r.response && r.response.toString().includes('GetM3U8')) {
-            Assets.toast('Reloading once more..');
-            const urls = r.additional && r.additional.qualities ?
-                JSON.stringify(r.additional.qualities) : r.response;
-            return location.href = chrome.extension.getURL('/html/m3u8.html') + '#' + urls;
+        if (r.response && /GetM3U8/.test(r.response.toString())) {
+            player.m3u8 = true;
+            // Assets.toast('Reloading once more..');
+            // const urls = r.additional && r.additional.qualities ?
+            //     JSON.stringify(r.additional.qualities) : r.response;
+            // return location.href = chrome.extension.getURL('/html/m3u8.html') + '#' + urls;
         }
         r.additional && r.additional.crossorigin ?
             player.v[0].crossorigin = 'anonymous' : player.v.removeAttr('crossorigin');
@@ -834,6 +814,7 @@ class Player {
         if (!player.v[0].crossorigin)
             player.buttons.screenshot.add(player.buttons.record).remove();
 
+        if (sName == 'streamhls') player.m3u8 = true;
 
         player.v[0].src = r.response;
         try {
