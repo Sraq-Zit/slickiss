@@ -1,6 +1,14 @@
 # Changelog
 
-## v2.6.0
+## v2.7.0
+- Bug fix: Volume in the player
+- Bug fix: Notification image
+- Supported new servers Beta6, 7 and streamhls
+- Changed notification type to image with large image
+
+---
+
+## v2.6.0 (17/06/2020)
 - Bug fix: Compatibility with Essentials layout
 - Bug fix: Downloading freezing caused by BetaX
 - Added option to hide announcements

@@ -1,6 +1,6 @@
 {
     "name": "Slickiss",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "manifest_version": 2,
     "description": "Hides ads and Captcha in Kissanime and offers many other functionalities like notifications for Anime, quick download, and more",
     "browser_action": {
@@ -12,8 +12,9 @@
         "128": "icons/128.png"
     },
     "permissions": [
-        "*://coa3coaca-opensocial.googleusercontent.com/*",
+        "*://*.googleusercontent.com/*",
         "*://*.googlevideo.com/*",
+        "*://img.novelplanet.com/*",
         "cookies",
         "storage",
         "notifications",
@@ -52,6 +53,7 @@
                 "src/libs/jquery-2.1.4.min.js",
                 "src/libs/ocrad.min.js",
                 "src/libs/md5.js",
+                "src/libs/loader.js",
                 "src/libs/hls.js",
                 "src/custom.js",
                 "src/Tooltip.js",
@@ -83,6 +85,7 @@
                 "*://hydrax.net/*",
                 "*://play.p2ps.io/*",
                 "*://www.mp4upload.com/*",
+                "*://9sr4g3q37i9f0vh6k1srncmoetol5la4-a-sites-opensocial.googleusercontent.com/*",
                 "*://www.novelplanet.me/*"
             ],
             "include_globs": [
@@ -92,6 +95,7 @@
                 "*://hydrax.net/watch?v=*",
                 "*://play.p2ps.io/play/*",
                 "*://www.mp4upload.com/embed-*",
+                "*://9sr4g3q37i9f0vh6k1srncmoetol5la4-a-sites-opensocial.googleusercontent.com/gadgets/*",
                 "*://www.novelplanet.me/v/*"
             ],
             "all_frames": true,

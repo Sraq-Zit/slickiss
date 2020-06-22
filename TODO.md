@@ -1,7 +1,4 @@
 # TODO list
- - [x] Support new server StreamHLS
- - [x] Support/Fix new servers Beta6/7
- - [x] Fix volume in the player
  - Custom style of the website
  - Mp4upload download from download section
  - Import public bookmark list
