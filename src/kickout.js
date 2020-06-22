@@ -21,13 +21,16 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 
 const BETAX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36';
+const REFERER = 'https://9sr4g3q37i9f0vh6k1srncmoetol5la4-a-sites-opensocial.googleusercontent.com/';
 chrome.webRequest.onBeforeSendHeaders.addListener(
     function (details) {
+        if ($('<a/>', { href: details.url })[0].host == 'coacoaca-opensocial.googleusercontent.com')
+            return { requestHeaders: details.requestHeaders.concat([{ name: 'Referer', value: REFERER }]) };
         if (settings.useragent)
             return { requestHeaders: changeHeaders(details.requestHeaders, 'user-agent', BETAX_UA) };
     },
-    { urls: ['*://*.googlevideo.com/*', '*://kissanime.ru/*'] },
-    ['blocking', 'requestHeaders']
+    { urls: ['*://*.googlevideo.com/*', '*://kissanime.ru/*', '*://coacoaca-opensocial.googleusercontent.com/*'] },
+    ['blocking', 'requestHeaders', 'extraHeaders']
 );
 
 chrome.webRequest.onHeadersReceived.addListener(
