@@ -31,7 +31,9 @@ class BatchManager {
             )
                 for (const url in await Chrome.get('batchQueue'))
                     if (!(md5(url) in this.data)) {
-                        this.createCard(url, v.batchQueue.newValue[url].date);
+                        let date = v.batchQueue.newValue[url].date
+                        date = typeof date == 'string' ? Date.now() : date;
+                        this.createCard(url, getDisplayDate(date));
                         this.queue[url] = v.batchQueue.newValue[url];
                     }
         });
@@ -44,7 +46,11 @@ class BatchManager {
         if (typeof this.queue == 'undefined')
             (this.queue = {}) && await Chrome.set({ batchQueue: {} });
 
-        for (const url in this.queue) this.createCard(url, this.queue[url].date);
+        for (const url in this.queue) {
+            let date = this.queue[url].date;
+            date = typeof date == 'string' ? Date.now() : date;
+            this.createCard(url, getDisplayDate(date));
+        }
         this.downloadBtn.on('click', () => {
             if (this.isDownloading)
                 return Assets.toast('Please wait until the current process finishes!');

@@ -12,7 +12,7 @@ class EpisodeListing {
                             const INVISIBLE = '⁣';
                             const time = (new Date(visits[info.id])).toTimeString().slice(0, 5);
                             $(el).css('text-decoration', 'underline');
-                            el.title = `Watched ${getDisplayDate(new Date())} at ${time}`;
+                            el.title = `Watched ${getDisplayDate(new Date(visits[info.id]))} at ${time}`;
                         }
                     }
                 );

@@ -176,7 +176,7 @@ class Slickiss {
                 if (data.anime in batch)
                     Assets.toast('Anime is already on the list');
                 else {
-                    batch[data.anime] = { date: getDisplayDate() };
+                    batch[data.anime] = { date: Date.now() };
                     Chrome.set({ batchQueue: batch });
                     Assets.toast(`
                         Anime was added to the batch list (${Object.keys(batch).length} items)
