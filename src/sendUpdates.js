@@ -76,20 +76,20 @@ async function sendUpdates() {
             r = await fetch(pic).then(t => t.text());
             const json = {
                 legit: true,
-                type: 'basic',
+                type: 'image',
                 title: "You've got " + (c > 1 ? c + " updates" : "an update"),
                 contextMessage: "You can disable this on the Slickiss extension options",
                 buttons: [{
                     title: "Open Kissanime"
                 }],
-                iconUrl: "/imgs/angry-loli.png",
+                iconUrl: "/imgs/mobchara_3.png",
                 message: toDisplay
             };
             if (!r.includes("challenge-form"))
                 try {
                     const url = $(r).find(".rightBox img").eq(0).attr("src");
                     await fetch(url);
-                    json.iconUrl = url;
+                    json.imageUrl = url;
                 } catch (e) { console.error(e) }
 
             if (pic && c == 1) {
