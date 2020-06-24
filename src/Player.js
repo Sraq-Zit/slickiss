@@ -169,6 +169,7 @@ class Player {
             reload: this.container.find(".slickBtn.reload"),
             setting: this.container.find(".slickBtn.setting"),
             download: this.container.find(".slickBtn.download"),
+            pip: this.container.find(".slickBtn.pip"),
             screen: this.container.find(".slickBtn.screen"),
             pin: this.container.find(".slickBtn.pin"),
             screenshot: this.container.find(".slickBtn.screenshot"),
@@ -240,6 +241,11 @@ class Player {
         this.buttons.prev.on('click', _ => parent.postMessage({ request: "prevEp" }, '*'));
         this.buttons.next.on('click', _ => parent.postMessage({ request: "nextEp" }, '*'));
         this.buttons.record.on('click', _ => this.toggleClipRecording());
+        this.buttons.pip.on('click', _ => {
+            if (this.buttons.pip.hasClass("disabled")) return;
+            this.buttons.pip.addClass('disabled');
+            this.v[0].requestPictureInPicture();
+        })
         this.buttons.thumbnails.on('click', _ => {
             const value = !this.buttons.thumbnails.toggleClass('fa-eye-slash').hasClass('fa-eye-slash');
             Chrome.set({ thumbnails: value });
@@ -305,6 +311,7 @@ class Player {
         this.v.on('volumechange', _ => this.onVolumeChange());
         this.v.on('error', _ => this.onVidError());
         this.v.on('seeking', _ => this.navigateTo());
+        this.v.on('leavepictureinpicture', _ => this.buttons.pip.removeClass('disabled'));
         this.v.on('waiting',
             _ => this.container.addClass('loading') &&
                 this.icons.loadingImg.css('filter', 'grayscale(1)') &&
