@@ -107,6 +107,14 @@
                                     oninput="top.postMessage({request:'light', opacity:this.value/100},'*')">
                             </div>
                         </div>
+                        <div style="cursor: pointer;" id="autoplay"
+                            title="Play media with Chrome's built-in plain html video player" class="col-12 pt-2">
+                            <input id="toggle-autoplay" type="checkbox" class="d-none">
+                            <label for="toggle-autoplay">
+                                <i class="fa fa-circle fa-check-circle"></i>
+                            </label>
+                            <strong>Autoplay</strong>
+                        </div>
                         <div style="cursor: pointer;" id="remove"
                             title="Play media with Chrome's built-in plain html video player" class="col-12 pt-2">
                             <i class="fab fa-html5"></i>

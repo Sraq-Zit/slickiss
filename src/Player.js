@@ -123,6 +123,11 @@ class Player {
         this.settings = this.container.find('.settings');
         this.qContainer = this.container.find('.q');
         this.remover = this.container.find('#remove, #disable');
+        this.container.find('#toggle-autoplay').on('change',
+            e => Chrome.set({ autoplay: settings.autoplay = e.currentTarget.checked })
+        ).on('click',
+            _ => this.container.find('#toggle-autoplay+label>i').toggleClass('fa-circle')
+        )[settings.autoplay ? 'click' : 'val']();
         /** MediaRecorder management for recording clips
          * @type {VideoRecorder}
          */
@@ -189,9 +194,15 @@ class Player {
         if (settings.thumbnails) this.buttons.thumbnails.removeClass('fa-eye-slash');
 
         if (!Player.HAS_NEXT) this.buttons.next.attr('style', 'display:none !important');
-        else this.buttons.next.attr('title', Player.HAS_NEXT);
+        else {
+            this.buttons.next.attr('title', Player.HAS_NEXT);
+            navigator.mediaSession.setActionHandler('nexttrack', _ => this.buttons.next.click());
+        }
         if (!Player.HAS_PREV) this.buttons.prev.attr('style', 'display:none !important');
-        else this.buttons.prev.attr('title', Player.HAS_PREV);
+        else {
+            this.buttons.prev.attr('title', Player.HAS_PREV);
+            navigator.mediaSession.setActionHandler('previoustrack', _ => this.buttons.prev.click());
+        }
 
 
         MessageManager.attachListener(e => { if (e.data.type) $(document).trigger(e.data) });
