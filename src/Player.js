@@ -304,8 +304,9 @@ class Player {
         this.v.on('progress', _ => this.onVidProgress());
         this.v.on('volumechange', _ => this.onVolumeChange());
         this.v.on('error', _ => this.onVidError());
+        this.v.on('seeking', _ => this.navigateTo());
         this.v.on('waiting',
-            e => this.container.addClass('loading') &&
+            _ => this.container.addClass('loading') &&
                 this.icons.loadingImg.css('filter', 'grayscale(1)') &&
                 (this.totalBuffered = this.buffered) &&
                 this.au[0].pause()
