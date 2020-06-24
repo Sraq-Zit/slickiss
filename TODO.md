@@ -1,6 +1,6 @@
 # TODO list
  - [x] Add Picture In Picture
- - [ ] Add linking to annoucements [test](https://kissanime.ru)
+ - [ ] Add linking to annoucements [test](https://kissanime.ru#))
  - Add sound effects to notification
  - Custom style of the website
  - Mp4upload download from download section
