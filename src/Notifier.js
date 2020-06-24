@@ -21,10 +21,18 @@ class Notifier {
             let p;
             container.append($('<div/>', { class: 'bigChar', text: 'To do' }));
             container.append(p = $('<p/>'));
-            for (const task of tasks.done)
-                p.append($('<div/>', { text: `✔ ${task}` }).css('font-weight', 'bold'));
-            for (const task of tasks.todo)
-                p.append($('<div/>', { text: `- ${task}` }).css('font-weight', 'normal'));
+            for (let task of tasks.done) {
+                task = $('<div/>', { text: `✔ ${task}` }).css('font-weight', 'bold');
+                const anchor = '<a target="_blank" href="$2">$1</a>';
+                task[0].innerHTML = task[0].innerHTML.replace(/\[(.+?)\]\((.+?)\)/g, anchor)
+                p.append(task);
+            }
+            for (let task of tasks.todo) {
+                task = $('<div/>', { text: `- ${task}` }).css('font-weight', 'normal');
+                const anchor = '<a target="_blank" href="$2">$1</a>';
+                task[0].innerHTML = task[0].innerHTML.replace(/\[(.+?)\]\((.+?)\)/g, anchor)
+                p.append(task);
+            }
         }
         return empty ? null : container;
     }
