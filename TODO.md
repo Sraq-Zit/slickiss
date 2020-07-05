@@ -1,7 +1,7 @@
 # TODO list
  - [x] Add Picture In Picture
  - [x] Add linking to annoucements
- - [ ] Fix disqus thread
+ - [x] Fix disqus thread
  - Add sound effects to notification
  - Custom style of the website
  - Mp4upload download from download section
