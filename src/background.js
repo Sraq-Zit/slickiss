@@ -16,6 +16,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.type == 'updateData')
         Chrome.get().then(s => settings = s);
 
+    if (message.type == 'reload_extension')
+        chrome.management.getSelf(info => info.installType == 'development' && chrome.runtime.reload());
 
     if (message.ajax) {
         delete message.ajax;
