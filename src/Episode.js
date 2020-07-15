@@ -437,7 +437,7 @@ class Episode {
         for (var i in glxTsIds)
             $("body > .dummy").eq(0).append("<div id='glx-" + glxTsIds[i] + "-container'></div>");
 
-        inject(`setTimeout = _=>_; setInterval = _=>_;`);
+        // inject(`setTimeout = _=>_; setInterval = _=>_t;`);
     }
 
 
