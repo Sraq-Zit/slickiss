@@ -127,11 +127,11 @@ class Slickiss {
                     );
 
                     $(document).on('ready', Bookmark.getBookmarks(true).then(
-                        json => $("a[href*='Anime/']").each((i, a) => {
+                        json => markWatched($("a[href*='Anime/']").each((i, a) => {
                             const info = S.parseUrl(a.href);
                             if (info && json[info.name])
                                 $(a).addClass(json[info.name].watched ? 'bookmarked_seen' : 'bookmarked');
-                        })
+                        }))
                     ));
 
             }
@@ -265,3 +265,7 @@ if (location.protocol != 'chrome-extension:') {
     Player.deploy();
 
 
+document.onkeydown = e => {
+    e.ctrlKey && e.shiftKey && e.code == 'KeyR' && (e.preventDefault() ||
+        chrome.runtime.sendMessage({ type: 'reload_extension' }))
+};

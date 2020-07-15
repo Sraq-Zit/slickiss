@@ -596,7 +596,7 @@ class Player {
                     };
                     const p = await new Prompt(onyes, onno, this.container).load();
                     this.pinned = true;
-                    p.bigTitle.html(`Do you want to continue from where you left of ?`);
+                    p.bigTitle.html(`Do you want to continue from where you left off ?`);
                     p.subTitle.html(`You previously left this video at ${Assets.formatSecs(Player.TIMES[k].leftAt)}`);
                     p.show();
                     break;
@@ -631,7 +631,7 @@ class Player {
 
     /** Handle volume being changed */
     onVolumeChange() {
-        const value = this.v[0].muted ? 0 : this.v[0].volume * 100;
+        let value = this.v[0].muted ? 0 : this.v[0].volume * 100;
         if (value > 0) this.v[0].muted = false;
         if (this.v[0].muted) value = 0;
         this.volumeBar.val(value);
@@ -765,6 +765,13 @@ class Player {
      * @param {string} [data] Data of the video if available
      */
     static async deploy(data) {
+        if (!$('body').length)
+            document.documentElement.innerHTML = `
+                <body style="display:flex; justify-content: center; align-items: center;">
+                    <h1 style='color: white'>Just a sec</h1>
+                </body>
+            `;
+
         settings = await Chrome.get();
         if (top != self)
             await new Promise(r => {
@@ -810,14 +817,18 @@ class Player {
             location.reload();
             return;
         }
+
         const player = new Player();
         await player.init();
-        if (!$('body').length)
-            document.documentElement.innerHTML = '<body></body>';
 
-        $('body').css('margin', 0).append(player.container);
+        $('body').removeAttr('style').css('margin', 0).empty().append(player.container);
         $('input').val(Number(Player.OPACITY) * 100);
         $('html').attr('overflow', 'hidden');
+
+
+        if (location.hash.includes(GLOBALS.PLAYER_PREVIEW))
+            player.container.replaceWith(player.v) && player.v.attr('autoplay', '');
+
         if (!(sName in DlGrabber.handlers))
             return Assets.toast('Whoops! Server not supported by Slickiss. Try switching to kissanime version in Settings > Appearance', 5e3) && player;
         const r = data || await DlGrabber.handlers.auto(url);
@@ -854,6 +865,35 @@ class Player {
 
         if (!settings.player)
             Assets.toast('Slickiss player disabled') && player.removePlayer(0);
+
+
+        if (location.hash.includes(GLOBALS.PLAYER_PREVIEW)) {
+            player.v[0].controls = false;
+            player.v[0].loop = true;
+            player.v[0].muted = true;
+
+            if (r.additional) {
+                if (r.additional.qualities) {
+                    const quals = new QualityManager(r.additional.qualities, '360p');
+                    player.v[0].src = quals.preferredQ.file;
+                }
+            }
+
+            // player.container.replaceWith(player.v);
+            player.v.on('timeupdate', e => {
+                const v = e.currentTarget;
+                const splitDuration = 2;
+                const splits = 10;
+
+                if (v.currentTime >= (v.prevTime || 0) + splitDuration)
+                    if (v.currentTime + v.duration / splits < v.duration)
+                        v.prevTime = v.currentTime += v.duration / splits;
+                    else
+                        v.prevTime = v.currentTime = 0;
+
+            }).on('ended', _ => player.v[0].play());
+            return;
+        }
 
         return player;
     }

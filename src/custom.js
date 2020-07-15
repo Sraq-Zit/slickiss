@@ -1,3 +1,8 @@
+const GLOBALS = {
+    PLAYER_PREVIEW: '__player_preview:'
+};
+
+
 $.prototype.__defineGetter__('oHTML', function () { return this[0].outerHTML });
 
 String.prototype.__defineGetter__('noImgs', function () { return this && this.replace(/<img/g, '<im'); });
@@ -170,4 +175,26 @@ const inject = code => {
     const script = document.createElement('script');
     script.innerHTML = code;
     document.body.appendChild(script);
+}
+
+/** Change style of previously watched episodes
+ * @param {JQuery<HTMLAnchorElement>} anchors Query of condidates 
+ * @param {(el: JQuery<HTMLAnchorElement>) => void} [styleCb] Callback for each selected element
+ */
+const markWatched = (anchors, styleCb) => {
+    Chrome.get('lastVisit', 'local').then(lastVisit => {
+        if (!anchors.length || !lastVisit) return;
+        if (typeof styleCb != 'function') styleCb = el => el.css('text-decoration', 'underline');
+        anchors.each(
+            (_, el) => {
+                const info = S.parseUrl(el.href, S.cts.EPISODE);
+                if (info && 'name' in info && info.name in lastVisit && info.id in lastVisit[info.name]) {
+                    const visits = lastVisit[info.name];
+                    const time = (new Date(visits[info.id])).toTimeString().slice(0, 5);
+                    el.title = `Watched ${getDisplayDate(new Date(visits[info.id]))} at ${time}`;
+                    styleCb($(el));
+                }
+            }
+        );
+    });
 }

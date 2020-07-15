@@ -45,6 +45,7 @@ let settings = {
     'servers.streamhls': true,
     shortcuts: true,
     ttip: true,
+    ttip_video_pv: false,
     updates: ["0"],
     lastVisit: {}
 };

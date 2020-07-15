@@ -1,24 +1,9 @@
 class EpisodeListing {
     constructor(listing, process = true) {
         this.listing = listing;
-        Chrome.get('lastVisit', 'local').then(lastVisit => {
-            if (!this.listing.find('a').length || !lastVisit) return;
-            const visits = lastVisit[S.parseUrl(this.listing.find('a')[0].href).name];
-            if (visits)
-                this.listing.find('a').each(
-                    (_, el) => {
-                        const info = S.parseUrl(el.href);
-                        if (info.id in visits) {
-                            const INVISIBLE = '⁣';
-                            const time = (new Date(visits[info.id])).toTimeString().slice(0, 5);
-                            $(el).css('text-decoration', 'underline');
-                            el.title = `Watched ${getDisplayDate(new Date(visits[info.id]))} at ${time}`;
-                        }
-                    }
-                );
-        });
+        this.listing && markWatched(this.listing.find('a'));
         if (!process) return;
-        this.episodes = []
+        this.episodes = [];
         this.selectAll = $('<input/>', { type: 'checkbox' });
         this.aborter = $('<a/>', { href: '#', text: 'Stop' });
         this.getter = $('<a/>', { href: '#', text: 'Get all download links' });
