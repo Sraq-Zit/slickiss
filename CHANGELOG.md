@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.8.0
+- Bug fix: Disqus thread not appearing
+- Added Picture-In-Picture feature to the player
+- Added hyperlinks parsing to announcments
+- Added video preview to Anime info tooltip
+
+---
+
 ## v2.7.1 (23/06/2020)
 - Bug fix: Volume in the player
 - Bug fix: Notification image
