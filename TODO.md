@@ -1,4 +1,4 @@
- - [ ] Support Beta 8
+ - [x] Support Beta 8
  - Add sound effects to notification
  - Custom style of the website
  - Mp4upload download from download section
