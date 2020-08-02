@@ -1,5 +1,3 @@
- - [x] Support Beta 8
- - [x] Resize video player width
  - Add sound effects to notification
  - Custom style of the website
  - Mp4upload download from download section

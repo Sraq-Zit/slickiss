@@ -1,6 +1,12 @@
 # Changelog
 
-## v2.8.0
+## v2.9.0
+- Supported beta 8
+- Added resizing video player feature
+
+---
+
+## v2.8.0 (14/07/2020)
 - Bug fix: Disqus thread not appearing
 - Added Picture-In-Picture feature to the player
 - Added hyperlinks parsing to announcments
