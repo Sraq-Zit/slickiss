@@ -63,8 +63,9 @@ class DlGrabber {
                                 server: src.server,
                                 response: src
                             });
-                            if (src.success && src.additional.qualities)
-                                src.response = (new QualityManager(src.additional.qualities, settings.quality)).preferredQ.file
+                            const qs = src.additional && src.additional.qualities;
+                            if (src.success && qs && Object.keys(qs).length)
+                                src.response = (new QualityManager(qs, settings.quality)).preferredQ.file
                             this.downloads[src.server] = src;
                             if (Object.keys(this.downloads).length == count)
                                 resolve();
@@ -316,6 +317,8 @@ class DlGrabber {
             beta5: url => this.handlers.alpha(url, 'beta5'),
             /** @param {string} url */
             beta7: url => this.handlers.beta6(url, 'beta7', true),
+            /** @param {string} url */
+            beta8: url => this.handlers.alpha(url, 'beta8'),
             /** @param {string} url */
             streamhls: url => this.handlers.alpha(url, 'streamhls'),
             /** @param {string} url */

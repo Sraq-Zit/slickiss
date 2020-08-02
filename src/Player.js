@@ -693,9 +693,9 @@ class Player {
      */
     static async prepareM3u8(url) {
         if (url.includes('master.m3u8')) return url;
-        if (!url.includes('GetM3U8')) return;
+        if (!/GetM(3U)?8/.test(url)) return;
         let m3u8 = await req(url);
-        const domains = (await Chrome.get('m3u8_domains')) || ['http%3A%2F%2Frv22pak.xyz%2F'];
+        // const domains = (await Chrome.get('m3u8_domains')) || ['http%3A%2F%2Frv22pak.xyz%2F'];
         // if (!m3u8.includes('urlRe='))
         //     m3u8.split(/[\n\r]/g)
         //         .forEach(
@@ -835,7 +835,7 @@ class Player {
         if (!r.success) return Assets.toast('No video found') && player;
         player.seekPreviewAvailable = !Player.THUMBNAIL_PREVIEW_BLACKLIST.includes(r.server);
         if (!player.seekPreviewAvailable) Assets.toast('Seeking preview not available on this server');
-        if (r.response && /GetM3U8/.test(r.response.toString())) {
+        if (r.response && /GetM(3U)?8/.test(r.response.toString())) {
             player.m3u8 = true;
             // Assets.toast('Reloading once more..');
             // const urls = r.additional && r.additional.qualities ?
