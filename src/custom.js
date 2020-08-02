@@ -24,12 +24,21 @@ Number.prototype.pad = function (pad, length) {
     return str;
 }
 
+
+
 const rand = (min, max) => {
     if ((min instanceof Array) && min && min.length) return min[rand(0, min.length - 1)];
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+/** Returns the number if it is between the extremities otherwise return the closest one
+ * @param {number} min 
+ * @param {number} max 
+ * @returns {number}
+ */
+Number.prototype.between = function (min, max) { return Math.min(max, Math.max(min, this)) }
 
 /** Manage video qualities order and preferences */
 class QualityManager {

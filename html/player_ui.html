@@ -42,6 +42,11 @@
             pointer-events: none;
         }
 
+        .theater {
+            flex-basis: 100% !important;
+            max-width: 100% !important;
+        }
+
         .border-left,
         .border-right,
         .border-top,
@@ -408,11 +413,16 @@
 
 
     <div class="row mx-3 border-left border-right border-bottom" style="height: calc(90vh - 80px);">
-        <div class="col-8 border-right p-0 h-100 position-relative animate" style="z-index: 2">
+        <div class="col border-right p-0 h-100 position-relative animate" style="z-index: 2; flex-basis: 66%; max-width: 66%;">
             <div id='status' class="position-absolute display-4 w-100 text-center text-muted"
                 style="left: 50%;top: 50%;transform: translate(-50%, -50%);opacity: .1;z-index: -1;"></div>
 
-            <iframe id="player" frameborder="0" class="w-100 h-100" allowfullscreen allow="autoplay fullscreen"></iframe>
+            <iframe id="player" frameborder="0" class="w-100 h-100" allowfullscreen
+                allow="autoplay fullscreen"></iframe>
+        </div>
+        <div class="col p-0" style="max-width: 0; cursor: col-resize;" id="resizer">
+            <i class="text-light h4 fa fa-arrows-alt-h position-absolute px-1"
+                style="transform: translateX(-50%);bottom: 0;height: calc(100% + 15px); z-index: 2;"></i>
         </div>
         <div class="col h-100 overflow-auto px-0 py-2" id="episodes"></div>
     </div>
@@ -456,9 +466,9 @@
             <i class="fa fa-list-ul text-warning cursor-pointer mx-2" title="Show list of updated Anime"
                 onclick="$('#bList').show().css('margin-top', 0)"></i>
             <i class="fa fa-exchange-alt text-success cursor-pointer mx-2" title="Inverse layout" onclick="
-                    const eps = $('#episodes');
-                    (eps.next().length && eps.next().after(eps) && $('#tools').parent().append($('#tools'))) ||
-                    (eps.prev().length && eps.prev().before(eps) && $('#tools').parent().prepend($('#tools')));
+                    const eps = $('#episodes'), resizer = $('#resizer');
+                    (eps.next().length && eps.parent().append(resizer).append(eps) && $('#tools').parent().append($('#tools'))) ||
+                    (eps.prev().length && eps.parent().prepend(resizer).prepend(eps) && $('#tools').parent().prepend($('#tools')));
                     localStorage.inverseLayout = eps.prev().length ? '' : '1';
                 " id="inverseLayout"></i>
             <i class="fa fa-info-circle text-info mx-2" style="cursor: help; z-index: 3;"></i>

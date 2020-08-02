@@ -169,6 +169,36 @@ class Episode {
         this.prevBtn = $('#prev').data('url', prev || '').addClass(prev ? '' : 'disabled');
         this.epStatus = $('#status').text(document.title.replace(this.animeData.name, ''));
         this.srvContainer = $('#servers');
+
+        this.resizer = $('#resizer');
+        this.resizer.on('mousedown', e => {
+            if ($('.col.theater').length) {
+                Assets.toast('Please disable theater mode', 2e3);
+                return;
+            }
+            e.preventDefault();
+            this.resizer.dragging = true;
+            this.resizer.prev().removeClass('animate');
+            this.iframe.css('pointer-events', 'none');
+        });
+
+        $(document).on('mousemove mouseup', e => {
+            if (!this.resizer.dragging) return;
+            if (e.type == 'mouseup') {
+                this.resizer.dragging = false;
+                this.resizer.prev().addClass('animate');
+                this.iframe.css('pointer-events', '');
+                localStorage.leftResize = this.resizer.prev().attr('style');
+                return;
+            }
+            const screen = this.resizer.prev();
+            const container = this.resizer.parent();
+            for (const k of ['max-width', 'flex-basis'])
+                screen.css(
+                    k, (100 * (e.clientX - container.offset().left) / container.width()).between(0, 100) + '%'
+                ) && this.resizer.next().css(k, '');
+        });
+
         $('body').append(`
             <script>
                 var disqus_shortname = 'kissanime';
@@ -182,9 +212,12 @@ class Episode {
         this.markEpisode(location.href, 'ready', false);
         $('#bootstrap').on('load', _ => $('.slickExtra').remove() && this.update());
         $('.fa-lightbulb').on('click', _ => this.toggleLights());
-        $('.fa-tv').on('click', _ => localStorage.theaterMode = this.iframe.parent().toggleClass('col-12').hasClass('col-12'));
+        $('.fa-tv').on('click', _ => localStorage.theaterMode = this.iframe.parent().toggleClass('theater').hasClass('theater'));
         if (localStorage.theaterMode == 'true') $('.fa-tv')[0].click();
         if (localStorage.inverseLayout) $('#inverseLayout')[0].click();
+        if (localStorage.leftResize)
+            this.resizer.prev().attr('style', localStorage.leftResize) &&
+                this.resizer.next().css({ 'max-width': '', 'flex-basis': '' });
         this.srvContainer.on('click', 'span:not(.disabled)', e => {
             const server = $(e.currentTarget);
             const activated = 'rounded-pill cursor-pointer btn btn-secondary disabled';
